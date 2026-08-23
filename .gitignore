@@ -10,3 +10,5 @@ venv/
 *.db
 .vscode/
 .idea/
+.env-example
+
