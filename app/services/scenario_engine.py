@@ -2,18 +2,18 @@ from decimal import Decimal
 
 
 def run_scenario(
-    base_revenue: Decimal,
-    pipeline_revenue: Decimal,
-    utilization: Decimal,
-    billing_rate_change: Decimal = Decimal("0"),
-    pipeline_conversion_change: Decimal = Decimal("0"),
-    utilization_change: Decimal = Decimal("0"),
-    slippage_rate: Decimal = Decimal("0"),
+    base_revenue: float,
+    pipeline_revenue: float,
+    utilization: float,
+    pipeline_conversion_change: float = 0.0,
+    utilization_change: float = 0.0,
+    billing_rate_change: float = 0.0,
+    slippage_rate: float = 0.0,
 ):
 
     adjusted_pipeline = (
         pipeline_revenue
-        * (Decimal("1") + pipeline_conversion_change)
+        * (1 + pipeline_conversion_change)
     )
 
     adjusted_utilization = (
@@ -22,28 +22,54 @@ def run_scenario(
 
     utilization_factor = (
         adjusted_utilization / utilization
-        if utilization > 0
-        else Decimal("1")
+        if utilization
+        else 1
     )
 
     adjusted_revenue = (
         base_revenue
         * utilization_factor
-        * (Decimal("1") + billing_rate_change)
+        * (1 + billing_rate_change)
     )
 
     adjusted_revenue += adjusted_pipeline
 
     adjusted_revenue *= (
-        Decimal("1") - slippage_rate
+        1 - slippage_rate
     )
 
     return {
-        "base_revenue": base_revenue.quantize(Decimal("0.01")),
-        "adjusted_pipeline": adjusted_pipeline.quantize(Decimal("0.01")),
-        "adjusted_utilization": adjusted_utilization.quantize(Decimal("0.01")),
-        "scenario_revenue": adjusted_revenue.quantize(Decimal("0.01")),
-        "revenue_change": (
-            adjusted_revenue - base_revenue
-        ).quantize(Decimal("0.01")),
+        "base_revenue": round(
+            base_revenue,
+            2,
+        ),
+        "adjusted_pipeline": round(
+            adjusted_pipeline,
+            2,
+        ),
+        "adjusted_utilization": round(
+            adjusted_utilization,
+            4,
+        ),
+        "scenario_revenue": round(
+            adjusted_revenue,
+            2,
+        ),
+        "revenue_change": round(
+            adjusted_revenue - base_revenue,
+            2,
+        ),
+        "revenue_change_pct": round(
+            (
+                (
+                    adjusted_revenue
+                    - base_revenue
+                )
+                / base_revenue
+                * 100
+            )
+            if base_revenue
+            else 0,
+            2,
+        ),
     }

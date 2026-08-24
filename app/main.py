@@ -1,8 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.routers import scenarios
 from app.routers import analytics, forecast, projects
-
+from app.routers import (
+    analytics,
+    forecast,
+    projects,
+    scenarios,
+)
 app = FastAPI(
     title="X-Fin",
     description="Intelligent Delivery Finance Operating System",
@@ -20,8 +25,7 @@ app.add_middleware(
 app.include_router(projects.router)
 app.include_router(forecast.router)
 app.include_router(analytics.router)
-
-
+app.include_router(scenarios.router)
 @app.get("/")
 def root():
     return {

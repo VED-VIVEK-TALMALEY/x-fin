@@ -1,27 +1,42 @@
-from decimal import Decimal
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
-from fastapi import APIRouter
+from app.db.connection import get_db
+from app.services.backlog_engine import calculate_backlog
+from app.services.finance_queries import (
+    get_pipeline_summary,
+)
+from app.services.forecast_engine import build_forecast
 
-from app.services.forecast_engine import calculate_forecast
+router = APIRouter(
+    prefix="/forecast",
+    tags=["Forecast"],
+)
 
-router = APIRouter(prefix="/forecast", tags=["Forecast"])
 
+@router.get("/current")
+def current_forecast(
+    db: Session = Depends(get_db),
+):
 
-@router.get("/demo")
-def demo_forecast():
+    backlog = calculate_backlog(db)
 
-    result = calculate_forecast(
-        backlog_revenue=Decimal("28000000"),
-        pipeline_revenue=Decimal("12000000"),
-        utilization=Decimal("0.74"),
-        target_utilization=Decimal("0.75"),
-        risk_rate=Decimal("0.05"),
+    pipeline = get_pipeline_summary(db)
+
+    utilization = 0.74
+
+    result = build_forecast(
+        committed_backlog=backlog[
+            "committed_backlog"
+        ],
+        weighted_pipeline=float(
+            pipeline["weighted_pipeline"]
+        ),
+        utilization=utilization,
     )
 
     return {
-        "backlog_revenue": float(result.backlog_revenue),
-        "pipeline_revenue": float(result.pipeline_revenue),
-        "capacity_adjustment": float(result.capacity_adjustment),
-        "risk_adjustment": float(result.risk_adjustment),
-        "total_forecast": float(result.total_forecast),
-    }   
+        "forecast": result.__dict__,
+        "pipeline": pipeline,
+        "backlog": backlog,
+    }
