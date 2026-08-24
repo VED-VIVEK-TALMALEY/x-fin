@@ -1,0 +1,27 @@
+./
+├── gen_tree.py
+├── project_tree.txt
+├── requirements.txt
+├── app/
+│   ├── config.py
+│   ├── main.py
+│   ├── __init__.py
+│   ├── db/
+│   │   ├── connection.py
+│   │   ├── schema.sql
+│   │   ├── __init__.py
+│   ├── models/
+│   │   ├── project.py
+│   │   ├── __init__.py
+│   ├── routers/
+│   │   ├── __init__.py
+│   ├── services/
+│   │   ├── revenue_calc.py
+│   │   ├── __init__.py
+├── data/
+│   ├── synthetic_projects.csv
+├── scripts/
+│   ├── generate_synthetic_data.py
+│   ├── load_data.py
+├── tests/
+│   ├── __init__.py
