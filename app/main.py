@@ -1,29 +1,39 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import logging
 
-logging.basicConfig(level=logging.INFO)
+from app.routers import analytics, forecast, projects
 
 app = FastAPI(
-    title="Revenue Forecast Engine",
-    version="0.1.0"
+    title="X-Fin",
+    description="Intelligent Delivery Finance Operating System",
+    version="1.0.0",
 )
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
+app.include_router(projects.router)
+app.include_router(forecast.router)
+app.include_router(analytics.router)
+
 
 @app.get("/")
 def root():
-    return {"name": "Revenue Forecast Engine", "version": "0.1.0"}
+    return {
+        "name": "X-Fin",
+        "description": "Intelligent Delivery Finance Operating System",
+        "version": "1.0.0",
+    }
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy",
+        "service": "x-fin",
+    }

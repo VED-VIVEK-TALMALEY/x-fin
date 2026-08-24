@@ -1,32 +1,46 @@
-from pydantic import BaseModel, validator, conint, condecimal
 from datetime import date
+from decimal import Decimal
 from enum import Enum
 from typing import Optional
-import uuid
+from uuid import UUID
 
-class StageEnum(str, Enum):
+from pydantic import BaseModel, Field
+
+
+class ProjectStage(str, Enum):
     PROSPECT = "Prospect"
     QUALIFIED = "Qualified"
     IN_DELIVERY = "In Delivery"
     CLOSED_WON = "Closed Won"
     CLOSED_LOST = "Closed Lost"
 
+
+class ProjectStatus(str, Enum):
+    ACTIVE = "Active"
+    COMPLETED = "Completed"
+    CANCELLED = "Cancelled"
+
+
 class ProjectCreate(BaseModel):
     project_name: str
-    business_unit: str
     client_name: str
-    stage: StageEnum
+    business_unit: str
+    stage: ProjectStage
+    status: ProjectStatus = ProjectStatus.ACTIVE
     start_date: date
     end_date: Optional[date] = None
-    billable_hours: conint(gt=0)
-    bill_rate_per_hour: condecimal(decimal_places=2, gt=0)
-    utilization_percent: conint(ge=0, le=100)
-    win_probability: condecimal(decimal_places=2, ge=0, le=1)
+    contract_value: Decimal = Field(gt=0)
+    billing_rate: Decimal = Field(gt=0)
+    planned_hours: Decimal = Field(gt=0)
 
-class ProjectResponse(ProjectCreate):
-    project_id: uuid.UUID
-    created_at: str
-    updated_at: str
 
-    class Config:
-        from_attributes = True
+class ForecastRequest(BaseModel):
+    project_id: Optional[UUID] = None
+    forecast_month: date
+
+
+class ScenarioRequest(BaseModel):
+    pipeline_conversion_change: float = 0.0
+    utilization_change: float = 0.0
+    billing_rate_change: float = 0.0
+    slippage_rate: float = 0.0
