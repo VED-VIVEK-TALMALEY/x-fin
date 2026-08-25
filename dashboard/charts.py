@@ -51,9 +51,10 @@ def revenue_vs_budget_chart(
         actual["month"]
     )
 
-    budget["month"] = pd.to_datetime(
-        budget["month"]
-    )
+    if not budget.empty:
+        budget["month"] = pd.to_datetime(
+            budget["month"]
+        )
 
     merged = actual.merge(
         budget,
@@ -71,13 +72,14 @@ def revenue_vs_budget_chart(
         )
     )
 
-    fig.add_trace(
-        go.Bar(
-            x=merged["month"],
-            y=merged["budget_revenue"],
-            name="Budget",
+    if "budget_revenue" in merged.columns:
+        fig.add_trace(
+            go.Bar(
+                x=merged["month"],
+                y=merged["budget_revenue"],
+                name="Budget",
+            )
         )
-    )
 
     fig.update_layout(
         title="Actual vs Budget Revenue",
@@ -140,6 +142,9 @@ def business_unit_chart(data):
 
     df = pd.DataFrame(data)
 
+    if "actual_revenue" not in df.columns:
+        return go.Figure()
+
     df = df.sort_values(
         "actual_revenue",
         ascending=True,
@@ -168,6 +173,9 @@ def business_unit_chart(data):
 
 
 def variance_chart(data):
+
+    if not data:
+        return go.Figure()
 
     labels = [
         "Actual vs Budget",

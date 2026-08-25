@@ -1,39 +1,63 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from app.routers import scenarios
-from app.routers import analytics, forecast, projects
+
 from app.routers import (
-    analytics,
-    forecast,
     projects,
+    forecast,
+    analytics,
     scenarios,
+    intelligence,
 )
+
+
 app = FastAPI(
     title="X-Fin",
-    description="Intelligent Delivery Finance Operating System",
     version="1.0.0",
+    description="Intelligent Delivery Finance Operating System",
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+
+# --------------------------------------------------
+# ROUTERS
+# --------------------------------------------------
+
+app.include_router(
+    projects.router,
 )
 
-app.include_router(projects.router)
-app.include_router(forecast.router)
-app.include_router(analytics.router)
-app.include_router(scenarios.router)
+app.include_router(
+    forecast.router,
+)
+
+app.include_router(
+    analytics.router,
+)
+
+app.include_router(
+    scenarios.router,
+)
+
+app.include_router(
+    intelligence.router,
+)
+
+
+# --------------------------------------------------
+# ROOT
+# --------------------------------------------------
+
 @app.get("/")
 def root():
     return {
         "name": "X-Fin",
-        "description": "Intelligent Delivery Finance Operating System",
         "version": "1.0.0",
+        "description": "Intelligent Delivery Finance Operating System",
+        "status": "healthy",
     }
 
+
+# --------------------------------------------------
+# HEALTH
+# --------------------------------------------------
 
 @app.get("/health")
 def health():
