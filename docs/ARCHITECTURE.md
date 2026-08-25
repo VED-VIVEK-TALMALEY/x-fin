@@ -67,6 +67,37 @@ graph TB
     UI_API -->|HTTP REST JSON| APITier
     Routers --> ServiceTier
     ServiceTier --> DB_CONN
+
+    style Client fill:#F1F5F9,stroke:#475569,stroke-width:2px,color:#0F172A
+    style PresentationTier fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style APITier fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#15803D
+    style ServiceTier fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+    style DataTier fill:#F8FAFC,stroke:#334155,stroke-width:2px,color:#1E293B
+
+    style BROWSER fill:#E2E8F0,stroke:#475569,stroke-width:1px,color:#0F172A
+
+    style UI_MAIN fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style UI_INTEL fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style UI_CHARTS fill:#BFDBFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style UI_COMP fill:#BFDBFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style UI_API fill:#93C5FD,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+
+    style MAIN fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
+    style Routers fill:#BBF7D0,stroke:#15803D,stroke-width:1px,color:#166534
+
+    style S_FC fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S_BL fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S_VR fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S_RS fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S_IN fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S_RC fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S_SC fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S_BU fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S_FA fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S_FQ fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+
+    style DB_CONN fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style Tables fill:#CBD5E1,stroke:#334155,stroke-width:1px,color:#0F172A
 ```
 
 ---
@@ -116,6 +147,34 @@ flowchart TD
     end
 
     Ingestion --> ForecastStage --> ReasoningStage --> InsightStage --> RecommendationStage --> DeliveryStage
+
+    style Ingestion fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
+    style ForecastStage fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style ReasoningStage fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+    style InsightStage fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style RecommendationStage fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+    style DeliveryStage fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#15803D
+
+    style DB fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style Q1 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style Q2 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style Q3 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style Q4 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+
+    style F1 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style F_OUT fill:#BFDBFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+
+    style R1 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style R_OUT fill:#E9D5FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+
+    style I1 fill:#FEF3C7,stroke:#B45309,stroke-width:1px,color:#78350F
+    style I_OUT fill:#FDE68A,stroke:#B45309,stroke-width:1px,color:#78350F
+
+    style REC1 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
+    style REC_OUT fill:#A7F3D0,stroke:#047857,stroke-width:1px,color:#064E3B
+
+    style EP fill:#BBF7D0,stroke:#15803D,stroke-width:1px,color:#166534
+    style ST fill:#86EFAC,stroke:#15803D,stroke-width:2px,color:#14532D
 ```
 
 ---
@@ -153,4 +212,14 @@ graph LR
     User(["Executive / Finance Lead"]) -->|HTTP Browser Request| ST_APP
     ST_APP -->|Internal REST API Calls (127.0.0.1:8000)| UV
     UV -->|Connection Pooling / TCP :5432| PG
+
+    style Host fill:#F8FAFC,stroke:#334155,stroke-width:2px,color:#0F172A
+    style ServiceStreamlit fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style ServiceFastAPI fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#15803D
+    style ServicePostgres fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+
+    style User fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#92400E
+    style ST_APP fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style UV fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
+    style PG fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
 ```

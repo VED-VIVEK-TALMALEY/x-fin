@@ -94,6 +94,12 @@ flowchart LR
     P -.-> L["<b>Stage: Closed Lost</b><br/>Win Probability: 0% (0.00)<br/>Class: Inactive"]
     Q -.-> L
     D -.-> L
+
+    style P fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#92400E
+    style Q fill:#FED7AA,stroke:#EA580C,stroke-width:2px,color:#9A3412
+    style D fill:#DBEAFE,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style W fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#15803D
+    style L fill:#FEE2E2,stroke:#DC2626,stroke-width:2px,color:#991B1B
 ```
 
 ---

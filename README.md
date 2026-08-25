@@ -30,6 +30,16 @@ flowchart LR
     end
 
     K1 --- K2 --- K3 --- K4
+
+    style K1 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style K2 fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
+    style K3 fill:#F5F3FF,stroke:#7C3AED,stroke-width:2px,color:#5B21B6
+    style K4 fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+
+    style M1 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style M2 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style M3 fill:#EDE9FE,stroke:#6D28D9,stroke-width:1px,color:#4C1D95
+    style M4 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
 ```
 
 ---
@@ -51,6 +61,17 @@ graph TD
     end
 
     Strategic --> Operational
+
+    style Strategic fill:#EFF6FF,stroke:#1E40AF,stroke-width:2px,color:#1E3A8A
+    style Operational fill:#F0FDF4,stroke:#15803D,stroke-width:2px,color:#166534
+
+    style S1 fill:#DBEAFE,stroke:#2563EB,stroke-width:1px,color:#1E40AF
+    style S2 fill:#DBEAFE,stroke:#2563EB,stroke-width:1px,color:#1E40AF
+    style S3 fill:#DBEAFE,stroke:#2563EB,stroke-width:1px,color:#1E40AF
+
+    style O1 fill:#DCFCE7,stroke:#16A34A,stroke-width:1px,color:#15803D
+    style O2 fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
+    style O3 fill:#FEE2E2,stroke:#DC2626,stroke-width:1px,color:#991B1B
 ```
 
 ---
@@ -104,6 +125,41 @@ graph TD
     UI_API -->|HTTP REST JSON| Gateway
     Gateway --> ServiceLayer
     ServiceLayer -->|SQLAlchemy Raw Queries| Storage
+
+    style Presentation fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style Gateway fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#15803D
+    style ServiceLayer fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+    style Storage fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
+
+    style UI_MAIN fill:#DBEAFE,stroke:#1E40AF,stroke-width:1px,color:#1E3A8A
+    style UI_INTEL fill:#DBEAFE,stroke:#1E40AF,stroke-width:1px,color:#1E3A8A
+    style UI_API fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+
+    style MAIN fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
+    style R_FC fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
+    style R_AN fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
+    style R_IN fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
+    style R_SC fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
+    style R_PR fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
+
+    style S1 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S2 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S3 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S4 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S5 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S6 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S7 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S8 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S9 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S10 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+
+    style T1 fill:#E2E8F0,stroke:#475569,stroke-width:1px,color:#1E293B
+    style T2 fill:#E2E8F0,stroke:#475569,stroke-width:1px,color:#1E293B
+    style T3 fill:#E2E8F0,stroke:#475569,stroke-width:1px,color:#1E293B
+    style T4 fill:#E2E8F0,stroke:#475569,stroke-width:1px,color:#1E293B
+    style T5 fill:#E2E8F0,stroke:#475569,stroke-width:1px,color:#1E293B
+    style T6 fill:#E2E8F0,stroke:#475569,stroke-width:1px,color:#1E293B
+    style T7 fill:#E2E8F0,stroke:#475569,stroke-width:1px,color:#1E293B
 ```
 
 ---
@@ -145,6 +201,23 @@ flowchart TD
     end
 
     S1 --> S2 --> S3 --> S4 --> S5
+
+    style S1 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style S2 fill:#FDF4FF,stroke:#C026D3,stroke-width:2px,color:#86198F
+    style S3 fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+    style S4 fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#991B1B
+    style S5 fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+
+    style IN_B fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style IN_P fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style IN_U fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style IN_TU fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style CALC_F fill:#BFDBFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+
+    style CALC_UA fill:#F5D0FE,stroke:#A21CAF,stroke-width:1px,color:#701A75
+    style CALC_GF fill:#E9D5FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style CALC_RH fill:#FECACA,stroke:#B91C1C,stroke-width:1px,color:#7F1D1D
+    style CALC_NF fill:#A7F3D0,stroke:#047857,stroke-width:2px,color:#064E3B
 ```
 
 ### Numerical Trace Verification
@@ -197,6 +270,27 @@ flowchart TD
     end
 
     Telemetry --> Stage1 --> Stage2 --> Stage3
+
+    style Telemetry fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
+    style Stage1 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style Stage2 fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style Stage3 fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+
+    style D1 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style D2 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style D3 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style D4 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style D5 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+
+    style R1 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style R2 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style R3 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+
+    style I_MAP fill:#FEF3C7,stroke:#B45309,stroke-width:1px,color:#78350F
+    style I_RES fill:#FDE68A,stroke:#B45309,stroke-width:1px,color:#78350F
+
+    style REC_MAP fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
+    style REC_RES fill:#A7F3D0,stroke:#047857,stroke-width:1px,color:#064E3B
 ```
 
 ---
@@ -325,6 +419,26 @@ flowchart LR
         COMB & S_CHG --> SCEN
         SCEN & B --> DELT
     end
+
+    style Inputs fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
+    style Adjustments fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style Output fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+
+    style B fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style P fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style U fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style C_CHG fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style U_CHG fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style R_CHG fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style S_CHG fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+
+    style P_ADJ fill:#FEF3C7,stroke:#B45309,stroke-width:1px,color:#78350F
+    style U_FAC fill:#FEF3C7,stroke:#B45309,stroke-width:1px,color:#78350F
+    style B_ADJ fill:#FEF3C7,stroke:#B45309,stroke-width:1px,color:#78350F
+
+    style COMB fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
+    style SCEN fill:#A7F3D0,stroke:#047857,stroke-width:2px,color:#064E3B
+    style DELT fill:#6EE7B7,stroke:#047857,stroke-width:1px,color:#064E3B
 ```
 
 ---

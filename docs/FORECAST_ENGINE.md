@@ -38,6 +38,24 @@ flowchart TD
     end
 
     S1 --> S2 --> S3 --> S4 --> S5
+
+    style S1 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style S2 fill:#FDF4FF,stroke:#C026D3,stroke-width:2px,color:#86198F
+    style S3 fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+    style S4 fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#991B1B
+    style S5 fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+
+    style IN_B fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style IN_P fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style IN_U fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style IN_TU fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+
+    style F_CALC fill:#F5D0FE,stroke:#A21CAF,stroke-width:1px,color:#701A75
+    style UA_CALC fill:#F5D0FE,stroke:#A21CAF,stroke-width:1px,color:#701A75
+
+    style GF_CALC fill:#E9D5FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style RH_CALC fill:#FECACA,stroke:#B91C1C,stroke-width:1px,color:#7F1D1D
+    style NF_CALC fill:#A7F3D0,stroke:#047857,stroke-width:2px,color:#064E3B
 ```
 
 ---
@@ -101,6 +119,21 @@ graph TD
     end
 
     Given --> StepTrace
+
+    style Given fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style StepTrace fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+
+    style G1 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style G2 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style G3 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style G4 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style G5 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+
+    style T1 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
+    style T2 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
+    style T3 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
+    style T4 fill:#FECACA,stroke:#DC2626,stroke-width:1px,color:#991B1B
+    style T5 fill:#A7F3D0,stroke:#047857,stroke-width:2px,color:#064E3B
 ```
 
 > **Automated Verification:** Validated by `pytest tests/test_forecast.py`.
@@ -117,6 +150,12 @@ graph LR
         U3["Actual = 70% (-5% Downside)<br/>Factor = 0.9333<br/>Util Adj = -INR 6,666.67"]
         U4["Actual = 60% (-15% Severe)<br/>Factor = 0.8000<br/>Util Adj = -INR 20,000.00"]
     end
+
+    style Scenarios fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
+    style U1 fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#15803D
+    style U2 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style U3 fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#92400E
+    style U4 fill:#FEE2E2,stroke:#DC2626,stroke-width:2px,color:#991B1B
 ```
 
 ---
@@ -138,6 +177,15 @@ flowchart TD
 
         B_BUDGET --> V_SLIP --> V_PIPE --> V_UTIL --> V_RATE --> V_UNEXP --> B_ACTUAL
     end
+
+    style Bridge fill:#F8FAFC,stroke:#334155,stroke-width:2px,color:#0F172A
+    style B_BUDGET fill:#DBEAFE,stroke:#1E40AF,stroke-width:2px,color:#1E3A8A
+    style V_SLIP fill:#FEE2E2,stroke:#DC2626,stroke-width:1px,color:#991B1B
+    style V_PIPE fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
+    style V_UTIL fill:#EDE9FE,stroke:#7C3AED,stroke-width:1px,color:#5B21B6
+    style V_RATE fill:#EDE9FE,stroke:#7C3AED,stroke-width:1px,color:#5B21B6
+    style V_UNEXP fill:#E2E8F0,stroke:#64748B,stroke-width:1px,color:#334155
+    style B_ACTUAL fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#15803D
 ```
 
 ### Variance Calculation Formulas (`VarianceResult`)
@@ -163,4 +211,12 @@ flowchart LR
     P_ADJ & B_ADJ --> COMB["Combined Pre-Slippage Revenue"]
     COMB -->|"*(1 - slippage_rate)"| SCENARIO["Net Scenario Revenue"]
     SCENARIO & B_IN --> DELTA["Revenue Delta & Percentage Change"]
+
+    style P_IN fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style B_IN fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style P_ADJ fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
+    style B_ADJ fill:#EDE9FE,stroke:#7C3AED,stroke-width:1px,color:#5B21B6
+    style COMB fill:#DBEAFE,stroke:#2563EB,stroke-width:1px,color:#1E40AF
+    style SCENARIO fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#15803D
+    style DELTA fill:#A7F3D0,stroke:#059669,stroke-width:1px,color:#065F46
 ```

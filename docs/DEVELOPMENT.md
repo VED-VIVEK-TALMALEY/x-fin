@@ -31,6 +31,23 @@ flowchart LR
     end
 
     S1 --> S2 --> S3 --> S4
+
+    style S1 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style S2 fill:#FDF4FF,stroke:#C026D3,stroke-width:2px,color:#86198F
+    style S3 fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#15803D
+    style S4 fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+
+    style V fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style I fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+
+    style D fill:#F5D0FE,stroke:#A21CAF,stroke-width:1px,color:#701A75
+    style G fill:#F5D0FE,stroke:#A21CAF,stroke-width:1px,color:#701A75
+    style L fill:#F5D0FE,stroke:#A21CAF,stroke-width:1px,color:#701A75
+
+    style API fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
+    style UI fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
+
+    style T fill:#A7F3D0,stroke:#047857,stroke-width:2px,color:#064E3B
 ```
 
 ---
@@ -51,11 +68,20 @@ graph TD
 
     T1 --> C1
     T2 --> C2
+
+    style Suite fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style Trace fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+
+    style T1 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style T2 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+
+    style C1 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
+    style C2 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
 ```
 
 Run test suite:
 ```bash
-pytest tests/ -v
+python -m pytest tests/ -v
 ```
 
 ---

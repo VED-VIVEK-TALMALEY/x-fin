@@ -39,6 +39,26 @@ flowchart TD
     end
 
     DataInputs --> Stage1 --> Stage2 --> Stage3
+
+    style DataInputs fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
+    style Stage1 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style Stage2 fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style Stage3 fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+
+    style D1 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style D2 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style D3 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style D4 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style D5 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+
+    style R_METRICS fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style R_CLASSIFY fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+
+    style I_EVAL fill:#FEF3C7,stroke:#B45309,stroke-width:1px,color:#78350F
+    style I_OUT fill:#FDE68A,stroke:#B45309,stroke-width:1px,color:#78350F
+
+    style REC_EVAL fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
+    style REC_OUT fill:#A7F3D0,stroke:#047857,stroke-width:2px,color:#064E3B
 ```
 
 ---
@@ -85,6 +105,26 @@ graph TD
         FP1 -->|"80% - 99%"| FP_W["[WATCH] watch"]
         FP1 -->|"< 80%"| FP_WK["[WEAK] weak"]
     end
+
+    style FC fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style PR fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style FP fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+
+    style FC1 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style FC_L fill:#DCFCE7,stroke:#16A34A,stroke-width:1px,color:#15803D
+    style FC_M fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
+    style FC_H fill:#FEE2E2,stroke:#DC2626,stroke-width:1px,color:#991B1B
+
+    style PR1 fill:#FEF3C7,stroke:#B45309,stroke-width:1px,color:#78350F
+    style PR_L fill:#DCFCE7,stroke:#16A34A,stroke-width:1px,color:#15803D
+    style PR_M fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
+    style PR_H fill:#FEE2E2,stroke:#DC2626,stroke-width:1px,color:#991B1B
+
+    style FP1 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style FP_S fill:#DCFCE7,stroke:#16A34A,stroke-width:1px,color:#15803D
+    style FP_A fill:#EFF6FF,stroke:#2563EB,stroke-width:1px,color:#1E40AF
+    style FP_W fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
+    style FP_WK fill:#FEE2E2,stroke:#DC2626,stroke-width:1px,color:#991B1B
 ```
 
 ---

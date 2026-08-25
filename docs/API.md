@@ -38,6 +38,30 @@ graph LR
     end
 
     API --> Analytics & Forecast & Intelligence & Scenarios & System
+
+    style API fill:#1E293B,stroke:#0F172A,stroke-width:2px,color:#FFFFFF
+    style Analytics fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style Forecast fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+    style Intelligence fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+    style Scenarios fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style System fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
+
+    style A1 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style A2 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style A3 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style A4 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style A5 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style A6 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+
+    style F1 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+
+    style I1 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
+    style I2 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
+
+    style S1 fill:#FEF3C7,stroke:#B45309,stroke-width:1px,color:#78350F
+
+    style SYS1 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
+    style SYS2 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
 ```
 
 ---
@@ -130,6 +154,14 @@ flowchart TD
         SM["source_metrics: Raw input values"]
         FC["forecast: Forecast construction components"]
     end
+
+    style Payload fill:#F8FAFC,stroke:#334155,stroke-width:2px,color:#0F172A
+    style ST fill:#DCFCE7,stroke:#16A34A,stroke-width:1px,color:#15803D
+    style R fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style IN fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
+    style RC fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
+    style SM fill:#E2E8F0,stroke:#475569,stroke-width:1px,color:#1E293B
+    style FC fill:#EDE9FE,stroke:#7C3AED,stroke-width:1px,color:#5B21B6
 ```
 
 ---
