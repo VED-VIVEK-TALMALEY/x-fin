@@ -8,9 +8,9 @@
 
 ---
 
-## Executive Overview: Practice Economics at BCG X
+## Executive Overview
 
-X-Fin is the delivery finance operating platform designed for Managing Directors & Partners (MDPs), Practice Area Leads, and Delivery Directors across **BCG X** business units (**X Build**, **X Design**, and **Digital Ventures**).
+**X-Fin** is an independent delivery finance operating system engineered as a technical and financial portfolio showcase. The platform simulates the end-to-end finance operations of a multi-hub technology consulting practice (modeling regional business units like **X Build**, **X Design**, and **Digital Ventures**).
 
 It provides real-time transparency across engagement economics, billing realization, billable staffing utilization, project backlog velocity, and probability-weighted pipeline conversion.
 
@@ -501,6 +501,6 @@ pytest tests/ -v
 
 ---
 
-## License & Compliance
+## Project Attribution
 
-Internal Delivery Finance Platform · BCG X · Confidential & Proprietary
+Personal Portfolio Project · Delivery Finance Operating System Showcase
