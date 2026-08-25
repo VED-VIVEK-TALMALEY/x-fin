@@ -9,6 +9,12 @@ def revenue_chart(data):
 
     df = pd.DataFrame(data)
 
+    if "month" not in df.columns:
+        return go.Figure()
+
+    if "revenue" not in df.columns:
+        return go.Figure()
+
     df["month"] = pd.to_datetime(
         df["month"]
     )
@@ -41,17 +47,28 @@ def revenue_vs_budget_chart(
     budget_data,
 ):
 
-    actual = pd.DataFrame(actual_data)
-    budget = pd.DataFrame(budget_data)
+    actual = pd.DataFrame(
+        actual_data or []
+    )
+
+    budget = pd.DataFrame(
+        budget_data or []
+    )
 
     if actual.empty:
+        return go.Figure()
+
+    if "month" not in actual.columns:
+        return go.Figure()
+
+    if "revenue" not in actual.columns:
         return go.Figure()
 
     actual["month"] = pd.to_datetime(
         actual["month"]
     )
 
-    if not budget.empty:
+    if not budget.empty and "month" in budget.columns:
         budget["month"] = pd.to_datetime(
             budget["month"]
         )
@@ -73,6 +90,7 @@ def revenue_vs_budget_chart(
     )
 
     if "budget_revenue" in merged.columns:
+
         fig.add_trace(
             go.Bar(
                 x=merged["month"],
@@ -91,7 +109,11 @@ def revenue_vs_budget_chart(
     return fig
 
 
-def backlog_chart(backlog):
+def backlog_chart(
+    backlog,
+):
+
+    backlog = backlog or {}
 
     waterfall = backlog.get(
         "waterfall",
@@ -123,6 +145,7 @@ def backlog_chart(backlog):
         go.Bar(
             x=labels,
             y=values,
+            name="Backlog",
         )
     )
 
@@ -135,14 +158,23 @@ def backlog_chart(backlog):
     return fig
 
 
-def business_unit_chart(data):
+def business_unit_chart(
+    data,
+):
 
     if not data:
         return go.Figure()
 
     df = pd.DataFrame(data)
 
-    if "actual_revenue" not in df.columns:
+    required = {
+        "actual_revenue",
+        "business_unit",
+    }
+
+    if not required.issubset(
+        df.columns
+    ):
         return go.Figure()
 
     df = df.sort_values(
@@ -172,10 +204,11 @@ def business_unit_chart(data):
     return fig
 
 
-def variance_chart(data):
+def variance_chart(
+    data,
+):
 
-    if not data:
-        return go.Figure()
+    data = data or {}
 
     labels = [
         "Actual vs Budget",
@@ -197,6 +230,7 @@ def variance_chart(data):
         go.Bar(
             x=labels,
             y=values,
+            name="Variance",
         )
     )
 
@@ -204,6 +238,98 @@ def variance_chart(data):
         title="Revenue Variance",
         template="plotly_white",
         height=350,
+    )
+
+    return fig
+
+
+def forecast_decomposition_chart(
+    decomposition,
+):
+
+    decomposition = (
+        decomposition or {}
+    )
+
+    committed_backlog = float(
+        decomposition.get(
+            "committed_backlog",
+            0,
+        )
+        or 0
+    )
+
+    weighted_pipeline = float(
+        decomposition.get(
+            "weighted_pipeline",
+            0,
+        )
+        or 0
+    )
+
+    utilization_adjustment = float(
+        decomposition.get(
+            "utilization_adjustment",
+            0,
+        )
+        or 0
+    )
+
+    risk_adjustment = float(
+        decomposition.get(
+            "risk_adjustment",
+            0,
+        )
+        or 0
+    )
+
+    forecast_revenue = float(
+        decomposition.get(
+            "forecast_revenue",
+            0,
+        )
+        or 0
+    )
+
+    fig = go.Figure(
+        go.Waterfall(
+            name="Forecast",
+            orientation="v",
+            measure=[
+                "relative",
+                "relative",
+                "relative",
+                "relative",
+                "total",
+            ],
+            x=[
+                "Committed Backlog",
+                "Weighted Pipeline",
+                "Utilization Adjustment",
+                "Risk Adjustment",
+                "Forecast Revenue",
+            ],
+            y=[
+                committed_backlog,
+                weighted_pipeline,
+                utilization_adjustment,
+                -risk_adjustment,
+                forecast_revenue,
+            ],
+            connector={
+                "line": {
+                    "width": 1,
+                }
+            },
+        )
+    )
+
+    fig.update_layout(
+        title="Forecast Revenue Decomposition",
+        yaxis_title="Revenue",
+        template="plotly_white",
+        height=450,
+        showlegend=False,
     )
 
     return fig
