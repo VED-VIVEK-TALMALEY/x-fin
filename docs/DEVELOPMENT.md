@@ -1,222 +1,109 @@
-# X-Fin — Development Guide
+# X-Fin Developer & Operations Manual
 
-> **Stack** Python 3.10+ · FastAPI · SQLAlchemy · PostgreSQL · Streamlit · Plotly
+> **Technology Stack:** Python 3.10+ · FastAPI · PostgreSQL 14+ · Streamlit · SQLAlchemy · Plotly
 
 ---
 
-## Environment Setup
+## Local Development Lifecycle
 
-### 1 — Clone and enter the repo
+```mermaid
+flowchart LR
+    subgraph S1["1. ENVIRONMENT"]
+        V["Create Virtualenv<br/><code>python -m venv .venv</code>"]
+        I["Install Dependencies<br/><code>pip install -r requirements.txt</code>"]
+        V --> I
+    end
 
-```bash
-cd x-fin
-```
+    subgraph S2["2. DATABASE SETUP"]
+        D["Execute Schema DDL<br/><code>psql -f app/db/schema.sql</code>"]
+        G["Generate Synthetic Data<br/><code>python scripts/generate_synthetic_data.py</code>"]
+        L["Load Database Tables<br/><code>python scripts/load_data.py</code>"]
+        D --> G --> L
+    end
 
-### 2 — Create a virtual environment
+    subgraph S3["3. APPLICATION RUNTIME"]
+        API["Launch FastAPI Server<br/><code>uvicorn app.main:app --port 8000</code>"]
+        UI["Launch Streamlit UI<br/><code>streamlit run dashboard/app.py</code>"]
+    end
 
-```bash
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS / Linux
-source .venv/bin/activate
-```
+    subgraph S4["4. AUTOMATED VERIFICATION"]
+        T["Execute Pytest Suite<br/><code>pytest tests/ -v</code>"]
+    end
 
-### 3 — Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4 — Configure `.env`
-
-```ini
-DATABASE_URL=postgresql://postgres:forecast@localhost:5432/consulting_forecast
-ENVIRONMENT=development
-LOG_LEVEL=INFO
-API_PORT=8000
-```
-
-### 5 — Set up PostgreSQL
-
-```bash
-# Create database
-createdb -U postgres consulting_forecast
-
-# Apply schema
-psql -U postgres -d consulting_forecast -f app/db/schema.sql
-```
-
-### 6 — Seed data
-
-```bash
-# Generate synthetic CSV files (750 projects, 24 months)
-python scripts/generate_synthetic_data.py
-
-# Load into PostgreSQL
-python scripts/load_data.py
+    S1 --> S2 --> S3 --> S4
 ```
 
 ---
 
-## Running Services
+## Automated Verification Suite
 
-### API (FastAPI)
+```mermaid
+graph TD
+    subgraph Suite["Automated Pytest Framework"]
+        T1["tests/test_forecast.py"]
+        T2["tests/test_variance.py"]
+    end
 
-```bash
-uvicorn app.main:app --reload --port 8000
+    subgraph Trace["Test Verification Logic"]
+        C1["<b>test_forecast:</b><br/>• Committed Backlog = INR 100,000.00<br/>• Weighted Pipeline = INR 50,000.00<br/>• Actual Util = 0.75, Target Util = 0.75<br/>• Risk Haircut = 5% (0.05)<br/>Result: Asserts forecast_revenue == INR 142,500.00"]
+        C2["<b>test_variance:</b><br/>• Actual = 90.00, Budget = 100.00, Forecast = 95.00<br/>Result: Asserts Actual Variance == -10.00 (-10.00%)<br/>Result: Asserts Forecast Variance == -5.00 (-5.00%)"]
+    end
+
+    T1 --> C1
+    T2 --> C2
 ```
 
-- OpenAPI docs: http://127.0.0.1:8000/docs
-- ReDoc: http://127.0.0.1:8000/redoc
-- Health: http://127.0.0.1:8000/health
-
-### Dashboard (Streamlit)
-
-```bash
-cd dashboard
-streamlit run app.py
-```
-
-Default: http://localhost:8501
-
-### Intelligence page
-
-```bash
-cd dashboard
-streamlit run intelligence.py
-```
-
----
-
-## Running Tests
-
+Run test suite:
 ```bash
 pytest tests/ -v
 ```
 
-### Test coverage
-
-| Test file | What it tests |
-|-----------|--------------|
-| `tests/test_forecast.py` | `build_forecast()` with known inputs → asserts `forecast_revenue == 142500.00` |
-| `tests/test_variance.py` | `calculate_variance()` → asserts absolute and pct variances |
-
 ---
 
-## Project Structure
+## Dependency Matrix
 
-```
-app/
-├── main.py            FastAPI application factory, router registration
-├── config.py          Environment variable loading (dotenv)
-├── __init__.py        Package init; loads DATABASE_URL, ENVIRONMENT, API_PORT
-│
-├── db/
-│   ├── connection.py  SQLAlchemy engine + get_db() dependency
-│   └── schema.sql     PostgreSQL DDL (DROP + CREATE)
-│
-├── models/
-│   └── project.py     SQLAlchemy ORM model for projects table
-│
-├── routers/           FastAPI APIRouter modules
-│   ├── analytics.py   /analytics/* (summary, monthly-revenue, backlog, variance, etc.)
-│   ├── forecast.py    /forecast/current
-│   ├── intelligence.py /intelligence/health + /intelligence/overview
-│   ├── projects.py    /projects/*
-│   └── scenarios.py   /scenarios/run
-│
-└── services/          Pure Python business logic (no FastAPI dependencies)
-    ├── backlog_engine.py        Backlog + waterfall SQL queries
-    ├── business_unit_engine.py  BU performance SQL query + calcs
-    ├── finance_queries.py       Finance, pipeline, budget, monthly revenue queries
-    ├── finance_reasoning.py     20+ derived metrics from 5 inputs
-    ├── forecast_accuracy.py     Monthly actual vs budget accuracy series
-    ├── forecast_engine.py       Deterministic forecast formula (ForecastResult dataclass)
-    ├── insight_engine.py        9-rule insight scorer
-    ├── recommendation_engine.py 10-rule recommendation generator
-    ├── revenue_calc.py          Revenue calculation helpers
-    ├── scenario_engine.py       What-if scenario calculator
-    └── variance_engine.py       VarianceResult + variance_bridge
+```mermaid
+pie title Dependencies by Architecture Layer
+    "API & Web Framework (FastAPI, Uvicorn, Pydantic, Requests)" : 30
+    "Database & ORM (SQLAlchemy, psycopg2-binary)" : 20
+    "Data & Numerical Ops (Pandas, Numpy)" : 20
+    "Visualization & UI (Streamlit, Plotly)" : 20
+    "Testing & Quality (Pytest, HTTPX, Black, Flake8)" : 10
 ```
 
----
-
-## Code Conventions
-
-| Convention | Detail |
-|-----------|--------|
-| Formatting | `black` (PEP 8) |
-| Linting | `flake8` |
-| Imports | Absolute imports from `app.*` |
-| Type hints | Used in service layer function signatures |
-| SQL | Raw SQLAlchemy `text()` — no ORM queries in services |
-| Precision | All financial values rounded to 2dp before returning |
-| Currency | INR — ₹ symbol used in insight/recommendation messages |
-| Null safety | All DB values wrapped in `float(value or 0)` before arithmetic |
-
----
-
-## Dependency Table
-
-| Package | Version | Role |
-|---------|---------|------|
-| `fastapi` | latest | REST API framework |
-| `uvicorn` | latest | ASGI server |
-| `sqlalchemy` | latest | Database ORM + raw SQL |
-| `psycopg2-binary` | latest | PostgreSQL adapter |
-| `pydantic` | latest | Request/response validation |
-| `python-dotenv` | latest | `.env` loader |
-| `pandas` | latest | Data manipulation (scripts + dashboard) |
-| `numpy` | latest | Numerical operations (scripts) |
-| `plotly` | latest | Interactive charts |
-| `streamlit` | latest | Dashboard framework |
-| `pytest` | latest | Test runner |
-| `httpx` | latest | Async HTTP client (test dependency) |
-| `pytest-asyncio` | latest | Async test support |
-| `black` | latest | Code formatter |
-| `flake8` | latest | Linter |
-| `requests` | latest | HTTP client (dashboard → API) |
+| Package Name | Minimum Version | Architectural Role | Layer Categorization |
+|:-------------|:---------------:|:-------------------|:---------------------|
+| `fastapi` | `0.115.0+` | Asynchronous REST API framework | API Gateway |
+| `uvicorn` | `0.30.0+` | Production ASGI web server | API Gateway |
+| `sqlalchemy` | `2.0.0+` | Database abstraction and raw SQL engine | Persistence |
+| `psycopg2-binary` | `2.9.9+` | PostgreSQL database driver adapter | Persistence |
+| `pydantic` | `2.8.0+` | Data schema validation and serialisation | API Gateway |
+| `pandas` | `2.2.0+` | Tabular data transformations | Analytics & Logic |
+| `numpy` | `1.26.0+` | Mathematical operations & distributions | Analytics & Logic |
+| `plotly` | `5.22.0+` | Interactive visual charting engine | Presentation |
+| `streamlit` | `1.36.0+` | Reactive executive dashboard frontend | Presentation |
+| `pytest` | `8.2.0+` | Test execution runner | Quality & Testing |
+| `httpx` | `0.27.0+` | Asynchronous test HTTP client | Quality & Testing |
+| `requests` | `2.32.0+` | HTTP client for Streamlit UI connector | Presentation |
 
 ---
 
-## Adding a New Endpoint
+## New Endpoint Development Workflow
 
-1. **Add service logic** in `app/services/`
-2. **Create or update a router** in `app/routers/`
-3. **Register router** in `app/main.py` via `app.include_router()`
-4. **Add dashboard call** in `dashboard/api.py`
-5. **Add dashboard section** in `dashboard/app.py` or a new page
-6. **Write a test** in `tests/`
+```mermaid
+sequenceDiagram
+    autonumber
+    participant S as app/services/
+    participant R as app/routers/
+    participant M as app/main.py
+    participant D as dashboard/api.py
+    participant UI as dashboard/app.py
+    participant T as tests/
 
----
-
-## Regenerating Synthetic Data
-
-If you need fresh data (e.g. after schema changes):
-
-```bash
-# Drop and recreate schema
-psql -U postgres -d consulting_forecast -f app/db/schema.sql
-
-# Re-generate CSV files
-python scripts/generate_synthetic_data.py
-
-# Reload into PostgreSQL
-python scripts/load_data.py
+    Note over S: 1. Write pure calculation function in services/
+    Note over R: 2. Expose endpoint in routers/ with Pydantic model
+    Note over M: 3. Register router in app/main.py
+    Note over D: 4. Add HTTP request wrapper in dashboard/api.py
+    Note over UI: 5. Build Streamlit metric cards and Plotly charts
+    Note over T: 6. Add automated regression unit test in tests/
 ```
-
-> **Note:** `generate_synthetic_data.py` uses `np.random.seed(42)` for reproducibility. Remove the seed for different random data.
-
----
-
-## Known Limitations
-
-| Area | Limitation |
-|------|-----------|
-| Backlog waterfall | `revenue_recognized` is always `null` — period-specific backlog consumption schedules are not implemented |
-| Forecast current endpoint | Hard-coded utilization of `0.74` vs intelligence endpoint which uses live budget utilization |
-| Forecast versions table | Schema exists but no endpoint populates it in v1.0.0 |
-| Risk rate | 5% haircut is hard-coded; should be environment-configurable |
-| Currency | Hard-coded INR (₹) in message strings; not internationalised |
-| `dashboard/api.py` | `get_intelligence()` is defined twice (duplicate function); second definition takes precedence |

@@ -1,239 +1,214 @@
-# X-Fin — Data Model
+# X-Fin Relational Data Model & Schema Specification
 
-> **Database** PostgreSQL >= 14 · **ORM** SQLAlchemy · **Schema** `app/db/schema.sql`
-
----
-
-## Entity Relationship Diagram
-
-```
-business_units
-┌──────────────────────────────┐
-│ business_unit_id  UUID  PK   │
-│ name              VARCHAR    │
-└──────────┬───────────────────┘
-           │  1
-           │  *
-           ▼
-       projects
-┌────────────────────────────────────────┐
-│ project_id       UUID  PK              │
-│ project_name     VARCHAR               │
-│ client_name      VARCHAR               │
-│ business_unit_id UUID  FK              │
-│ stage            VARCHAR               │
-│ status           VARCHAR  default=Active│
-│ start_date       DATE                  │
-│ end_date         DATE                  │
-│ contract_value   NUMERIC(15,2)         │
-│ billing_rate     NUMERIC(10,2)         │
-│ planned_hours    NUMERIC(12,2)         │
-│ created_at       TIMESTAMP             │
-└────┬─────────────────────┬─────────────┘
-     │                     │
-     │ 1                   │ 1
-     │ *                   │ *
-     ▼                     ▼
-project_pipeline       project_actuals
-┌────────────────────┐  ┌───────────────────────┐
-│ pipeline_id  UUID  │  │ actual_id   UUID  PK   │
-│ project_id   UUID  │  │ project_id  UUID  FK   │
-│ snapshot_date DATE │  │ month       DATE        │
-│ stage        VCHAR │  │ actual_hours  NUM(12,2) │
-│ probability  NUM   │  │ actual_revenue NUM(15,2)│
-│ expected_close DATE│  │ actual_cost   NUM(15,2) │
-│ pipeline_value NUM │  └───────────────────────-┘
-└────────────────────┘
-
-business_units
-┌──────────────────┐
-│ business_unit_id │──────────────────────┐
-└──────────────────┘                      │
-                                          │ 1
-                                          │ *
-                                          ▼
-                                       budgets
-                            ┌────────────────────────────────────┐
-                            │ budget_id          UUID  PK         │
-                            │ business_unit_id   UUID  FK         │
-                            │ month              DATE              │
-                            │ revenue_budget     NUMERIC(15,2)    │
-                            │ hours_budget       NUMERIC(12,2)    │
-                            │ utilization_budget NUMERIC(5,2)     │
-                            │ UNIQUE(business_unit_id, month)     │
-                            └────────────────────────────────────┘
-
-forecast_versions (1) ──* forecast_values (*) ──1 projects
-┌──────────────────────┐   ┌───────────────────────────────┐
-│ forecast_id  UUID PK │   │ forecast_value_id UUID PK     │
-│ forecast_date DATE   │   │ forecast_id  UUID  FK         │
-│ forecast_month DATE  │   │ project_id   UUID  FK         │
-│ forecast_method VCHAR│   │ forecast_revenue NUMERIC(15,2)│
-│ created_at TIMESTAMP │   │ confidence   NUMERIC(5,4)     │
-└──────────────────────┘   └───────────────────────────────┘
-```
+> **Database:** PostgreSQL 14+ · **ORM:** SQLAlchemy · **DDL File:** `app/db/schema.sql`
 
 ---
 
-## Tables
+## Entity Relationship Diagram (ERD)
 
-### `business_units`
+```mermaid
+erDiagram
+    BUSINESS_UNITS ||--o{ PROJECTS : "funds / delivers"
+    BUSINESS_UNITS ||--o{ BUDGETS : "has operating targets"
+    PROJECTS ||--o{ PROJECT_PIPELINE : "has historical snapshots"
+    PROJECTS ||--o{ PROJECT_ACTUALS : "has monthly delivered actuals"
+    PROJECTS ||--o{ FORECAST_VALUES : "attributed forecast"
+    FORECAST_VERSIONS ||--o{ FORECAST_VALUES : "contains project values"
 
-Master table of delivery business units.
+    BUSINESS_UNITS {
+        uuid business_unit_id PK "gen_random_uuid()"
+        varchar name UK "Practice name (e.g. X Build)"
+    }
 
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `business_unit_id` | UUID | PK, default gen_random_uuid() | Surrogate key |
-| `name` | VARCHAR(100) | UNIQUE, NOT NULL | BU display name |
+    PROJECTS {
+        uuid project_id PK "gen_random_uuid()"
+        varchar project_name "Engagement title"
+        varchar client_name "Client organization name"
+        uuid business_unit_id FK "References business_units"
+        varchar stage "Prospect, Qualified, In Delivery, Closed Won, Closed Lost"
+        varchar status "Default: 'Active'"
+        date start_date "Kickoff date"
+        date end_date "Completion date (nullable)"
+        numeric contract_value "Total contracted fees (15,2)"
+        numeric billing_rate "Hourly blended rate (10,2)"
+        numeric planned_hours "Total planned delivery hours (12,2)"
+        timestamp created_at "Default: NOW()"
+    }
 
-**Seed values:** `X Build`, `X Design`, `Digital Ventures`
+    PROJECT_PIPELINE {
+        uuid pipeline_id PK "gen_random_uuid()"
+        uuid project_id FK "References projects(ON DELETE CASCADE)"
+        date snapshot_date "Snapshot capture date (indexed)"
+        varchar stage "Pipeline stage at snapshot"
+        numeric probability "Win probability: 0.0000 - 1.0000 (5,4)"
+        date expected_close_date "Expected close date (nullable)"
+        numeric pipeline_value "Contract value at snapshot (15,2)"
+    }
 
----
+    PROJECT_ACTUALS {
+        uuid actual_id PK "gen_random_uuid()"
+        uuid project_id FK "References projects(ON DELETE CASCADE)"
+        date month "First day of delivery month (indexed)"
+        numeric actual_hours "Billable hours delivered (12,2)"
+        numeric actual_revenue "Recognized monthly revenue (15,2)"
+        numeric actual_cost "Direct consulting delivery cost (15,2)"
+    }
 
-### `projects`
+    BUDGETS {
+        uuid budget_id PK "gen_random_uuid()"
+        uuid business_unit_id FK "References business_units"
+        date month "Budget target month (First day of month)"
+        numeric revenue_budget "Monthly revenue target (15,2)"
+        numeric hours_budget "Monthly hours target (12,2)"
+        numeric utilization_budget "Target billable utilization: e.g. 0.75 (5,2)"
+    }
 
-Core project master, one row per project.
+    FORECAST_VERSIONS {
+        uuid forecast_id PK "gen_random_uuid()"
+        date forecast_date "Date forecast run executed"
+        date forecast_month "Forecast target month (indexed)"
+        varchar forecast_method "Engine version or method identifier"
+        timestamp created_at "Default: NOW()"
+    }
 
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `project_id` | UUID | PK | Surrogate key |
-| `project_name` | VARCHAR(255) | NOT NULL | Display name |
-| `client_name` | VARCHAR(255) | NOT NULL | Client name |
-| `business_unit_id` | UUID | FK → business_units | Parent BU |
-| `stage` | VARCHAR(50) | NOT NULL | Pipeline stage |
-| `status` | VARCHAR(50) | default=`Active` | Project status |
-| `start_date` | DATE | NOT NULL | Engagement start |
-| `end_date` | DATE | — | Planned end |
-| `contract_value` | NUMERIC(15,2) | NOT NULL | Total contract value |
-| `billing_rate` | NUMERIC(10,2) | NOT NULL | ₹/hour billing rate |
-| `planned_hours` | NUMERIC(12,2) | NOT NULL | Total planned hours |
-| `created_at` | TIMESTAMP | default=NOW() | Record creation |
-
-**Stage values**
-
-| Stage | Meaning | Probability |
-|-------|---------|-------------|
-| `Prospect` | Early interest | 0.15 |
-| `Qualified` | Qualified opportunity | 0.35 |
-| `In Delivery` | Active engagement | 0.75 |
-| `Closed Won` | Won / completed | 1.00 |
-| `Closed Lost` | Lost | 0.00 |
-
----
-
-### `project_pipeline`
-
-Snapshot-based pipeline register. Each project can have multiple rows — one per snapshot date. The system always reads from the **most recent snapshot**.
-
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `pipeline_id` | UUID | PK | Surrogate key |
-| `project_id` | UUID | FK → projects CASCADE | Parent project |
-| `snapshot_date` | DATE | NOT NULL | Date of snapshot |
-| `stage` | VARCHAR(50) | NOT NULL | Stage at snapshot |
-| `probability` | NUMERIC(5,4) | NOT NULL | Win probability (0–1) |
-| `expected_close_date` | DATE | — | Predicted close |
-| `pipeline_value` | NUMERIC(15,2) | NOT NULL | Contract value at snapshot |
-
-**Index:** `idx_pipeline_snapshot` on `snapshot_date`
-
-**Backlog classification:**
-
-```
-committed_backlog    = SUM(pipeline_value) WHERE stage IN ('In Delivery', 'Closed Won')
-uncommitted_pipeline = SUM(pipeline_value) WHERE stage IN ('Prospect', 'Qualified')
-weighted_pipeline    = SUM(pipeline_value * probability)   -- all stages
+    FORECAST_VALUES {
+        uuid forecast_value_id PK "gen_random_uuid()"
+        uuid forecast_id FK "References forecast_versions(ON DELETE CASCADE)"
+        uuid project_id FK "References projects"
+        numeric forecast_revenue "Project-level forecast value (15,2)"
+        numeric confidence "Attributed confidence ratio (5,4)"
+    }
 ```
 
 ---
 
-### `project_actuals`
+## Pipeline Stages & Win Probability Matrix
 
-Monthly financial actuals per project. One row per (project, month).
+```mermaid
+flowchart LR
+    P["<b>Stage: Prospect</b><br/>Win Probability: 15% (0.15)<br/>Class: Uncommitted Pipeline"]
+    --> Q["<b>Stage: Qualified</b><br/>Win Probability: 35% (0.35)<br/>Class: Uncommitted Pipeline"]
+    --> D["<b>Stage: In Delivery</b><br/>Win Probability: 75% (0.75)<br/>Class: Committed Backlog"]
+    --> W["<b>Stage: Closed Won</b><br/>Win Probability: 100% (1.00)<br/>Class: Committed Backlog"]
 
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `actual_id` | UUID | PK | Surrogate key |
-| `project_id` | UUID | FK → projects CASCADE | Parent project |
-| `month` | DATE | NOT NULL | Month start date |
-| `actual_hours` | NUMERIC(12,2) | NOT NULL | Hours delivered |
-| `actual_revenue` | NUMERIC(15,2) | NOT NULL | Revenue recognised |
-| `actual_cost` | NUMERIC(15,2) | NOT NULL | Delivery cost |
-
-**Unique constraint:** `(project_id, month)`
-
-**Index:** `idx_actuals_month` on `month`
+    P -.-> L["<b>Stage: Closed Lost</b><br/>Win Probability: 0% (0.00)<br/>Class: Inactive"]
+    Q -.-> L
+    D -.-> L
+```
 
 ---
 
-### `budgets`
+## Database Table Specifications
 
-Monthly budget targets per business unit.
+### 1. `business_units`
+Stores the high-level delivery practice units.
 
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `budget_id` | UUID | PK | Surrogate key |
-| `business_unit_id` | UUID | FK → business_units | Parent BU |
-| `month` | DATE | NOT NULL | Month start |
-| `revenue_budget` | NUMERIC(15,2) | NOT NULL | Revenue target |
-| `hours_budget` | NUMERIC(12,2) | NOT NULL | Hours target |
-| `utilization_budget` | NUMERIC(5,2) | NOT NULL | Target utilization rate |
-
-**Unique constraint:** `(business_unit_id, month)`
+| Column Name | PostgreSQL Type | Nullable | Key / Constraint | Functional Description |
+|:------------|:----------------|:--------:|:-----------------|:-----------------------|
+| `business_unit_id` | `UUID` | No | `PRIMARY KEY`, Default `gen_random_uuid()` | Unique surrogate identifier |
+| `name` | `VARCHAR(100)` | No | `UNIQUE` | Business unit name (`X Build`, `X Design`, `Digital Ventures`) |
 
 ---
 
-### `forecast_versions`
+### 2. `projects`
+Master registry for consulting client engagements.
 
-Audit trail of forecast runs (future extensibility).
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `forecast_id` | UUID | PK |
-| `forecast_date` | DATE | Date forecast was produced |
-| `forecast_month` | DATE | Month being forecast |
-| `forecast_method` | VARCHAR(100) | Method identifier |
-| `created_at` | TIMESTAMP | Creation timestamp |
-
-**Index:** `idx_forecast_month` on `forecast_month`
-
----
-
-### `forecast_values`
-
-Per-project forecast values linked to a forecast version.
-
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| `forecast_value_id` | UUID | PK | Surrogate key |
-| `forecast_id` | UUID | FK → forecast_versions CASCADE | Parent forecast |
-| `project_id` | UUID | FK → projects | Project |
-| `forecast_revenue` | NUMERIC(15,2) | NOT NULL | Projected revenue |
-| `confidence` | NUMERIC(5,4) | — | Statistical confidence (0–1) |
-
-**Unique constraint:** `(forecast_id, project_id)`
+| Column Name | PostgreSQL Type | Nullable | Key / Constraint | Functional Description |
+|:------------|:----------------|:--------:|:-----------------|:-----------------------|
+| `project_id` | `UUID` | No | `PRIMARY KEY`, Default `gen_random_uuid()` | Unique project identifier |
+| `project_name` | `VARCHAR(255)` | No | — | Engagement title |
+| `client_name` | `VARCHAR(255)` | No | — | Client organization name |
+| `business_unit_id` | `UUID` | No | `FOREIGN KEY -> business_units` | Delivering practice |
+| `stage` | `VARCHAR(50)` | No | Check constraint valid stage | Current pipeline stage |
+| `status` | `VARCHAR(50)` | No | Default `'Active'` | Operational status (`Active`, `Completed`, `On Hold`) |
+| `start_date` | `DATE` | No | — | Project kickoff date |
+| `end_date` | `DATE` | Yes | — | Completion date |
+| `contract_value` | `NUMERIC(15,2)` | No | — | Total contracted revenue (INR) |
+| `billing_rate` | `NUMERIC(10,2)` | No | — | Blended hourly billing rate (INR/hr) |
+| `planned_hours` | `NUMERIC(12,2)` | No | — | Budgeted billable hours |
+| `created_at` | `TIMESTAMP` | No | Default `NOW()` | Insertion timestamp |
 
 ---
 
-## Synthetic Data Generator
+### 3. `project_pipeline`
+Periodic snapshots of project stages, probabilities, and values over time.
 
-`scripts/generate_synthetic_data.py` creates realistic test data:
+| Column Name | PostgreSQL Type | Nullable | Key / Constraint | Functional Description |
+|:------------|:----------------|:--------:|:-----------------|:-----------------------|
+| `pipeline_id` | `UUID` | No | `PRIMARY KEY`, Default `gen_random_uuid()` | Unique snapshot record ID |
+| `project_id` | `UUID` | No | `FOREIGN KEY -> projects(CASCADE)` | Associated engagement |
+| `snapshot_date` | `DATE` | No | `INDEX idx_pipeline_snapshot` | Snapshot capture date |
+| `stage` | `VARCHAR(50)` | No | — | Stage at snapshot date |
+| `probability` | `NUMERIC(5,4)` | No | Value range 0.0000 - 1.0000 | Win probability |
+| `expected_close_date` | `DATE` | Yes | — | Expected execution date |
+| `pipeline_value` | `NUMERIC(15,2)` | No | — | Estimated deal value (INR) |
 
-| Dataset | Records | Notes |
-|---------|---------|-------|
-| Projects | 750 | Random BU, stage, billing rate, hours |
-| Pipeline | 750 × 6 months | Monthly snapshots per project |
-| Actuals | 750 × 24 months | Monthly revenue, hours, cost per project |
-| Budgets | 3 BUs × 24 months | Random ₹4M–₹10M monthly budget per BU |
+---
 
-**Stage distribution** (approx)
+### 4. `project_actuals`
+Monthly delivered effort, revenue, and delivery costs.
 
-| Stage | Weight |
-|-------|--------|
-| Prospect | 20% |
-| Qualified | 25% |
-| In Delivery | 25% |
-| Closed Won | 25% |
-| Closed Lost | 5% |
+| Column Name | PostgreSQL Type | Nullable | Key / Constraint | Functional Description |
+|:------------|:----------------|:--------:|:-----------------|:-----------------------|
+| `actual_id` | `UUID` | No | `PRIMARY KEY`, Default `gen_random_uuid()` | Unique actuals record ID |
+| `project_id` | `UUID` | No | `FOREIGN KEY -> projects(CASCADE)` | Associated engagement |
+| `month` | `DATE` | No | `INDEX idx_actuals_month` | First day of delivery month |
+| `actual_hours` | `NUMERIC(12,2)` | No | — | Actual billable hours logged |
+| `actual_revenue` | `NUMERIC(15,2)` | No | — | Monthly recognized revenue (INR) |
+| `actual_cost` | `NUMERIC(15,2)` | No | — | Direct consulting delivery cost (INR) |
 
-**Billing rates used:** ₹150, ₹200, ₹250, ₹300, ₹350, ₹400 per hour
+> **Unique Constraint:** `UNIQUE (project_id, month)`
+
+---
+
+### 5. `budgets`
+Monthly operational budget targets defined per business unit.
+
+| Column Name | PostgreSQL Type | Nullable | Key / Constraint | Functional Description |
+|:------------|:----------------|:--------:|:-----------------|:-----------------------|
+| `budget_id` | `UUID` | No | `PRIMARY KEY`, Default `gen_random_uuid()` | Unique budget record ID |
+| `business_unit_id` | `UUID` | No | `FOREIGN KEY -> business_units` | Associated business unit |
+| `month` | `DATE` | No | — | Budget target month |
+| `revenue_budget` | `NUMERIC(15,2)` | No | — | Monthly target revenue (INR) |
+| `hours_budget` | `NUMERIC(12,2)` | No | — | Monthly target billable hours |
+| `utilization_budget` | `NUMERIC(5,2)` | No | — | Target billable utilization (e.g. 0.75) |
+
+> **Unique Constraint:** `UNIQUE (business_unit_id, month)`
+
+---
+
+### 6. `forecast_versions` & `forecast_values`
+Audit trail tables for historical forecast runs.
+
+| Table Name | Column Name | PostgreSQL Type | Key / Constraint | Description |
+|:-----------|:------------|:----------------|:-----------------|:------------|
+| `forecast_versions` | `forecast_id` | `UUID` | `PRIMARY KEY` | Version ID |
+| `forecast_versions` | `forecast_date` | `DATE` | — | Run execution date |
+| `forecast_versions` | `forecast_month` | `DATE` | `INDEX idx_forecast_month` | Target month |
+| `forecast_versions` | `forecast_method` | `VARCHAR(100)` | — | Calculation model ID |
+| `forecast_values` | `forecast_value_id` | `UUID` | `PRIMARY KEY` | Record ID |
+| `forecast_values` | `forecast_id` | `UUID` | `FOREIGN KEY -> forecast_versions(CASCADE)` | Forecast version link |
+| `forecast_values` | `project_id` | `UUID` | `FOREIGN KEY -> projects` | Engagement link |
+| `forecast_values` | `forecast_revenue`| `NUMERIC(15,2)` | — | Projected revenue |
+| `forecast_values` | `confidence` | `NUMERIC(5,4)` | — | Attributed confidence |
+
+> **Unique Constraint (`forecast_values`):** `UNIQUE (forecast_id, project_id)`
+
+---
+
+## Synthetic Data Generator Profile
+
+```mermaid
+pie title Synthetic Dataset Record Breakdown
+    "project_actuals (18,000 rows)" : 78
+    "project_pipeline (4,500 rows)" : 19
+    "projects (750 rows)" : 3
+    "budgets (72 rows)" : 1
+```
+
+| Table | Record Volume | Generation Rule |
+|:------|:--------------|:----------------|
+| `projects` | 750 records | Randomly assigned to 3 BUs; billing rate ₹150–₹400/hr; hours 200–5000 |
+| `project_pipeline` | 4,500 records | 6 monthly snapshots per project |
+| `project_actuals` | 18,000 records | 24 monthly records per project (revenue, hours, cost) |
+| `budgets` | 72 records | 3 BUs × 24 months (₹4M–₹10M monthly budget per BU) |

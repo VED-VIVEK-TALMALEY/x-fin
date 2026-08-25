@@ -1,178 +1,166 @@
-# X-Fin — Forecast Engine
+# X-Fin Forecast & Variance Engine Specification
 
-> **Module** `app/services/forecast_engine.py` · **Router** `app/routers/forecast.py`
-
----
-
-## Overview
-
-The forecast engine produces a single deterministic revenue number for the current planning period. It takes three financial signals — committed backlog, probability-weighted pipeline, and utilization — and applies two adjustments to arrive at net forecast revenue.
+> **Module Path:** `app/services/forecast_engine.py` · **Router:** `app/routers/forecast.py`
 
 ---
 
-## Formula
+## Forecast Calculation Pipeline
 
-```
-Step 1 — Utilization factor
-─────────────────────────────
-utilization_factor = actual_utilization / target_utilization
+```mermaid
+flowchart TD
+    subgraph S1["INPUT EXTRACTION"]
+        IN_B["<b>Committed Backlog</b><br/><code>backlog_engine.calculate_backlog()</code><br/>SUM(pipeline_value) WHERE stage IN ('In Delivery', 'Closed Won')"]
+        IN_P["<b>Weighted Pipeline</b><br/><code>finance_queries.get_pipeline_summary()</code><br/>SUM(pipeline_value * probability) [Latest Snapshot]"]
+        IN_U["<b>Actual Utilization</b><br/><code>finance_queries.get_budget_summary()</code><br/>AVG(budgets.utilization_budget)"]
+        IN_TU["<b>Target Utilization Benchmark</b><br/><code>target_utilization = 0.75</code> (75% Baseline)"]
+    end
 
+    subgraph S2["UTILIZATION ADJUSTMENT CALCULATION"]
+        F_CALC["<b>1. Compute Utilization Factor</b><br/><code>factor = actual_utilization / target_utilization</code><br/><i>(e.g., 0.75 / 0.75 = 1.00)</i>"]
+        UA_CALC["<b>2. Compute Utilization Adjustment</b><br/><code>adj_util = committed_backlog * (factor - 1.0)</code><br/><i>(Delta applied to committed backlog base)</i>"]
+        IN_U & IN_TU --> F_CALC --> UA_CALC
+        IN_B --> UA_CALC
+    end
 
-Step 2 — Utilization adjustment
-────────────────────────────────
-utilization_adjustment = committed_backlog
-                       * (utilization_factor - 1)
+    subgraph S3["GROSS FORECAST SYNTHESIS"]
+        GF_CALC["<b>3. Compute Gross Forecast</b><br/><code>gross_forecast = committed_backlog + weighted_pipeline + adj_util</code>"]
+        IN_B & IN_P & UA_CALC --> GF_CALC
+    end
 
-  > Positive when actual > target: upside
-  > Negative when actual < target: downside
+    subgraph S4["RISK HAIRCUT CALCULATION"]
+        RH_CALC["<b>4. Apply 5% Flat Execution Haircut</b><br/><code>risk_rate = 0.05</code><br/><code>adj_risk = gross_forecast * 0.05</code>"]
+        GF_CALC --> RH_CALC
+    end
 
+    subgraph S5["NET FORECAST OUTPUT"]
+        NF_CALC["<b>5. Compute Net Forecast Revenue</b><br/><code>forecast_revenue = round(gross_forecast - adj_risk, 2)</code>"]
+        GF_CALC & RH_CALC --> NF_CALC
+    end
 
-Step 3 — Gross forecast
-────────────────────────
-gross_forecast = committed_backlog
-               + weighted_pipeline
-               + utilization_adjustment
-
-
-Step 4 — Risk adjustment (haircut)
-────────────────────────────────────
-risk_adjustment = gross_forecast * risk_rate   (default 5%)
-
-
-Step 5 — Net forecast
-──────────────────────
-forecast_revenue = gross_forecast - risk_adjustment
+    S1 --> S2 --> S3 --> S4 --> S5
 ```
 
 ---
 
-## Inputs
+## Mathematical Formulation
 
-| Input | Source | Default | Description |
-|-------|--------|---------|-------------|
-| `committed_backlog` | `backlog_engine.calculate_backlog()` | — | Sum of pipeline_value where stage IN ('In Delivery', 'Closed Won') at latest snapshot |
-| `weighted_pipeline` | `finance_queries.get_pipeline_summary()` | — | SUM(pipeline_value * probability) at latest snapshot |
-| `utilization` | `finance_queries.get_budget_summary()` → `budget_utilization` | 0.74 | Average utilization_budget across all BU/month budget records |
-| `target_utilization` | Hard-coded | **0.75** | Target utilization rate; raises ValueError if <= 0 |
-| `risk_rate` | Hard-coded | **0.05** | 5% gross forecast haircut |
+$$\text{Factor}_{\text{util}} = \frac{U_{\text{actual}}}{U_{\text{target}}}$$
 
----
+$$\text{Adj}_{\text{util}} = \text{Backlog}_{\text{committed}} \times \left( \text{Factor}_{\text{util}} - 1.0 \right)$$
 
-## Outputs (`ForecastResult` dataclass)
+$$\text{Gross Forecast} = \text{Backlog}_{\text{committed}} + \text{Pipeline}_{\text{weighted}} + \text{Adj}_{\text{util}}$$
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `committed_backlog` | float | Input committed backlog (rounded to 2dp) |
-| `weighted_pipeline` | float | Input weighted pipeline (rounded to 2dp) |
-| `utilization_adjustment` | float | Upside or downside from utilization delta |
-| `risk_adjustment` | float | 5% gross forecast haircut |
-| `forecast_revenue` | float | **Net forecast revenue** |
+$$\text{Adj}_{\text{risk}} = \text{Gross Forecast} \times 0.05$$
+
+$$\text{Forecast Revenue} = \text{Gross Forecast} - \text{Adj}_{\text{risk}}$$
 
 ---
 
-## Numerical Example
+## Input & Output Parameter Specifications
 
-| Input | Value |
-|-------|-------|
-| Committed Backlog | ₹100,000 |
-| Weighted Pipeline | ₹50,000 |
-| Actual Utilization | 0.75 |
-| Target Utilization | 0.75 |
-| Risk Rate | 5% |
+### Input Parameters
 
-```
-utilization_factor    = 0.75 / 0.75 = 1.0
-utilization_adjustment = 100,000 * (1.0 - 1) = 0
+| Parameter Name | Python Type | Default Value | Source Query | Description |
+|:---------------|:-----------:|:-------------:|:-------------|:------------|
+| `committed_backlog` | `float` | Required | `backlog_engine.calculate_backlog()` | Sum of deals in `In Delivery` and `Closed Won` stages |
+| `weighted_pipeline` | `float` | Required | `finance_queries.get_pipeline_summary()` | Probability-weighted sum of active pipeline deals |
+| `utilization` | `float` | `0.74` | `finance_queries.get_budget_summary()` | Current billable staffing utilization rate |
+| `target_utilization` | `float` | `0.75` | Hard-coded Constant | Benchmark target utilization rate (Raises `ValueError` if <= 0) |
+| `risk_rate` | `float` | `0.05` | Hard-coded Constant | Standard 5% execution risk discount |
 
-gross_forecast = 100,000 + 50,000 + 0 = 150,000
+### Output Dataclass (`ForecastResult`)
 
-risk_adjustment = 150,000 * 0.05 = 7,500
-
-forecast_revenue = 150,000 - 7,500 = 142,500
-```
-
-> **Test assertion:** `test_forecast.py` confirms `forecast_revenue == 142500.00`
-
----
-
-## Utilization Sensitivity
-
-```
-Actual Utilization vs Target 0.75 | Adjustment Direction
-─────────────────────────────────────────────────────────
-0.80 (above target)               | Positive (upside)
-0.75 (at target)                  | Zero (neutral)
-0.70 (below target)               | Negative (downside)
-0.60 (well below target)          | Larger negative
-```
+| Field Name | Type | Precision | Example Value | Description |
+|:-----------|:----:|:---------:|:--------------|:------------|
+| `committed_backlog` | `float` | 2 decimal places | `100000.00` | Input committed backlog volume |
+| `weighted_pipeline` | `float` | 2 decimal places | `50000.00` | Input probability-weighted pipeline |
+| `utilization_adjustment` | `float` | 2 decimal places | `0.00` | Revenue adjustment derived from utilization delta |
+| `risk_adjustment` | `float` | 2 decimal places | `7500.00` | 5% execution risk haircut |
+| `forecast_revenue` | `float` | 2 decimal places | `142500.00` | **Final net deliverable forecast revenue** |
 
 ---
 
-## Usage in Intelligence
+## Numerical Trace Verification
 
-When called from `/intelligence/overview`, the forecast engine receives:
+```mermaid
+graph TD
+    subgraph Given["Given Financial State"]
+        G1["Committed Backlog: INR 100,000.00"]
+        G2["Weighted Pipeline: INR 50,000.00"]
+        G3["Actual Utilization: 0.75 (75%)"]
+        G4["Target Utilization: 0.75 (75%)"]
+        G5["Risk Rate: 0.05 (5%)"]
+    end
 
-- `committed_backlog` from `backlog_engine`
-- `weighted_pipeline` from `finance_queries`
-- `utilization` = `budget_utilization` from `finance_queries.get_budget_summary()`
-- `target_utilization` = 0.75
-- `risk_rate` = 0.05
+    subgraph StepTrace["Step-by-Step Execution Trace"]
+        T1["1. Factor = 0.75 / 0.75 = 1.00"]
+        T2["2. Util Adj = 100,000 * (1.00 - 1.0) = INR 0.00"]
+        T3["3. Gross = 100,000 + 50,000 + 0 = INR 150,000.00"]
+        T4["4. Risk Haircut = 150,000 * 0.05 = INR 7,500.00"]
+        T5["5. Net Forecast = 150,000 - 7,500 = INR 142,500.00"]
+    end
 
-When called from `/forecast/current`, `utilization` is hard-coded to **0.74** (legacy default).
+    Given --> StepTrace
+```
+
+> **Automated Verification:** Validated by `pytest tests/test_forecast.py`.
 
 ---
 
-## Variance Engine
+## Utilization Sensitivity Model
 
-`app/services/variance_engine.py` provides two functions:
-
-### `calculate_variance(actual, budget, forecast)`
-
-Returns a `VarianceResult` dataclass:
-
-| Field | Formula |
-|-------|---------|
-| `actual_vs_budget` | `actual - budget` |
-| `actual_vs_budget_pct` | `(actual - budget) / budget * 100` |
-| `forecast_vs_budget` | `forecast - budget` |
-| `forecast_vs_budget_pct` | `(forecast - budget) / budget * 100` |
-
-All values use `Decimal` for precision. Rounded to 2dp.
-
-### `variance_bridge(budget, actual, project_slippage, pipeline_change, utilization_change, rate_change)`
-
-Decomposes the variance between budget and actual into explained components:
-
+```mermaid
+graph LR
+    subgraph Scenarios["Sensitivity on INR 100,000 Backlog (Target = 75%)"]
+        U1["Actual = 80% (+5% Upside)<br/>Factor = 1.0667<br/>Util Adj = +INR 6,666.67"]
+        U2["Actual = 75% (Target)<br/>Factor = 1.0000<br/>Util Adj = INR 0.00"]
+        U3["Actual = 70% (-5% Downside)<br/>Factor = 0.9333<br/>Util Adj = -INR 6,666.67"]
+        U4["Actual = 60% (-15% Severe)<br/>Factor = 0.8000<br/>Util Adj = -INR 20,000.00"]
+    end
 ```
-total_explained = project_slippage
-                + pipeline_change
-                + utilization_change
-                + rate_change
-
-unexplained = actual - budget - total_explained
-```
-
-Returns a bridge dictionary with all components and `unexplained`.
 
 ---
 
-## Scenario Engine
+## Variance Engine & Bridge Decomposition
 
-`app/services/scenario_engine.py` — `run_scenario()`:
+The variance engine (`app/services/variance_engine.py`) provides exact variance calculation and waterfall bridge analysis:
 
+```mermaid
+flowchart TD
+    subgraph Bridge["Waterfall Variance Bridge Decomposition"]
+        B_BUDGET["Budget Revenue Target"]
+        V_SLIP["- Project Slippage Delta"]
+        V_PIPE["+/- Pipeline Conversion Delta"]
+        V_UTIL["+/- Staffing Utilization Delta"]
+        V_RATE["+/- Hourly Billing Rate Delta"]
+        V_UNEXP["+/- Unexplained Residual Variance"]
+        B_ACTUAL["= Final Delivered Actual Revenue"]
+
+        B_BUDGET --> V_SLIP --> V_PIPE --> V_UTIL --> V_RATE --> V_UNEXP --> B_ACTUAL
+    end
 ```
-adjusted_pipeline  = pipeline_revenue * (1 + pipeline_conversion_change)
 
-utilization_factor = (utilization + utilization_change) / utilization
-                     [capped: if utilization == 0, factor = 1]
+### Variance Calculation Formulas (`VarianceResult`)
 
-adjusted_revenue   = base_revenue
-                   * utilization_factor
-                   * (1 + billing_rate_change)
-                   + adjusted_pipeline
+| Metric Field | Precision | Exact Formula | Functional Description |
+|:-------------|:---------:|:--------------|:-----------------------|
+| `actual_vs_budget` | `Decimal(2dp)` | `Actual - Budget` | Absolute variance delivered against budget |
+| `actual_vs_budget_pct` | `Decimal(2dp)` | `(Actual - Budget) / Budget * 100` | Percentage variance delivered against budget |
+| `forecast_vs_budget` | `Decimal(2dp)` | `Forecast - Budget` | Expected variance at period completion |
+| `forecast_vs_budget_pct`| `Decimal(2dp)` | `(Forecast - Budget) / Budget * 100` | Projected percentage variance at completion |
 
-scenario_revenue   = adjusted_revenue * (1 - slippage_rate)
+---
 
-revenue_change     = scenario_revenue - base_revenue
-revenue_change_pct = revenue_change / base_revenue * 100
+## Scenario Simulation Logic
+
+`app/services/scenario_engine.py` models revenue sensitivities against delivery and market variables:
+
+```mermaid
+flowchart LR
+    P_IN["Pipeline Revenue"] -->|"*(1 + conversion_change)"| P_ADJ["Adjusted Pipeline"]
+    B_IN["Base Revenue"] -->|"* ((util + util_change)/util) * (1 + rate_change)"| B_ADJ["Adjusted Delivery Base"]
+
+    P_ADJ & B_ADJ --> COMB["Combined Pre-Slippage Revenue"]
+    COMB -->|"*(1 - slippage_rate)"| SCENARIO["Net Scenario Revenue"]
+    SCENARIO & B_IN --> DELTA["Revenue Delta & Percentage Change"]
 ```
