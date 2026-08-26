@@ -13,9 +13,9 @@ graph TB
     end
 
     subgraph PresentationTier["PRESENTATION TIER (Streamlit :8501)"]
-        UI_MAIN["<b>dashboard/app.py</b><br/>• Executive Performance Overview<br/>• Revenue Performance Line Chart<br/>• Backlog Waterfall Chart<br/>• Business Unit Margins Grouped Chart<br/>• Forecast Accuracy Time Series<br/>• Scenario Planning Sliders"]
+        UI_MAIN["<b>dashboard/app.py</b><br/>• Decision Snapshot & Leadership Readout<br/>• Executive Performance Overview<br/>• Forecast Waterfall & Confidence Distribution<br/>• Risk Driver & Staffing Capacity Charts<br/>• Business Unit Performance Heatmap<br/>• Historical Accuracy Trend<br/>• Scenario Planning Sliders"]
         UI_INTEL["<b>dashboard/intelligence.py</b><br/>• Financial Status Banner<br/>• Revenue Outlook Comparison Bar<br/>• Forward Revenue Split Bar<br/>• Forecast Construction Dataframe<br/>• Scored Insights Cards<br/>• Action Recommendations Cards"]
-        UI_CHARTS["<b>dashboard/charts.py</b><br/>Plotly Chart Builders (Line, Bar, Waterfall)"]
+        UI_CHARTS["<b>dashboard/charts.py</b><br/>Themed Plotly Builders (Line, Bar, Waterfall, Heatmap, Confidence, Risk, Capacity)"]
         UI_COMP["<b>dashboard/components.py</b><br/>UI Helper Functions & Formatters"]
         UI_API["<b>dashboard/api.py</b><br/>Requests HTTP Client with 10s Timeout"]
 

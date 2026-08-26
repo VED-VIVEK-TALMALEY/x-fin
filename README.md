@@ -14,6 +14,21 @@
 
 It provides real-time transparency across engagement economics, billing realization, billable staffing utilization, project backlog velocity, and probability-weighted pipeline conversion.
 
+### Decision Intelligence Dashboard
+
+The Streamlit dashboard is designed as a leadership decision surface rather than a metric-only report. It combines:
+
+- Executive snapshot with forecast confidence, revenue at risk, and delivery signals
+- Forecast construction waterfall and Monte Carlo confidence distribution
+- Forecast risk-driver comparison for committed coverage, pipeline dependency, and headroom
+- Staffing hours versus budget view with explicit data-quality caveats
+- Business-unit revenue chart, performance heatmap, and detailed comparison table
+- Historical forecast-accuracy trend and preserved source data tables
+- Severity-ranked insights, recommended actions, and an interactive scenario simulator
+- Hover help on section headings and important metrics, plus point-level chart tooltips
+
+See [docs/DASHBOARD.md](docs/DASHBOARD.md) for the dashboard workflow and [docs/METRICS.md](docs/METRICS.md) for definitions and limitations.
+
 ```mermaid
 flowchart LR
     subgraph K1["ACTUAL DELIVERED REVENUE"]

@@ -1,17 +1,26 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse
 
+from app.config import APP_NAME, APP_VERSION
 from app.routers import (
-    projects,
-    forecast,
     analytics,
-    scenarios,
+    forecast,
     intelligence,
+    projects,
+    scenarios,
 )
 
 
+# ============================================================
+# APPLICATION
+# ============================================================
+
 app = FastAPI(
-    title="X-Fin Finance API",
+    title=APP_NAME,
+    version=APP_VERSION,
+    description=(
+        "Intelligent Delivery Finance Operating System"
+    ),
 )
 
 
@@ -24,6 +33,14 @@ async def global_exception_handler(
     request: Request,
     exc: Exception,
 ):
+    """
+    Return useful error information instead of
+    FastAPI's generic 'Internal Server Error'.
+
+    This is particularly useful during development
+    and deployment debugging.
+    """
+
     import traceback
 
     traceback.print_exc()
@@ -67,7 +84,7 @@ app.include_router(
 def root():
     return {
         "name": "X-Fin",
-        "version": "1.0.0",
+        "version": APP_VERSION,
         "description": (
             "Intelligent Delivery Finance "
             "Operating System"
@@ -85,4 +102,30 @@ def health():
     return {
         "status": "healthy",
         "service": "x-fin",
-    }   
+    }
+
+
+# ============================================================
+# DATABASE HEALTH
+# ============================================================
+
+@app.get("/health/db")
+def database_health():
+    """
+    Lightweight database connectivity check.
+
+    Useful for Render health/debugging.
+    """
+
+    from app.db.connection import test_connection
+
+    if test_connection():
+        return {
+            "status": "healthy",
+            "database": "connected",
+        }
+
+    return {
+        "status": "unhealthy",
+        "database": "unreachable",
+    }

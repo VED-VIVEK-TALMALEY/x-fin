@@ -15,6 +15,8 @@ from api import (
 from components import (
     metric_card,
     section_title,
+    insight_card,
+    recommendation_card,
     format_currency,
     format_percentage,
     show_error,
@@ -25,6 +27,12 @@ from charts import (
     backlog_chart,
     business_unit_chart,
     variance_chart,
+    forecast_decomposition_chart,
+    business_unit_heatmap,
+    capacity_chart,
+    risk_driver_chart,
+    forecast_confidence_chart,
+    accuracy_chart,
 )
 
 
@@ -36,10 +44,13 @@ st.set_page_config(
 
 st.markdown(
     """
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merienda:wght@600&family=Momo+Signature&family=Oswald:wght@400;500;600&family=Parisienne&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
     <style>
         .stApp {
-            background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
-            color: #e5e7eb;
+            background: linear-gradient(180deg, #311827 0%, #0f172a 100%);
+            color: #f4f8fx3;
         }
 
         .block-container {
@@ -87,15 +98,85 @@ st.markdown(
             border-radius: 0.8rem;
         }
 
-        h1 {
+        .brand-title {
+            color: #f3f453;
+            font-family: "Momo Signature", cursive;
+            font-weight: 400;
+            letter-spacing: 0;
+            font-size: 3.2rem;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        h2 {
+            font-family: "Merienda", cursive;
+        }
+
+        h3, .card-kicker, .card-label, [data-testid="stMetricLabel"] p {
+            font-family: "Oswald", sans-serif;
+            letter-spacing: 0.02em;
+        }
+
+        .decision-card {
+            min-height: 190px;
+            padding: 1.1rem 1.15rem;
+            margin: 0 0 1rem;
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            border-left: 4px solid var(--card-accent);
+            border-radius: 0.8rem;
+            background: rgba(31, 41, 55, 0.76);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+        }
+
+        .decision-card h3 {
+            margin: 0.35rem 0 0.45rem;
             color: #f8fafc;
+            font-size: 1.1rem;
+            line-height: 1.25;
+        }
+
+        .decision-card p {
+            color: #d1d5db;
+            line-height: 1.55;
+            margin: 0.55rem 0 0;
+        }
+
+        .card-kicker {
+            color: var(--card-accent);
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .card-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .card-action {
+            color: #f3f4f6 !important;
+            font-weight: 500;
+        }
+
+        .card-rationale, .card-impact {
+            color: #a7b0c0;
+            font-size: 0.86rem;
+            line-height: 1.45;
+            margin-top: 0.75rem;
+        }
+
+        .card-impact {
+            color: #67e8f9;
+            font-family: "Oswald", sans-serif;
         }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-st.title("X-Fin — Delivery Finance OS")
+st.markdown(
+    '<h1 class="brand-title">X-Fin — Delivery Finance OS</h1>',
+    unsafe_allow_html=True,
+)
 st.caption(
     "Finance performance, forecasting, backlog and scenario intelligence"
 )
@@ -171,6 +252,65 @@ gross_margin_pct = (
     gross_margin / actual_revenue * 100
     if actual_revenue
     else 0
+)
+
+pipeline_dependency = float(
+    risk.get("pipeline_dependency", 0) or 0
+)
+committed_coverage = float(
+    risk.get("committed_forecast_coverage", 0) or 0
+)
+probability_above_budget = float(
+    monte_carlo.get("budget_analysis", {}).get(
+        "probability_above_budget", 0
+    ) or 0
+)
+
+
+# ==================================================
+# DECISION SNAPSHOT
+# ==================================================
+
+section_title(
+    "Decision Snapshot",
+    "A concise leadership readout that connects growth, forecast confidence, delivery risk, and the next management focus.",
+)
+
+snapshot_cols = st.columns(3)
+
+with snapshot_cols[0]:
+    st.metric(
+        "Forecast Confidence",
+        f"{probability_above_budget:.1f}%",
+        help="Monte Carlo probability that revenue finishes at or above budget.",
+    )
+    st.caption(
+        "The forecast has strong simulated budget coverage, but the revenue mix still depends heavily on pipeline conversion."
+    )
+
+with snapshot_cols[1]:
+    st.metric(
+        "Revenue at Risk",
+        money(weighted_pipeline),
+        help="Weighted pipeline value that remains dependent on opportunity conversion.",
+    )
+    st.caption(
+        f"Pipeline dependency is {pipeline_dependency:.1f}% of forward revenue; prioritize high-probability opportunities."
+    )
+
+with snapshot_cols[2]:
+    st.metric(
+        "Delivery Signal",
+        title_case(staffing.get("capacity_status")),
+        help="Current staffing-hours signal used to identify delivery pressure or data-quality concerns.",
+    )
+    st.caption(
+        "Hours are above budget, but true utilization cannot be confirmed without a capacity-hours denominator."
+    )
+
+st.info(
+    f"**Leadership readout:** Revenue is {pct(reasoning.get('budget_gap_pct'))} above budget and the forecast is {pct(reasoning.get('forecast_gap_pct'))} above plan. "
+    f"The main watchpoint is forecast quality: only {committed_coverage:.1f}% is committed, so the next action is to validate the highest-value pipeline."
 )
 
 
@@ -374,6 +514,11 @@ st.caption(
     "contribution is displayed as a negative amount."
 )
 
+st.plotly_chart(
+    forecast_decomposition_chart(decomposition),
+    width="stretch",
+)
+
 
 # ==================================================
 # FORECAST RISK
@@ -441,6 +586,21 @@ with detail[1]:
 with detail[2]:
     st.write("**Pipeline Risk**")
     st.write(title_case(risk.get("pipeline_risk")))
+
+risk_chart_cols = st.columns(2)
+with risk_chart_cols[0]:
+    st.plotly_chart(
+        risk_driver_chart(risk),
+        width="stretch",
+    )
+with risk_chart_cols[1]:
+    st.plotly_chart(
+        forecast_confidence_chart(
+            monte_carlo,
+            budget_revenue,
+        ),
+        width="stretch",
+    )
 
 
 # ==================================================
@@ -562,6 +722,11 @@ st.warning(
     )
 )
 
+st.plotly_chart(
+    capacity_chart(staffing),
+    width="stretch",
+)
+
 
 # ==================================================
 # FINANCIAL POSITION
@@ -613,22 +778,15 @@ section_title(
 )
 
 if insights:
-    for insight in insights:
-        severity = str(
-            insight.get("severity", "INFO")
-        ).upper()
-        content = (
-            f"**{insight.get('category', 'General')} — "
-            f"{insight.get('metric', '')}**\n\n"
-            f"{insight.get('message', '')}"
-        )
-
-        if severity == "HIGH":
-            st.error(content)
-        elif severity == "MEDIUM":
-            st.warning(content)
-        else:
-            st.info(content)
+    insight_columns = st.columns(3)
+    for index, insight in enumerate(insights):
+        with insight_columns[index % 3]:
+            insight_card(
+                insight.get("category", "General"),
+                insight.get("metric", ""),
+                insight.get("message", ""),
+                insight.get("severity", "INFO"),
+            )
 else:
     st.info("No material insights detected.")
 
@@ -643,27 +801,15 @@ section_title(
 )
 
 if recommendations:
-    for recommendation in recommendations:
-        priority = str(
-            recommendation.get("priority", "LOW")
-        ).upper()
-
-        category = recommendation.get("category", "Action")
-        action = recommendation.get("action", "")
-        rationale = recommendation.get("rationale", "")
-        impact = recommendation.get("financial_impact")
-
-        st.markdown(f"### {category}")
-        st.write(f"**Priority:** {priority}")
-        st.write(f"**Action:** {action}")
-
-        if rationale:
-            st.write(f"**Rationale:** {rationale}")
-
-        if impact is not None:
-            st.write(
-                "**Financial Impact:** "
-                + money(impact)
+    recommendation_columns = st.columns(3)
+    for index, recommendation in enumerate(recommendations):
+        with recommendation_columns[index % 3]:
+            recommendation_card(
+                recommendation.get("category", "Action"),
+                recommendation.get("priority", "LOW"),
+                recommendation.get("action", ""),
+                recommendation.get("rationale", ""),
+                recommendation.get("financial_impact"),
             )
 else:
     st.info("No recommendations generated.")
@@ -770,6 +916,11 @@ if business_units:
         business_unit_chart(business_units),
         width="stretch",
     )
+
+    st.plotly_chart(
+        business_unit_heatmap(business_units),
+        width="stretch",
+    )
 else:
     st.info("No business-unit data available.")
 
@@ -784,6 +935,10 @@ section_title(
 )
 
 if forecast_accuracy:
+    st.plotly_chart(
+        accuracy_chart(forecast_accuracy),
+        width="stretch",
+    )
     st.dataframe(
         pd.DataFrame(forecast_accuracy),
         width="stretch",

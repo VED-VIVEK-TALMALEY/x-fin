@@ -31,6 +31,7 @@
 │   │   ├── forecast_decomposition.py
 │   │   ├── forecast_engine.py
 │   │   ├── insight_engine.py
+│   │   ├── intelligence_engine.py
 │   │   ├── monte_carlo_engine.py
 │   │   ├── recommendation_engine.py
 │   │   ├── revenue_calc.py
@@ -57,10 +58,12 @@
 ├── docs/
 │   ├── API.md
 │   ├── ARCHITECTURE.md
+│   ├── DASHBOARD.md
 │   ├── DATA_MODEL.md
 │   ├── DEVELOPMENT.md
 │   ├── FORECAST_ENGINE.md
 │   ├── INTELLIGENCE.md
+│   ├── METRICS.md
 ├── scripts/
 │   ├── generate_synthetic_data.py
 │   ├── load_data.py

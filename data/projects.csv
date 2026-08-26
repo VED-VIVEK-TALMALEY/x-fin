@@ -1,0 +1,751 @@
+project_name,client_name,business_unit,stage,status,start_date,end_date,contract_value,billing_rate,planned_hours
+Project 0001,Client 021,Digital Ventures,Qualified,Active,2026-06-14,2027-02-17,265000,250,1060
+Project 0002,Client 024,Digital Ventures,Qualified,Active,2026-05-29,2026-11-04,1156500,250,4626
+Project 0003,Client 002,X Build,Prospect,Active,2025-07-07,2026-06-25,290700,300,969
+Project 0004,Client 089,X Build,In Delivery,Active,2025-12-15,2026-10-06,1434000,400,3585
+Project 0005,Client 080,Digital Ventures,In Delivery,Active,2025-05-06,2026-01-08,551600,200,2758
+Project 0006,Client 064,X Build,In Delivery,Active,2025-02-08,2025-06-02,1173600,400,2934
+Project 0007,Client 004,X Build,Prospect,Active,2026-03-11,2027-02-07,1431500,350,4090
+Project 0008,Client 002,Digital Ventures,Closed Lost,Active,2025-09-13,2026-01-03,88200,200,441
+Project 0009,Client 036,X Design,In Delivery,Active,2026-01-31,2026-06-20,689000,250,2756
+Project 0010,Client 004,X Design,In Delivery,Active,2025-07-31,2025-11-21,1309200,400,3273
+Project 0011,Client 072,X Design,Prospect,Active,2025-11-28,2026-10-24,72200,200,361
+Project 0012,Client 080,X Build,Prospect,Active,2025-11-02,2026-08-01,486400,400,1216
+Project 0013,Client 060,X Build,Qualified,Active,2026-01-20,2026-11-27,255200,200,1276
+Project 0014,Client 088,X Build,Prospect,Active,2026-06-21,2026-08-28,791700,350,2262
+Project 0015,Client 008,Digital Ventures,Prospect,Active,2025-04-13,2025-08-31,423750,250,1695
+Project 0016,Client 041,Digital Ventures,Closed Won,Completed,2025-04-22,2026-02-06,1635900,350,4674
+Project 0017,Client 086,Digital Ventures,Closed Won,Completed,2026-05-18,2027-01-04,1321600,400,3304
+Project 0018,Client 014,Digital Ventures,In Delivery,Active,2026-08-20,2027-05-24,433500,150,2890
+Project 0019,Client 063,Digital Ventures,Prospect,Active,2025-02-17,2025-10-13,81200,200,406
+Project 0020,Client 015,Digital Ventures,In Delivery,Active,2025-04-27,2026-02-11,1317300,300,4391
+Project 0021,Client 066,X Design,Qualified,Active,2026-05-31,2027-05-09,480500,250,1922
+Project 0022,Client 044,X Design,Closed Won,Completed,2026-07-28,2027-01-11,1304000,400,3260
+Project 0023,Client 062,X Build,Closed Won,Completed,2025-09-11,2026-06-28,372600,200,1863
+Project 0024,Client 077,X Build,Qualified,Active,2024-11-30,2025-05-24,602400,400,1506
+Project 0025,Client 097,Digital Ventures,Qualified,Active,2024-11-14,2025-06-26,227250,250,909
+Project 0026,Client 096,X Build,Qualified,Active,2025-08-16,2026-03-23,215750,250,863
+Project 0027,Client 012,X Design,Qualified,Active,2025-06-09,2025-09-28,307950,150,2053
+Project 0028,Client 002,X Design,In Delivery,Active,2026-06-05,2027-02-06,275400,150,1836
+Project 0029,Client 002,X Build,Qualified,Active,2026-01-12,2026-07-16,368900,350,1054
+Project 0030,Client 056,Digital Ventures,In Delivery,Active,2025-06-12,2026-03-01,579900,300,1933
+Project 0031,Client 086,Digital Ventures,Qualified,Active,2024-12-23,2025-09-06,1606150,350,4589
+Project 0032,Client 070,X Build,Closed Won,Completed,2026-04-23,2026-12-25,121200,150,808
+Project 0033,Client 020,Digital Ventures,Closed Won,Completed,2025-07-18,2026-02-09,752750,250,3011
+Project 0034,Client 092,X Build,Prospect,Active,2024-11-22,2025-10-14,635200,200,3176
+Project 0035,Client 016,X Design,Prospect,Active,2024-12-22,2025-11-09,852200,200,4261
+Project 0036,Client 012,X Build,Closed Lost,Active,2026-08-23,2027-07-02,576450,150,3843
+Project 0037,Client 019,Digital Ventures,Closed Won,Completed,2026-01-04,2026-06-11,643500,150,4290
+Project 0038,Client 072,X Design,Closed Won,Completed,2024-12-05,2025-04-18,508650,150,3391
+Project 0039,Client 025,X Build,In Delivery,Active,2026-05-05,2026-10-10,113250,250,453
+Project 0040,Client 061,X Build,Qualified,Active,2026-03-15,2026-12-07,926600,200,4633
+Project 0041,Client 067,X Build,Prospect,Active,2025-04-08,2025-10-19,1642550,350,4693
+Project 0042,Client 030,X Design,Qualified,Active,2025-05-12,2025-08-01,880500,300,2935
+Project 0043,Client 098,X Build,Closed Lost,Active,2025-11-15,2026-02-09,304800,400,762
+Project 0044,Client 004,Digital Ventures,In Delivery,Active,2025-05-29,2025-12-21,173850,150,1159
+Project 0045,Client 093,X Design,Closed Won,Completed,2026-01-17,2026-08-22,64800,300,216
+Project 0046,Client 095,Digital Ventures,Closed Won,Completed,2025-04-15,2025-12-11,441000,350,1260
+Project 0047,Client 067,X Design,Closed Lost,Active,2026-03-17,2027-01-26,468650,350,1339
+Project 0048,Client 032,Digital Ventures,In Delivery,Active,2024-10-08,2025-09-12,192250,250,769
+Project 0049,Client 033,X Build,Closed Lost,Active,2025-04-22,2026-03-20,802250,250,3209
+Project 0050,Client 060,X Design,Closed Won,Completed,2025-07-13,2025-09-23,601200,200,3006
+Project 0051,Client 016,X Design,Prospect,Active,2026-08-05,2027-06-24,1515850,350,4331
+Project 0052,Client 087,Digital Ventures,Closed Won,Completed,2025-09-05,2026-08-18,409800,300,1366
+Project 0053,Client 022,X Design,Prospect,Active,2025-01-27,2025-10-03,787200,200,3936
+Project 0054,Client 097,X Build,Closed Won,Completed,2026-07-02,2026-12-09,383000,200,1915
+Project 0055,Client 099,Digital Ventures,Qualified,Active,2025-09-09,2025-12-24,61200,300,204
+Project 0056,Client 030,Digital Ventures,Prospect,Active,2024-11-27,2025-05-11,912800,200,4564
+Project 0057,Client 055,X Design,Closed Won,Completed,2024-12-29,2025-04-25,257500,250,1030
+Project 0058,Client 058,X Design,Prospect,Active,2026-04-20,2026-10-25,126400,400,316
+Project 0059,Client 089,X Build,Prospect,Active,2026-04-29,2026-08-14,1219600,400,3049
+Project 0060,Client 022,X Build,Qualified,Active,2024-09-20,2025-01-26,1240050,350,3543
+Project 0061,Client 057,X Build,Qualified,Active,2024-11-07,2025-04-01,669400,200,3347
+Project 0062,Client 062,X Build,Prospect,Active,2026-05-23,2027-03-16,497700,150,3318
+Project 0063,Client 100,X Build,In Delivery,Active,2025-06-19,2025-09-25,493000,200,2465
+Project 0064,Client 069,X Design,In Delivery,Active,2025-03-21,2026-01-20,930400,200,4652
+Project 0065,Client 069,X Build,Qualified,Active,2024-12-25,2025-11-06,786000,200,3930
+Project 0066,Client 091,X Design,Prospect,Active,2025-04-15,2025-11-20,607800,200,3039
+Project 0067,Client 012,Digital Ventures,In Delivery,Active,2024-10-03,2025-03-12,265200,150,1768
+Project 0068,Client 013,Digital Ventures,Closed Won,Completed,2025-02-15,2026-01-25,1028250,250,4113
+Project 0069,Client 081,X Design,Qualified,Active,2026-07-21,2027-04-21,549200,200,2746
+Project 0070,Client 007,X Design,Qualified,Active,2025-07-03,2025-12-24,730000,400,1825
+Project 0071,Client 021,X Build,In Delivery,Active,2025-07-08,2026-04-10,429000,250,1716
+Project 0072,Client 099,X Build,Qualified,Active,2025-05-25,2026-01-31,1282750,350,3665
+Project 0073,Client 023,X Design,Closed Won,Completed,2026-05-21,2026-12-18,354200,200,1771
+Project 0074,Client 023,X Build,In Delivery,Active,2024-09-29,2024-12-10,607650,150,4051
+Project 0075,Client 086,X Build,Qualified,Active,2025-01-06,2025-10-09,1660800,400,4152
+Project 0076,Client 009,Digital Ventures,Closed Won,Completed,2026-01-04,2026-05-19,208250,350,595
+Project 0077,Client 069,Digital Ventures,Closed Lost,Active,2025-04-06,2025-10-26,894600,300,2982
+Project 0078,Client 023,X Build,In Delivery,Active,2025-04-28,2025-08-18,1098300,350,3138
+Project 0079,Client 005,Digital Ventures,Prospect,Active,2026-01-14,2026-07-14,1272800,400,3182
+Project 0080,Client 076,X Build,Closed Won,Completed,2024-11-05,2025-08-30,1132500,250,4530
+Project 0081,Client 007,X Design,Closed Won,Completed,2025-12-15,2026-09-30,410850,150,2739
+Project 0082,Client 005,X Build,Closed Won,Completed,2024-11-29,2025-08-09,798250,250,3193
+Project 0083,Client 071,X Build,Prospect,Active,2025-09-17,2026-04-09,905100,350,2586
+Project 0084,Client 061,X Design,In Delivery,Active,2025-12-16,2026-11-15,810800,400,2027
+Project 0085,Client 067,X Build,Closed Won,Completed,2025-03-12,2025-06-18,182600,200,913
+Project 0086,Client 092,X Build,Prospect,Active,2026-06-28,2027-01-21,577200,400,1443
+Project 0087,Client 063,X Build,Closed Won,Completed,2025-08-03,2026-04-09,323700,150,2158
+Project 0088,Client 058,X Build,Prospect,Active,2026-04-30,2026-11-09,451200,400,1128
+Project 0089,Client 075,X Build,Closed Lost,Active,2026-06-06,2027-03-05,718200,350,2052
+Project 0090,Client 049,X Design,Qualified,Active,2026-07-09,2027-04-27,742400,200,3712
+Project 0091,Client 016,Digital Ventures,Qualified,Active,2025-02-05,2025-12-20,1324400,350,3784
+Project 0092,Client 008,X Design,Prospect,Active,2025-07-13,2026-02-13,621200,400,1553
+Project 0093,Client 028,X Build,Prospect,Active,2025-10-13,2026-06-07,877000,200,4385
+Project 0094,Client 073,X Build,Closed Lost,Active,2025-04-10,2025-10-31,993750,250,3975
+Project 0095,Client 006,X Design,Qualified,Active,2025-02-13,2025-05-18,812400,300,2708
+Project 0096,Client 056,X Design,Qualified,Active,2025-06-01,2025-08-09,305700,150,2038
+Project 0097,Client 018,Digital Ventures,Closed Won,Completed,2025-08-16,2025-12-18,182250,150,1215
+Project 0098,Client 099,Digital Ventures,Prospect,Active,2024-10-05,2025-03-11,653700,150,4358
+Project 0099,Client 003,X Build,Qualified,Active,2024-09-15,2025-03-26,1443900,300,4813
+Project 0100,Client 017,X Build,In Delivery,Active,2024-09-10,2025-01-30,1342600,350,3836
+Project 0101,Client 004,X Design,In Delivery,Active,2024-10-09,2025-06-30,562000,250,2248
+Project 0102,Client 072,Digital Ventures,Closed Won,Completed,2025-09-11,2026-02-12,956600,200,4783
+Project 0103,Client 050,X Build,In Delivery,Active,2026-04-29,2027-03-13,349200,400,873
+Project 0104,Client 047,Digital Ventures,In Delivery,Active,2025-07-20,2026-01-07,235200,400,588
+Project 0105,Client 038,X Design,Closed Won,Completed,2026-06-11,2026-11-20,836200,200,4181
+Project 0106,Client 038,X Build,Qualified,Active,2025-06-16,2026-04-20,389500,250,1558
+Project 0107,Client 005,X Build,Closed Won,Completed,2025-02-08,2025-06-28,967400,200,4837
+Project 0108,Client 034,X Design,Prospect,Active,2025-04-04,2025-08-10,734400,200,3672
+Project 0109,Client 075,Digital Ventures,In Delivery,Active,2026-07-13,2027-05-08,1800000,400,4500
+Project 0110,Client 025,Digital Ventures,In Delivery,Active,2025-08-30,2026-04-30,1093500,300,3645
+Project 0111,Client 051,Digital Ventures,Closed Won,Completed,2024-10-22,2025-02-19,303100,350,866
+Project 0112,Client 005,X Build,Closed Won,Completed,2025-03-09,2025-05-08,979800,200,4899
+Project 0113,Client 045,Digital Ventures,Qualified,Active,2026-06-08,2027-03-12,663400,200,3317
+Project 0114,Client 056,X Design,Prospect,Active,2026-01-23,2026-11-17,374400,150,2496
+Project 0115,Client 036,X Build,Prospect,Active,2025-09-22,2025-12-16,1520050,350,4343
+Project 0116,Client 056,X Design,Prospect,Active,2024-09-05,2025-03-10,442800,300,1476
+Project 0117,Client 014,Digital Ventures,Qualified,Active,2026-01-21,2026-08-22,1729200,400,4323
+Project 0118,Client 018,X Design,Qualified,Active,2025-08-27,2026-06-21,738400,400,1846
+Project 0119,Client 074,Digital Ventures,Qualified,Active,2024-12-02,2025-02-27,315900,150,2106
+Project 0120,Client 013,X Build,Qualified,Active,2025-03-06,2025-09-26,97500,300,325
+Project 0121,Client 100,Digital Ventures,In Delivery,Active,2026-05-08,2026-11-29,39900,150,266
+Project 0122,Client 041,X Build,Closed Won,Completed,2025-01-07,2025-04-18,737700,150,4918
+Project 0123,Client 033,X Build,Qualified,Active,2025-10-14,2026-07-29,490250,250,1961
+Project 0124,Client 004,X Design,Prospect,Active,2025-04-09,2025-09-27,773200,400,1933
+Project 0125,Client 040,X Build,Prospect,Active,2025-12-25,2026-03-25,389550,150,2597
+Project 0126,Client 075,Digital Ventures,Closed Lost,Active,2025-05-14,2026-02-17,41000,200,205
+Project 0127,Client 057,X Design,Closed Won,Completed,2025-04-08,2025-08-07,1251200,400,3128
+Project 0128,Client 012,Digital Ventures,In Delivery,Active,2026-01-12,2026-04-01,402300,300,1341
+Project 0129,Client 033,X Design,Closed Won,Completed,2026-04-08,2027-02-20,1979600,400,4949
+Project 0130,Client 002,X Build,Qualified,Active,2024-11-13,2025-07-02,73150,350,209
+Project 0131,Client 073,X Build,In Delivery,Active,2025-10-10,2026-03-19,272850,150,1819
+Project 0132,Client 095,X Build,Prospect,Active,2025-07-02,2025-12-02,1263200,400,3158
+Project 0133,Client 034,Digital Ventures,Closed Won,Completed,2025-09-25,2026-04-09,1268100,300,4227
+Project 0134,Client 014,X Design,Prospect,Active,2025-01-30,2025-12-22,1436400,400,3591
+Project 0135,Client 004,X Build,Closed Won,Completed,2026-06-08,2026-10-07,774500,250,3098
+Project 0136,Client 014,Digital Ventures,Closed Won,Completed,2025-11-02,2026-10-22,467200,200,2336
+Project 0137,Client 097,Digital Ventures,In Delivery,Active,2024-10-29,2025-05-21,730500,150,4870
+Project 0138,Client 051,Digital Ventures,Qualified,Active,2024-12-17,2025-05-29,768950,350,2197
+Project 0139,Client 029,X Build,Prospect,Active,2025-02-17,2025-05-02,706500,250,2826
+Project 0140,Client 038,X Build,In Delivery,Active,2025-07-01,2026-02-02,363500,250,1454
+Project 0141,Client 086,X Design,Qualified,Active,2025-12-14,2026-08-26,172500,150,1150
+Project 0142,Client 013,Digital Ventures,Closed Won,Completed,2026-04-29,2027-04-17,309750,150,2065
+Project 0143,Client 068,X Build,Qualified,Active,2026-03-21,2026-07-05,1199800,350,3428
+Project 0144,Client 043,Digital Ventures,Closed Won,Completed,2025-11-06,2026-10-13,73500,250,294
+Project 0145,Client 072,Digital Ventures,Qualified,Active,2025-02-21,2025-09-02,1722400,400,4306
+Project 0146,Client 013,X Design,In Delivery,Active,2025-07-25,2026-04-28,637250,250,2549
+Project 0147,Client 037,Digital Ventures,Prospect,Active,2024-10-11,2025-04-21,551700,300,1839
+Project 0148,Client 078,X Build,Prospect,Active,2026-07-05,2026-10-01,160600,200,803
+Project 0149,Client 036,X Design,Closed Won,Completed,2024-12-20,2025-06-07,796800,400,1992
+Project 0150,Client 047,X Build,Closed Won,Completed,2025-02-04,2025-08-31,1308800,400,3272
+Project 0151,Client 026,X Build,Closed Won,Completed,2025-10-16,2026-04-10,120300,300,401
+Project 0152,Client 002,Digital Ventures,Prospect,Active,2026-06-11,2027-05-30,147200,200,736
+Project 0153,Client 043,Digital Ventures,Qualified,Active,2025-03-14,2025-09-17,154250,250,617
+Project 0154,Client 088,X Build,In Delivery,Active,2026-02-26,2026-11-10,210750,150,1405
+Project 0155,Client 028,X Design,Qualified,Active,2024-11-01,2025-06-02,1089500,250,4358
+Project 0156,Client 020,X Design,In Delivery,Active,2026-06-02,2027-01-24,174900,150,1166
+Project 0157,Client 096,X Build,Closed Won,Completed,2025-10-02,2026-08-14,288600,150,1924
+Project 0158,Client 030,X Build,Qualified,Active,2025-10-11,2026-01-10,670500,250,2682
+Project 0159,Client 018,X Build,In Delivery,Active,2026-04-03,2026-06-20,680000,400,1700
+Project 0160,Client 094,X Design,Closed Won,Completed,2025-04-10,2025-09-29,651400,200,3257
+Project 0161,Client 032,X Design,Closed Won,Completed,2026-07-01,2027-01-07,1237250,350,3535
+Project 0162,Client 055,X Design,Qualified,Active,2025-08-10,2026-01-03,420200,200,2101
+Project 0163,Client 067,Digital Ventures,Closed Won,Completed,2025-10-16,2026-08-18,491850,150,3279
+Project 0164,Client 067,Digital Ventures,In Delivery,Active,2025-12-29,2026-10-13,210800,400,527
+Project 0165,Client 078,X Design,In Delivery,Active,2026-05-21,2026-10-15,650800,200,3254
+Project 0166,Client 085,X Design,Closed Won,Completed,2026-03-13,2026-11-09,1424100,300,4747
+Project 0167,Client 033,Digital Ventures,Qualified,Active,2026-08-18,2027-07-06,228600,200,1143
+Project 0168,Client 060,X Design,Closed Won,Completed,2025-02-23,2026-02-02,1363250,350,3895
+Project 0169,Client 087,Digital Ventures,Closed Won,Completed,2025-08-04,2026-04-15,758800,200,3794
+Project 0170,Client 009,X Design,Qualified,Active,2025-12-12,2026-09-19,401600,400,1004
+Project 0171,Client 081,X Design,Closed Won,Completed,2025-08-26,2026-07-31,1510800,400,3777
+Project 0172,Client 081,X Design,In Delivery,Active,2026-04-19,2027-01-27,922400,400,2306
+Project 0173,Client 025,Digital Ventures,Prospect,Active,2025-02-19,2025-12-12,415950,150,2773
+Project 0174,Client 026,X Design,Qualified,Active,2025-04-18,2025-06-20,375250,250,1501
+Project 0175,Client 085,X Design,Closed Won,Completed,2026-06-11,2027-01-02,999950,350,2857
+Project 0176,Client 076,Digital Ventures,In Delivery,Active,2024-10-17,2025-05-17,342150,150,2281
+Project 0177,Client 006,Digital Ventures,Prospect,Active,2026-07-29,2027-07-10,189350,350,541
+Project 0178,Client 046,X Design,In Delivery,Active,2024-10-09,2025-06-15,130800,200,654
+Project 0179,Client 026,X Build,Prospect,Active,2024-10-01,2025-09-17,237900,150,1586
+Project 0180,Client 039,Digital Ventures,Qualified,Active,2026-05-04,2027-01-05,677400,300,2258
+Project 0181,Client 056,X Build,Closed Won,Completed,2025-07-15,2025-11-20,1740000,400,4350
+Project 0182,Client 081,X Design,Qualified,Active,2025-05-15,2026-02-25,285000,300,950
+Project 0183,Client 073,X Build,Closed Lost,Active,2026-03-24,2026-08-03,102150,150,681
+Project 0184,Client 025,Digital Ventures,Qualified,Active,2024-12-17,2025-03-28,65000,250,260
+Project 0185,Client 051,X Design,Prospect,Active,2026-05-09,2026-12-26,1319150,350,3769
+Project 0186,Client 074,X Build,Prospect,Active,2026-07-12,2026-09-26,882700,350,2522
+Project 0187,Client 083,Digital Ventures,Qualified,Active,2025-01-10,2025-10-12,1722800,400,4307
+Project 0188,Client 072,X Build,Closed Won,Completed,2025-08-16,2026-04-30,682500,350,1950
+Project 0189,Client 047,X Design,Closed Won,Completed,2025-04-23,2025-07-17,981500,250,3926
+Project 0190,Client 007,X Design,In Delivery,Active,2026-05-31,2027-04-05,120000,200,600
+Project 0191,Client 093,X Design,Prospect,Active,2024-10-06,2025-07-07,1108000,250,4432
+Project 0192,Client 017,X Design,Closed Won,Completed,2025-07-19,2025-12-28,654750,250,2619
+Project 0193,Client 037,Digital Ventures,In Delivery,Active,2026-05-19,2026-11-25,860100,300,2867
+Project 0194,Client 004,X Build,Qualified,Active,2026-07-17,2026-09-29,1343400,300,4478
+Project 0195,Client 066,Digital Ventures,In Delivery,Active,2026-08-09,2027-01-23,445350,150,2969
+Project 0196,Client 013,X Build,In Delivery,Active,2025-12-17,2026-10-19,298000,400,745
+Project 0197,Client 062,X Build,Qualified,Active,2026-07-17,2026-10-13,1002500,250,4010
+Project 0198,Client 056,Digital Ventures,Qualified,Active,2024-09-27,2025-08-24,133200,300,444
+Project 0199,Client 094,X Build,Qualified,Active,2025-08-01,2025-12-03,336000,300,1120
+Project 0200,Client 062,X Build,Prospect,Active,2025-10-05,2026-04-28,546000,400,1365
+Project 0201,Client 059,X Design,Prospect,Active,2025-01-17,2025-08-04,316400,350,904
+Project 0202,Client 039,Digital Ventures,Closed Won,Completed,2025-08-10,2026-04-24,1067000,250,4268
+Project 0203,Client 071,Digital Ventures,Closed Won,Completed,2026-01-11,2026-08-11,84000,400,210
+Project 0204,Client 098,X Build,Qualified,Active,2025-04-19,2025-10-02,271000,250,1084
+Project 0205,Client 005,X Build,Qualified,Active,2025-12-09,2026-10-26,600000,200,3000
+Project 0206,Client 020,X Design,In Delivery,Active,2025-03-22,2025-08-27,138900,150,926
+Project 0207,Client 082,X Design,In Delivery,Active,2025-07-02,2026-02-24,422800,200,2114
+Project 0208,Client 073,X Design,Closed Lost,Active,2026-04-27,2026-09-22,50500,250,202
+Project 0209,Client 092,X Build,Closed Won,Completed,2025-10-06,2026-04-06,223500,150,1490
+Project 0210,Client 025,X Build,Closed Won,Completed,2025-03-22,2025-06-29,311000,200,1555
+Project 0211,Client 005,X Design,Closed Won,Completed,2026-07-18,2027-05-24,354900,300,1183
+Project 0212,Client 069,X Build,In Delivery,Active,2024-10-06,2025-09-14,70800,300,236
+Project 0213,Client 058,Digital Ventures,Closed Won,Completed,2026-01-13,2026-07-06,1158850,350,3311
+Project 0214,Client 088,Digital Ventures,Qualified,Active,2025-11-09,2026-09-26,1445500,350,4130
+Project 0215,Client 048,X Build,Closed Won,Completed,2025-01-31,2025-05-29,350850,150,2339
+Project 0216,Client 100,Digital Ventures,Qualified,Active,2024-10-01,2025-05-18,420600,150,2804
+Project 0217,Client 031,Digital Ventures,In Delivery,Active,2025-02-14,2025-12-19,1748250,350,4995
+Project 0218,Client 039,Digital Ventures,Prospect,Active,2025-06-14,2026-01-17,729750,250,2919
+Project 0219,Client 039,X Design,Prospect,Active,2025-01-13,2025-03-25,1411600,400,3529
+Project 0220,Client 017,Digital Ventures,Qualified,Active,2026-05-04,2027-02-20,829250,250,3317
+Project 0221,Client 096,X Design,Qualified,Active,2024-10-19,2025-03-01,1660050,350,4743
+Project 0222,Client 068,X Design,Qualified,Active,2026-07-19,2027-06-21,308400,400,771
+Project 0223,Client 022,X Design,Closed Won,Completed,2025-07-20,2026-03-29,372000,300,1240
+Project 0224,Client 029,Digital Ventures,Prospect,Active,2024-09-20,2025-05-12,1021200,400,2553
+Project 0225,Client 011,X Build,Prospect,Active,2026-08-18,2026-11-14,788400,300,2628
+Project 0226,Client 087,X Design,Qualified,Active,2025-05-23,2025-09-17,1049750,250,4199
+Project 0227,Client 015,Digital Ventures,Prospect,Active,2026-05-18,2026-08-24,1066800,300,3556
+Project 0228,Client 078,X Design,Closed Won,Completed,2026-04-17,2026-12-07,389400,300,1298
+Project 0229,Client 056,X Build,Prospect,Active,2025-08-08,2026-05-30,596700,150,3978
+Project 0230,Client 058,X Design,Closed Won,Completed,2024-11-04,2025-09-16,1267800,300,4226
+Project 0231,Client 015,Digital Ventures,Qualified,Active,2025-03-19,2026-02-15,545000,250,2180
+Project 0232,Client 079,Digital Ventures,Closed Lost,Active,2024-12-28,2025-03-05,177600,150,1184
+Project 0233,Client 060,X Design,Closed Won,Completed,2024-10-01,2024-12-23,1393200,300,4644
+Project 0234,Client 084,X Build,In Delivery,Active,2026-01-31,2026-12-29,108900,150,726
+Project 0235,Client 002,Digital Ventures,Qualified,Active,2025-04-11,2025-10-04,364800,300,1216
+Project 0236,Client 038,Digital Ventures,Closed Lost,Active,2025-11-24,2026-04-27,1038800,350,2968
+Project 0237,Client 086,Digital Ventures,In Delivery,Active,2025-06-26,2026-05-18,897200,400,2243
+Project 0238,Client 079,X Design,Prospect,Active,2026-07-10,2027-02-14,794400,300,2648
+Project 0239,Client 097,X Build,In Delivery,Active,2025-12-26,2026-02-25,584000,200,2920
+Project 0240,Client 026,X Design,Closed Won,Completed,2025-01-13,2025-07-07,322350,150,2149
+Project 0241,Client 098,X Design,Qualified,Active,2026-04-25,2026-11-13,115600,400,289
+Project 0242,Client 006,X Build,Prospect,Active,2025-10-12,2026-04-12,523750,250,2095
+Project 0243,Client 008,X Design,Closed Won,Completed,2025-08-20,2026-05-10,370500,150,2470
+Project 0244,Client 007,Digital Ventures,In Delivery,Active,2026-05-06,2027-03-12,522800,400,1307
+Project 0245,Client 026,Digital Ventures,Closed Won,Completed,2025-10-15,2026-01-04,439600,400,1099
+Project 0246,Client 012,X Build,In Delivery,Active,2026-08-13,2027-01-06,1077250,250,4309
+Project 0247,Client 100,X Build,In Delivery,Active,2026-03-31,2026-07-23,293200,200,1466
+Project 0248,Client 051,X Design,Prospect,Active,2024-09-29,2025-09-11,1365700,350,3902
+Project 0249,Client 003,X Design,Prospect,Active,2025-09-07,2026-01-03,301350,350,861
+Project 0250,Client 031,X Design,Qualified,Active,2026-01-30,2026-10-29,1659000,350,4740
+Project 0251,Client 020,X Design,Closed Won,Completed,2025-03-27,2025-12-31,211050,350,603
+Project 0252,Client 098,X Design,Closed Won,Completed,2025-07-01,2026-05-06,735450,150,4903
+Project 0253,Client 058,X Design,In Delivery,Active,2025-11-03,2026-09-01,1271600,400,3179
+Project 0254,Client 021,Digital Ventures,Qualified,Active,2025-03-13,2025-06-20,1369900,350,3914
+Project 0255,Client 042,X Design,Qualified,Active,2025-05-04,2025-09-27,1137300,300,3791
+Project 0256,Client 014,Digital Ventures,Closed Lost,Active,2025-02-18,2025-08-07,200900,350,574
+Project 0257,Client 066,Digital Ventures,Qualified,Active,2026-04-02,2026-06-28,131600,400,329
+Project 0258,Client 045,Digital Ventures,In Delivery,Active,2025-06-27,2026-02-05,336900,150,2246
+Project 0259,Client 014,X Design,In Delivery,Active,2024-09-17,2025-03-13,733200,200,3666
+Project 0260,Client 005,Digital Ventures,Qualified,Active,2025-08-29,2026-07-11,1236400,400,3091
+Project 0261,Client 037,Digital Ventures,Closed Won,Completed,2025-11-14,2026-05-13,1024000,400,2560
+Project 0262,Client 044,Digital Ventures,In Delivery,Active,2025-04-15,2025-10-11,361800,150,2412
+Project 0263,Client 073,Digital Ventures,Closed Won,Completed,2025-09-25,2026-04-02,204750,250,819
+Project 0264,Client 035,X Design,Qualified,Active,2026-08-24,2027-02-18,168350,350,481
+Project 0265,Client 020,X Build,Prospect,Active,2026-01-31,2026-04-12,302000,250,1208
+Project 0266,Client 057,Digital Ventures,In Delivery,Active,2026-01-20,2026-12-30,65000,200,325
+Project 0267,Client 045,X Design,In Delivery,Active,2025-11-04,2026-06-02,1034700,300,3449
+Project 0268,Client 008,X Build,Qualified,Active,2025-09-18,2026-03-25,934000,200,4670
+Project 0269,Client 065,Digital Ventures,Qualified,Active,2026-03-03,2027-02-15,1924800,400,4812
+Project 0270,Client 082,X Build,Closed Lost,Active,2025-07-07,2025-12-27,534800,200,2674
+Project 0271,Client 001,Digital Ventures,Closed Won,Completed,2025-01-14,2025-12-28,75300,150,502
+Project 0272,Client 062,X Design,Closed Won,Completed,2025-08-29,2026-01-25,1163400,350,3324
+Project 0273,Client 089,X Build,Closed Lost,Active,2026-03-17,2026-10-31,116100,150,774
+Project 0274,Client 004,X Design,Closed Won,Completed,2025-10-05,2026-03-11,514500,150,3430
+Project 0275,Client 083,X Build,Qualified,Active,2025-07-24,2026-06-27,750600,200,3753
+Project 0276,Client 085,Digital Ventures,Closed Won,Completed,2025-05-27,2025-10-22,626800,400,1567
+Project 0277,Client 035,X Design,In Delivery,Active,2024-12-28,2025-10-07,1501150,350,4289
+Project 0278,Client 026,X Design,Prospect,Active,2026-08-22,2027-01-13,1286000,400,3215
+Project 0279,Client 098,X Build,In Delivery,Active,2026-08-13,2027-02-21,206550,150,1377
+Project 0280,Client 023,Digital Ventures,Qualified,Active,2025-09-16,2025-12-05,757500,250,3030
+Project 0281,Client 036,Digital Ventures,Prospect,Active,2026-04-23,2027-03-29,713300,350,2038
+Project 0282,Client 034,X Design,Qualified,Active,2026-04-06,2027-03-06,1616650,350,4619
+Project 0283,Client 029,Digital Ventures,In Delivery,Active,2025-04-18,2025-07-13,171600,300,572
+Project 0284,Client 002,X Build,In Delivery,Active,2024-10-24,2025-05-17,91500,300,305
+Project 0285,Client 095,X Design,Closed Lost,Active,2025-09-09,2026-07-28,350550,150,2337
+Project 0286,Client 056,X Design,Closed Won,Completed,2025-06-06,2026-05-29,578100,150,3854
+Project 0287,Client 047,Digital Ventures,Closed Won,Completed,2025-08-14,2026-04-03,482400,300,1608
+Project 0288,Client 009,Digital Ventures,Prospect,Active,2026-01-17,2026-04-12,600000,400,1500
+Project 0289,Client 072,X Build,In Delivery,Active,2024-11-26,2025-07-13,393750,150,2625
+Project 0290,Client 019,Digital Ventures,Qualified,Active,2026-07-06,2027-02-02,454800,300,1516
+Project 0291,Client 069,Digital Ventures,In Delivery,Active,2024-10-18,2025-08-15,86250,250,345
+Project 0292,Client 021,X Build,Qualified,Active,2024-10-21,2025-04-17,675800,200,3379
+Project 0293,Client 011,X Design,Prospect,Active,2025-05-27,2026-01-01,763000,250,3052
+Project 0294,Client 025,X Design,Qualified,Active,2025-06-10,2026-04-19,455000,350,1300
+Project 0295,Client 039,X Build,Qualified,Active,2024-11-05,2025-02-14,1595300,350,4558
+Project 0296,Client 068,X Design,In Delivery,Active,2025-10-27,2026-01-13,1065300,300,3551
+Project 0297,Client 097,Digital Ventures,Qualified,Active,2026-07-20,2027-05-07,486500,350,1390
+Project 0298,Client 013,X Build,Qualified,Active,2025-06-26,2026-03-08,845600,400,2114
+Project 0299,Client 021,X Design,Closed Won,Completed,2025-03-04,2025-10-09,829200,300,2764
+Project 0300,Client 003,X Design,In Delivery,Active,2025-08-09,2025-12-04,106400,400,266
+Project 0301,Client 035,X Design,In Delivery,Active,2024-12-19,2025-09-13,892200,300,2974
+Project 0302,Client 069,X Build,Qualified,Active,2025-06-09,2025-09-12,1764400,400,4411
+Project 0303,Client 062,X Design,In Delivery,Active,2025-10-18,2026-07-12,536100,150,3574
+Project 0304,Client 084,Digital Ventures,In Delivery,Active,2024-11-06,2025-05-20,947700,300,3159
+Project 0305,Client 005,X Build,Closed Won,Completed,2024-12-06,2025-05-18,130800,300,436
+Project 0306,Client 032,X Build,Closed Won,Completed,2025-07-15,2026-05-01,104400,300,348
+Project 0307,Client 014,X Build,In Delivery,Active,2025-04-12,2026-01-22,1082800,400,2707
+Project 0308,Client 091,X Build,Qualified,Active,2025-09-18,2026-08-01,270150,150,1801
+Project 0309,Client 035,X Design,In Delivery,Active,2026-02-10,2026-12-28,385000,200,1925
+Project 0310,Client 012,Digital Ventures,In Delivery,Active,2026-05-16,2027-03-15,1391100,300,4637
+Project 0311,Client 030,X Design,Qualified,Active,2025-06-22,2026-06-07,585000,200,2925
+Project 0312,Client 073,Digital Ventures,Closed Won,Completed,2026-08-18,2026-10-30,83250,250,333
+Project 0313,Client 020,X Design,Qualified,Active,2025-05-16,2026-02-05,1106250,250,4425
+Project 0314,Client 036,Digital Ventures,In Delivery,Active,2025-12-15,2026-11-28,327750,150,2185
+Project 0315,Client 013,X Build,In Delivery,Active,2025-12-30,2026-03-24,533200,400,1333
+Project 0316,Client 068,X Build,Prospect,Active,2025-03-06,2025-07-22,632800,200,3164
+Project 0317,Client 078,X Design,In Delivery,Active,2024-11-10,2025-02-08,1326900,300,4423
+Project 0318,Client 002,Digital Ventures,Qualified,Active,2024-10-22,2025-02-01,1077600,400,2694
+Project 0319,Client 011,X Design,Prospect,Active,2025-09-14,2026-03-22,430600,200,2153
+Project 0320,Client 073,X Design,Prospect,Active,2026-05-18,2026-12-12,164000,250,656
+Project 0321,Client 004,Digital Ventures,Qualified,Active,2024-12-24,2025-11-08,179700,300,599
+Project 0322,Client 038,Digital Ventures,Qualified,Active,2026-01-16,2026-07-18,704400,300,2348
+Project 0323,Client 099,Digital Ventures,Closed Won,Completed,2024-09-21,2025-01-20,512400,300,1708
+Project 0324,Client 086,X Build,In Delivery,Active,2025-05-27,2026-03-11,1291600,400,3229
+Project 0325,Client 079,X Build,Prospect,Active,2025-07-16,2026-05-17,1872400,400,4681
+Project 0326,Client 090,X Design,Closed Won,Completed,2026-08-12,2027-05-11,165000,150,1100
+Project 0327,Client 036,X Build,In Delivery,Active,2026-03-05,2026-10-10,904750,350,2585
+Project 0328,Client 055,X Build,Prospect,Active,2024-09-21,2025-08-02,1248750,250,4995
+Project 0329,Client 082,Digital Ventures,In Delivery,Active,2024-12-09,2025-10-16,223500,300,745
+Project 0330,Client 021,X Design,Qualified,Active,2025-06-29,2025-10-08,580650,350,1659
+Project 0331,Client 002,X Build,Closed Won,Completed,2026-04-27,2026-11-01,660000,150,4400
+Project 0332,Client 028,Digital Ventures,Qualified,Active,2026-01-05,2026-12-07,88200,200,441
+Project 0333,Client 017,Digital Ventures,In Delivery,Active,2026-02-06,2026-06-24,243750,250,975
+Project 0334,Client 043,X Build,In Delivery,Active,2026-02-06,2026-07-02,821800,350,2348
+Project 0335,Client 005,X Build,Prospect,Active,2024-10-30,2025-01-14,151750,250,607
+Project 0336,Client 052,Digital Ventures,Qualified,Active,2026-01-09,2026-07-26,860000,400,2150
+Project 0337,Client 005,X Design,Closed Won,Completed,2025-02-08,2025-12-25,823800,300,2746
+Project 0338,Client 096,X Build,Closed Won,Completed,2025-02-21,2025-08-10,553400,200,2767
+Project 0339,Client 036,X Design,Qualified,Active,2025-09-30,2026-01-16,605850,150,4039
+Project 0340,Client 062,Digital Ventures,Qualified,Active,2026-01-20,2026-07-17,276000,150,1840
+Project 0341,Client 013,X Build,Closed Lost,Active,2024-11-11,2025-09-24,718800,300,2396
+Project 0342,Client 010,Digital Ventures,Closed Won,Completed,2026-01-11,2026-03-22,1254900,300,4183
+Project 0343,Client 089,X Design,Prospect,Active,2024-10-29,2025-04-30,364500,150,2430
+Project 0344,Client 051,X Design,Closed Won,Completed,2026-03-06,2027-02-16,798300,300,2661
+Project 0345,Client 094,Digital Ventures,Prospect,Active,2026-04-25,2026-07-25,1047000,250,4188
+Project 0346,Client 008,X Design,Closed Won,Completed,2026-03-29,2026-10-23,291200,200,1456
+Project 0347,Client 086,X Design,Closed Won,Completed,2026-02-03,2026-12-15,253800,300,846
+Project 0348,Client 029,X Build,Closed Lost,Active,2025-05-16,2026-03-29,834300,300,2781
+Project 0349,Client 044,X Build,Closed Won,Completed,2024-12-26,2025-05-22,96400,200,482
+Project 0350,Client 003,Digital Ventures,Qualified,Active,2025-09-06,2026-05-07,933800,350,2668
+Project 0351,Client 025,X Build,Prospect,Active,2026-07-26,2027-07-15,77700,350,222
+Project 0352,Client 001,X Build,Prospect,Active,2024-11-07,2025-03-18,112200,200,561
+Project 0353,Client 021,X Design,Closed Won,Completed,2025-04-21,2025-06-29,411000,200,2055
+Project 0354,Client 009,X Design,In Delivery,Active,2026-05-05,2026-07-16,224400,200,1122
+Project 0355,Client 078,X Design,Closed Won,Completed,2026-08-13,2027-05-08,205200,400,513
+Project 0356,Client 058,Digital Ventures,Closed Won,Completed,2026-06-16,2027-03-13,708500,250,2834
+Project 0357,Client 026,X Build,Qualified,Active,2025-03-07,2025-12-18,248600,200,1243
+Project 0358,Client 046,X Build,In Delivery,Active,2026-02-04,2026-05-12,778050,350,2223
+Project 0359,Client 003,X Build,Qualified,Active,2026-01-16,2026-03-30,756000,300,2520
+Project 0360,Client 030,X Design,In Delivery,Active,2025-03-07,2025-10-14,1258800,400,3147
+Project 0361,Client 022,X Build,In Delivery,Active,2025-10-10,2026-07-07,1037700,300,3459
+Project 0362,Client 048,X Build,Closed Won,Completed,2024-09-20,2024-12-07,952200,300,3174
+Project 0363,Client 063,X Build,Prospect,Active,2026-02-23,2026-09-16,671700,150,4478
+Project 0364,Client 017,X Design,In Delivery,Active,2026-04-29,2026-12-05,752500,250,3010
+Project 0365,Client 075,Digital Ventures,In Delivery,Active,2025-02-12,2025-06-29,884000,400,2210
+Project 0366,Client 010,X Design,In Delivery,Active,2025-04-07,2025-08-05,1284850,350,3671
+Project 0367,Client 070,X Build,Prospect,Active,2025-12-14,2026-06-09,1558400,400,3896
+Project 0368,Client 046,X Design,Closed Won,Completed,2025-06-25,2025-09-27,983500,350,2810
+Project 0369,Client 005,X Design,Closed Won,Completed,2026-06-12,2027-02-18,330450,150,2203
+Project 0370,Client 057,X Design,In Delivery,Active,2024-11-22,2025-10-27,986600,200,4933
+Project 0371,Client 057,Digital Ventures,Prospect,Active,2025-08-26,2026-04-30,265500,300,885
+Project 0372,Client 030,X Design,Closed Won,Completed,2025-07-13,2025-12-25,1695050,350,4843
+Project 0373,Client 010,X Design,Qualified,Active,2025-11-28,2026-05-26,108600,300,362
+Project 0374,Client 056,Digital Ventures,Qualified,Active,2025-02-15,2025-11-29,161600,400,404
+Project 0375,Client 068,X Design,Prospect,Active,2025-06-10,2025-08-29,624250,250,2497
+Project 0376,Client 075,Digital Ventures,Qualified,Active,2024-10-22,2025-08-25,668200,200,3341
+Project 0377,Client 057,X Build,Closed Won,Completed,2025-04-20,2025-11-07,329800,200,1649
+Project 0378,Client 037,X Build,Closed Lost,Active,2025-01-03,2025-10-07,963000,250,3852
+Project 0379,Client 050,X Build,In Delivery,Active,2025-06-06,2026-01-12,1403700,300,4679
+Project 0380,Client 061,X Build,Qualified,Active,2025-01-09,2025-08-08,119550,150,797
+Project 0381,Client 049,X Build,Closed Won,Completed,2025-06-28,2025-11-20,343500,150,2290
+Project 0382,Client 074,X Build,In Delivery,Active,2024-12-23,2025-04-26,686800,400,1717
+Project 0383,Client 051,X Build,Prospect,Active,2026-05-19,2026-12-08,667400,200,3337
+Project 0384,Client 099,Digital Ventures,Closed Won,Completed,2025-01-31,2025-08-16,1953200,400,4883
+Project 0385,Client 068,X Design,Closed Won,Completed,2025-03-11,2025-10-10,797650,350,2279
+Project 0386,Client 092,X Design,Closed Won,Completed,2026-06-07,2027-03-07,1046850,350,2991
+Project 0387,Client 025,X Design,Qualified,Active,2026-07-30,2026-12-02,649600,200,3248
+Project 0388,Client 006,Digital Ventures,Qualified,Active,2025-02-17,2025-11-30,190050,150,1267
+Project 0389,Client 051,Digital Ventures,In Delivery,Active,2025-06-24,2026-03-07,525200,200,2626
+Project 0390,Client 036,X Build,Qualified,Active,2025-05-06,2026-04-27,1157100,300,3857
+Project 0391,Client 042,X Design,In Delivery,Active,2026-05-13,2027-02-06,1941600,400,4854
+Project 0392,Client 040,X Design,Closed Won,Completed,2025-12-09,2026-11-16,755500,250,3022
+Project 0393,Client 004,X Design,Prospect,Active,2024-10-06,2025-03-21,1190000,350,3400
+Project 0394,Client 012,Digital Ventures,In Delivery,Active,2025-02-27,2025-09-11,495250,250,1981
+Project 0395,Client 013,X Design,In Delivery,Active,2025-03-10,2025-10-13,270900,350,774
+Project 0396,Client 027,X Build,Prospect,Active,2025-01-31,2025-12-03,265000,200,1325
+Project 0397,Client 099,X Build,In Delivery,Active,2024-10-28,2025-05-08,780000,300,2600
+Project 0398,Client 083,X Build,Qualified,Active,2025-04-26,2025-11-05,139200,300,464
+Project 0399,Client 088,X Design,In Delivery,Active,2025-05-25,2026-02-21,957000,300,3190
+Project 0400,Client 090,X Design,Closed Won,Completed,2025-11-21,2026-06-24,236100,300,787
+Project 0401,Client 051,Digital Ventures,Closed Won,Completed,2025-02-25,2025-06-05,569400,300,1898
+Project 0402,Client 022,X Build,Prospect,Active,2025-11-19,2026-07-12,194700,150,1298
+Project 0403,Client 016,X Design,Closed Won,Completed,2025-11-09,2026-08-07,749600,400,1874
+Project 0404,Client 020,X Build,Qualified,Active,2026-07-09,2027-03-26,340500,300,1135
+Project 0405,Client 015,Digital Ventures,Closed Won,Completed,2025-03-27,2026-03-15,263500,250,1054
+Project 0406,Client 100,X Build,Prospect,Active,2025-10-27,2026-05-16,537600,350,1536
+Project 0407,Client 097,X Design,Closed Won,Completed,2026-01-30,2026-10-26,1241400,300,4138
+Project 0408,Client 038,X Design,In Delivery,Active,2024-12-30,2025-04-14,663500,250,2654
+Project 0409,Client 030,Digital Ventures,Closed Won,Completed,2025-02-24,2025-09-18,415600,400,1039
+Project 0410,Client 026,X Design,Prospect,Active,2025-11-17,2026-10-12,119250,150,795
+Project 0411,Client 051,Digital Ventures,Qualified,Active,2026-06-03,2026-11-19,325050,150,2167
+Project 0412,Client 063,X Build,Closed Won,Completed,2026-03-05,2026-11-25,759300,300,2531
+Project 0413,Client 038,X Build,Qualified,Active,2025-07-23,2026-01-18,1478400,300,4928
+Project 0414,Client 052,X Build,In Delivery,Active,2025-12-03,2026-07-11,1084800,400,2712
+Project 0415,Client 041,Digital Ventures,Closed Won,Completed,2025-09-25,2026-07-03,294300,150,1962
+Project 0416,Client 012,Digital Ventures,Closed Won,Completed,2026-06-24,2027-01-27,1472800,350,4208
+Project 0417,Client 021,X Build,Qualified,Active,2025-05-13,2026-03-23,957800,200,4789
+Project 0418,Client 061,X Build,Qualified,Active,2024-10-10,2025-06-27,1035000,250,4140
+Project 0419,Client 008,X Build,In Delivery,Active,2025-05-02,2025-09-03,235200,200,1176
+Project 0420,Client 046,Digital Ventures,In Delivery,Active,2025-06-13,2025-10-26,494100,300,1647
+Project 0421,Client 021,Digital Ventures,Prospect,Active,2024-12-28,2025-10-15,990800,200,4954
+Project 0422,Client 055,Digital Ventures,Qualified,Active,2026-02-27,2026-09-06,1680000,350,4800
+Project 0423,Client 086,X Design,Prospect,Active,2026-06-10,2026-10-14,388400,400,971
+Project 0424,Client 038,X Design,Qualified,Active,2025-01-18,2025-06-13,389100,150,2594
+Project 0425,Client 006,X Design,Closed Won,Completed,2025-01-29,2025-12-22,598950,150,3993
+Project 0426,Client 099,X Design,Closed Won,Completed,2025-06-02,2025-11-01,730200,200,3651
+Project 0427,Client 008,Digital Ventures,In Delivery,Active,2026-07-07,2027-03-13,1998400,400,4996
+Project 0428,Client 054,X Design,Closed Won,Completed,2024-09-20,2025-03-04,1713950,350,4897
+Project 0429,Client 041,Digital Ventures,Qualified,Active,2025-01-31,2025-09-30,727200,150,4848
+Project 0430,Client 046,X Build,In Delivery,Active,2025-09-26,2026-03-31,429250,250,1717
+Project 0431,Client 072,X Build,Qualified,Active,2025-09-27,2026-02-05,972750,250,3891
+Project 0432,Client 092,X Design,Closed Won,Completed,2025-12-28,2026-05-26,1238650,350,3539
+Project 0433,Client 049,Digital Ventures,Closed Won,Completed,2025-06-20,2026-03-21,149200,400,373
+Project 0434,Client 036,X Design,Closed Won,Completed,2024-10-21,2025-04-25,1269900,300,4233
+Project 0435,Client 097,X Design,Prospect,Active,2026-06-02,2026-11-21,592200,300,1974
+Project 0436,Client 066,Digital Ventures,Qualified,Active,2026-05-12,2027-01-28,841200,200,4206
+Project 0437,Client 073,X Build,In Delivery,Active,2025-02-08,2025-08-04,221800,200,1109
+Project 0438,Client 002,X Build,Prospect,Active,2025-05-28,2025-12-28,291000,300,970
+Project 0439,Client 035,Digital Ventures,Prospect,Active,2026-06-05,2027-04-28,724200,200,3621
+Project 0440,Client 062,X Build,In Delivery,Active,2025-09-02,2026-06-01,439600,200,2198
+Project 0441,Client 021,X Design,Qualified,Active,2025-11-04,2026-10-13,244650,150,1631
+Project 0442,Client 053,X Design,Closed Won,Completed,2025-08-15,2025-12-25,1000300,350,2858
+Project 0443,Client 028,Digital Ventures,Closed Won,Completed,2025-05-31,2026-02-09,1037700,300,3459
+Project 0444,Client 057,X Design,Closed Won,Completed,2025-02-11,2025-09-18,567500,250,2270
+Project 0445,Client 037,Digital Ventures,Closed Won,Completed,2025-06-11,2026-01-12,840000,200,4200
+Project 0446,Client 020,Digital Ventures,Prospect,Active,2026-02-13,2026-05-30,268650,150,1791
+Project 0447,Client 011,X Build,Prospect,Active,2025-07-02,2026-01-03,333900,300,1113
+Project 0448,Client 056,X Design,Prospect,Active,2025-07-29,2026-03-21,271250,350,775
+Project 0449,Client 075,X Build,In Delivery,Active,2025-08-14,2025-12-18,420000,200,2100
+Project 0450,Client 051,X Design,Qualified,Active,2025-08-27,2026-06-16,551200,400,1378
+Project 0451,Client 037,X Design,Qualified,Active,2025-03-01,2025-08-29,388500,350,1110
+Project 0452,Client 073,X Build,Qualified,Active,2024-09-16,2025-08-15,1343200,400,3358
+Project 0453,Client 096,X Design,Prospect,Active,2025-04-12,2025-09-27,1741600,400,4354
+Project 0454,Client 086,X Build,In Delivery,Active,2025-10-24,2026-06-02,515400,150,3436
+Project 0455,Client 051,X Design,Closed Won,Completed,2025-02-17,2025-08-04,286500,250,1146
+Project 0456,Client 011,Digital Ventures,Prospect,Active,2025-03-10,2026-03-04,956700,300,3189
+Project 0457,Client 099,X Build,In Delivery,Active,2025-11-18,2026-05-21,1096800,300,3656
+Project 0458,Client 099,X Design,In Delivery,Active,2025-06-16,2026-05-14,715800,300,2386
+Project 0459,Client 028,X Build,In Delivery,Active,2026-03-13,2026-05-19,787000,200,3935
+Project 0460,Client 091,X Build,In Delivery,Active,2024-11-04,2025-03-07,964400,400,2411
+Project 0461,Client 021,X Design,In Delivery,Active,2025-02-12,2025-08-30,715750,350,2045
+Project 0462,Client 041,X Design,Closed Won,Completed,2026-02-22,2026-05-12,236250,350,675
+Project 0463,Client 052,X Design,Prospect,Active,2024-10-28,2025-04-13,270500,250,1082
+Project 0464,Client 064,X Build,In Delivery,Active,2026-01-21,2026-10-10,271500,150,1810
+Project 0465,Client 051,Digital Ventures,Qualified,Active,2026-06-04,2026-11-02,934000,250,3736
+Project 0466,Client 073,X Build,Closed Won,Completed,2026-03-15,2026-06-30,1056650,350,3019
+Project 0467,Client 067,Digital Ventures,Qualified,Active,2025-01-27,2026-01-15,1033750,250,4135
+Project 0468,Client 080,X Design,Prospect,Active,2024-09-23,2025-09-04,456800,400,1142
+Project 0469,Client 010,X Design,In Delivery,Active,2024-10-11,2025-02-01,1448000,400,3620
+Project 0470,Client 024,Digital Ventures,In Delivery,Active,2026-02-12,2026-09-28,142800,300,476
+Project 0471,Client 019,X Design,Qualified,Active,2025-10-26,2026-06-05,1740800,400,4352
+Project 0472,Client 065,X Build,In Delivery,Active,2024-11-16,2025-03-22,1763200,400,4408
+Project 0473,Client 008,X Build,In Delivery,Active,2026-04-06,2027-01-22,1105300,350,3158
+Project 0474,Client 066,Digital Ventures,Closed Won,Completed,2024-10-18,2025-01-20,60000,150,400
+Project 0475,Client 030,Digital Ventures,Prospect,Active,2025-08-06,2026-06-21,707200,200,3536
+Project 0476,Client 096,X Design,Prospect,Active,2026-02-18,2026-10-08,906500,250,3626
+Project 0477,Client 066,X Build,Prospect,Active,2025-09-01,2025-11-15,582500,250,2330
+Project 0478,Client 031,X Design,In Delivery,Active,2026-08-12,2027-04-12,949000,200,4745
+Project 0479,Client 027,X Design,Qualified,Active,2024-12-01,2025-03-25,1260400,400,3151
+Project 0480,Client 053,X Build,Qualified,Active,2026-01-04,2026-08-09,268200,150,1788
+Project 0481,Client 031,X Build,In Delivery,Active,2025-11-17,2026-08-17,608700,150,4058
+Project 0482,Client 014,X Design,Closed Won,Completed,2024-11-03,2025-06-10,536700,300,1789
+Project 0483,Client 030,Digital Ventures,Closed Won,Completed,2025-07-13,2025-10-02,423850,350,1211
+Project 0484,Client 098,Digital Ventures,Prospect,Active,2025-11-08,2026-09-11,494000,400,1235
+Project 0485,Client 096,X Design,Prospect,Active,2026-03-24,2027-02-20,292800,200,1464
+Project 0486,Client 028,Digital Ventures,Closed Won,Completed,2025-07-31,2026-03-04,722800,200,3614
+Project 0487,Client 082,Digital Ventures,Closed Won,Completed,2024-10-20,2025-03-28,1108000,250,4432
+Project 0488,Client 056,Digital Ventures,Closed Won,Completed,2026-02-08,2026-07-29,195900,150,1306
+Project 0489,Client 023,X Build,Prospect,Active,2024-12-01,2025-07-23,134000,200,670
+Project 0490,Client 068,Digital Ventures,Closed Won,Completed,2025-03-20,2026-02-15,338400,300,1128
+Project 0491,Client 042,X Build,Closed Won,Completed,2024-11-11,2025-10-29,1448400,300,4828
+Project 0492,Client 078,Digital Ventures,Qualified,Active,2025-09-04,2026-03-28,418050,150,2787
+Project 0493,Client 013,Digital Ventures,Qualified,Active,2026-08-12,2027-05-08,163650,150,1091
+Project 0494,Client 087,X Build,Closed Won,Completed,2026-03-12,2026-08-18,741600,150,4944
+Project 0495,Client 028,X Design,Prospect,Active,2025-11-24,2026-01-25,1252800,300,4176
+Project 0496,Client 100,X Build,In Delivery,Active,2025-04-24,2025-08-26,1026000,300,3420
+Project 0497,Client 054,X Design,Qualified,Active,2026-07-07,2026-12-31,262200,150,1748
+Project 0498,Client 037,X Design,In Delivery,Active,2025-02-13,2025-04-26,460000,200,2300
+Project 0499,Client 035,X Build,Qualified,Active,2025-07-23,2026-02-05,330750,150,2205
+Project 0500,Client 029,Digital Ventures,Closed Won,Completed,2026-02-24,2026-05-18,429150,150,2861
+Project 0501,Client 028,Digital Ventures,Closed Won,Completed,2026-01-07,2026-07-04,480300,300,1601
+Project 0502,Client 042,Digital Ventures,Qualified,Active,2025-04-10,2025-12-06,775000,200,3875
+Project 0503,Client 007,X Build,Qualified,Active,2025-06-30,2026-01-09,598400,200,2992
+Project 0504,Client 016,Digital Ventures,Qualified,Active,2024-11-25,2025-02-04,1267500,300,4225
+Project 0505,Client 075,X Build,In Delivery,Active,2024-12-10,2025-07-17,351600,300,1172
+Project 0506,Client 004,Digital Ventures,In Delivery,Active,2026-01-23,2026-05-21,1321250,350,3775
+Project 0507,Client 079,Digital Ventures,Closed Won,Completed,2026-01-11,2026-10-02,480800,200,2404
+Project 0508,Client 005,X Design,In Delivery,Active,2026-05-13,2026-11-07,143000,200,715
+Project 0509,Client 017,Digital Ventures,In Delivery,Active,2025-11-20,2026-09-08,1221300,300,4071
+Project 0510,Client 025,X Design,Closed Won,Completed,2025-06-10,2025-09-03,694000,200,3470
+Project 0511,Client 095,Digital Ventures,Qualified,Active,2025-05-26,2025-09-30,231000,350,660
+Project 0512,Client 054,X Build,Qualified,Active,2026-05-15,2027-02-14,381600,300,1272
+Project 0513,Client 052,X Build,Closed Won,Completed,2026-08-20,2027-01-10,996200,200,4981
+Project 0514,Client 015,X Build,Qualified,Active,2025-06-29,2026-04-10,379200,200,1896
+Project 0515,Client 086,X Design,Closed Won,Completed,2025-11-04,2026-03-05,1080000,400,2700
+Project 0516,Client 003,X Design,In Delivery,Active,2026-01-14,2026-10-22,892150,350,2549
+Project 0517,Client 033,X Build,Closed Won,Completed,2025-04-19,2026-02-07,830100,300,2767
+Project 0518,Client 070,X Build,Closed Lost,Active,2025-03-20,2025-10-21,516000,200,2580
+Project 0519,Client 064,Digital Ventures,Prospect,Active,2025-02-11,2025-10-12,627000,300,2090
+Project 0520,Client 087,Digital Ventures,Closed Lost,Active,2025-11-24,2026-02-10,83400,150,556
+Project 0521,Client 029,Digital Ventures,Qualified,Active,2025-07-31,2026-06-15,440200,200,2201
+Project 0522,Client 008,X Build,Qualified,Active,2025-12-23,2026-10-25,374000,250,1496
+Project 0523,Client 065,Digital Ventures,Closed Won,Completed,2025-04-17,2025-09-17,817500,300,2725
+Project 0524,Client 086,X Build,In Delivery,Active,2025-01-02,2025-10-30,1344600,300,4482
+Project 0525,Client 092,X Design,In Delivery,Active,2026-06-12,2026-09-15,1551200,350,4432
+Project 0526,Client 072,Digital Ventures,Closed Won,Completed,2025-10-07,2026-01-29,725100,300,2417
+Project 0527,Client 045,X Design,Qualified,Active,2025-05-31,2025-12-17,1097600,350,3136
+Project 0528,Client 032,X Build,Closed Won,Completed,2025-02-25,2025-09-01,415250,250,1661
+Project 0529,Client 094,Digital Ventures,Closed Won,Completed,2025-07-17,2026-01-09,1006000,250,4024
+Project 0530,Client 018,X Build,Prospect,Active,2024-09-06,2024-11-21,907500,250,3630
+Project 0531,Client 068,X Build,Qualified,Active,2026-05-26,2026-10-14,771050,350,2203
+Project 0532,Client 087,X Design,Qualified,Active,2025-07-17,2026-01-08,123550,350,353
+Project 0533,Client 098,X Build,Closed Won,Completed,2026-02-13,2027-01-16,189600,150,1264
+Project 0534,Client 076,X Design,Qualified,Active,2024-11-02,2025-04-09,1236500,250,4946
+Project 0535,Client 040,X Build,Closed Won,Completed,2026-02-07,2026-09-08,399600,300,1332
+Project 0536,Client 093,X Build,Qualified,Active,2026-06-02,2027-03-30,475800,200,2379
+Project 0537,Client 099,X Build,Qualified,Active,2025-04-18,2026-03-14,1762800,400,4407
+Project 0538,Client 036,X Design,In Delivery,Active,2026-07-16,2027-03-21,397500,250,1590
+Project 0539,Client 057,X Build,Closed Won,Completed,2026-08-21,2027-08-05,556600,200,2783
+Project 0540,Client 053,X Design,In Delivery,Active,2025-01-21,2025-11-30,167300,350,478
+Project 0541,Client 040,Digital Ventures,In Delivery,Active,2025-02-05,2025-08-21,1209600,300,4032
+Project 0542,Client 051,X Design,Qualified,Active,2026-01-25,2026-03-28,1174600,350,3356
+Project 0543,Client 041,X Build,Closed Won,Completed,2026-07-18,2027-05-12,1277700,300,4259
+Project 0544,Client 025,Digital Ventures,Closed Won,Completed,2025-03-01,2025-11-05,409800,200,2049
+Project 0545,Client 039,X Design,Qualified,Active,2026-07-09,2027-04-22,1197750,250,4791
+Project 0546,Client 031,X Design,Qualified,Active,2025-11-26,2026-03-24,436200,150,2908
+Project 0547,Client 081,Digital Ventures,Closed Won,Completed,2025-12-14,2026-02-20,947600,200,4738
+Project 0548,Client 025,Digital Ventures,In Delivery,Active,2025-02-11,2025-07-31,445950,150,2973
+Project 0549,Client 051,X Build,Closed Won,Completed,2026-02-15,2026-11-18,450000,150,3000
+Project 0550,Client 023,X Design,Closed Won,Completed,2026-02-08,2026-04-09,1099750,250,4399
+Project 0551,Client 041,X Build,Closed Won,Completed,2025-01-09,2025-11-15,279150,150,1861
+Project 0552,Client 003,X Build,Prospect,Active,2025-09-19,2026-07-20,1950800,400,4877
+Project 0553,Client 065,X Build,Closed Won,Completed,2026-02-23,2026-11-01,454650,350,1299
+Project 0554,Client 068,X Design,Qualified,Active,2025-02-27,2025-09-02,1216200,300,4054
+Project 0555,Client 058,X Build,Prospect,Active,2025-07-02,2025-11-16,72600,300,242
+Project 0556,Client 083,X Build,Closed Lost,Active,2025-10-14,2026-05-29,1498800,300,4996
+Project 0557,Client 064,X Design,In Delivery,Active,2025-03-18,2026-01-11,1442800,400,3607
+Project 0558,Client 020,Digital Ventures,In Delivery,Active,2025-02-16,2025-07-14,740750,250,2963
+Project 0559,Client 057,X Build,Qualified,Active,2025-08-14,2025-11-03,684400,200,3422
+Project 0560,Client 083,Digital Ventures,Prospect,Active,2024-12-07,2025-11-03,869250,250,3477
+Project 0561,Client 053,Digital Ventures,Prospect,Active,2026-05-04,2026-07-14,1427700,300,4759
+Project 0562,Client 057,X Design,Prospect,Active,2026-05-20,2026-07-23,50850,150,339
+Project 0563,Client 019,X Design,In Delivery,Active,2026-07-23,2026-11-09,271750,250,1087
+Project 0564,Client 068,X Build,Qualified,Active,2025-02-12,2025-09-26,669200,400,1673
+Project 0565,Client 054,X Build,In Delivery,Active,2026-01-22,2026-07-28,1586000,400,3965
+Project 0566,Client 062,X Build,Prospect,Active,2025-02-02,2025-11-06,444150,150,2961
+Project 0567,Client 069,X Design,Closed Lost,Active,2025-02-01,2025-09-17,1027600,400,2569
+Project 0568,Client 071,Digital Ventures,Closed Won,Completed,2024-10-05,2025-06-25,708000,150,4720
+Project 0569,Client 074,X Design,In Delivery,Active,2024-11-27,2025-11-01,81400,200,407
+Project 0570,Client 020,Digital Ventures,Closed Lost,Active,2024-10-25,2025-08-10,891500,250,3566
+Project 0571,Client 099,Digital Ventures,Qualified,Active,2025-07-18,2025-12-08,718500,300,2395
+Project 0572,Client 027,X Design,In Delivery,Active,2026-04-13,2027-01-04,1219600,400,3049
+Project 0573,Client 059,X Design,In Delivery,Active,2025-06-08,2025-11-14,1942000,400,4855
+Project 0574,Client 053,Digital Ventures,Closed Won,Completed,2026-03-24,2027-02-12,322000,250,1288
+Project 0575,Client 100,X Design,Qualified,Active,2025-12-20,2026-11-22,1117900,350,3194
+Project 0576,Client 007,X Build,Qualified,Active,2025-10-28,2026-03-04,72450,150,483
+Project 0577,Client 046,X Design,In Delivery,Active,2024-11-13,2025-03-25,42300,150,282
+Project 0578,Client 054,X Design,Closed Won,Completed,2024-11-06,2025-10-14,150000,400,375
+Project 0579,Client 004,X Build,Prospect,Active,2025-08-23,2026-07-19,234600,150,1564
+Project 0580,Client 042,X Design,In Delivery,Active,2026-07-13,2026-10-21,948600,300,3162
+Project 0581,Client 096,Digital Ventures,Closed Won,Completed,2026-03-27,2026-09-13,592650,150,3951
+Project 0582,Client 043,X Design,Prospect,Active,2025-08-24,2025-12-30,447600,150,2984
+Project 0583,Client 075,X Design,Prospect,Active,2025-10-15,2026-05-23,52000,200,260
+Project 0584,Client 019,Digital Ventures,Qualified,Active,2025-09-21,2025-12-27,345200,200,1726
+Project 0585,Client 008,Digital Ventures,Qualified,Active,2024-12-30,2025-10-23,989250,250,3957
+Project 0586,Client 060,X Build,Closed Won,Completed,2024-12-14,2025-12-03,1102400,400,2756
+Project 0587,Client 085,X Design,Closed Won,Completed,2025-02-03,2025-10-07,988800,200,4944
+Project 0588,Client 040,X Design,In Delivery,Active,2026-02-18,2026-12-04,1164500,250,4658
+Project 0589,Client 022,Digital Ventures,In Delivery,Active,2025-03-13,2025-07-13,467400,300,1558
+Project 0590,Client 001,Digital Ventures,In Delivery,Active,2026-05-29,2027-02-19,1592850,350,4551
+Project 0591,Client 038,X Build,Closed Won,Completed,2026-04-26,2026-10-04,636200,200,3181
+Project 0592,Client 071,Digital Ventures,Prospect,Active,2024-09-10,2024-11-29,126600,150,844
+Project 0593,Client 068,Digital Ventures,Closed Won,Completed,2026-06-17,2026-12-22,300600,300,1002
+Project 0594,Client 063,X Design,In Delivery,Active,2025-11-21,2026-03-21,570900,150,3806
+Project 0595,Client 049,X Design,Closed Won,Completed,2025-02-23,2025-08-11,976850,350,2791
+Project 0596,Client 006,Digital Ventures,Qualified,Active,2026-01-24,2026-08-08,464250,150,3095
+Project 0597,Client 042,Digital Ventures,Closed Won,Completed,2024-12-03,2025-10-19,129150,150,861
+Project 0598,Client 037,Digital Ventures,Closed Won,Completed,2025-05-25,2026-05-04,1256800,400,3142
+Project 0599,Client 023,X Build,Prospect,Active,2025-04-17,2025-10-05,1148700,300,3829
+Project 0600,Client 018,X Design,Prospect,Active,2025-06-01,2025-12-11,1360450,350,3887
+Project 0601,Client 032,X Design,Prospect,Active,2024-11-25,2025-09-15,1833600,400,4584
+Project 0602,Client 073,X Design,Closed Won,Completed,2026-05-02,2026-12-09,985800,200,4929
+Project 0603,Client 015,X Design,In Delivery,Active,2026-04-20,2026-11-12,981200,400,2453
+Project 0604,Client 033,X Design,Closed Lost,Active,2026-04-10,2026-11-30,913500,350,2610
+Project 0605,Client 001,X Design,Closed Won,Completed,2026-03-03,2026-09-19,488400,200,2442
+Project 0606,Client 064,X Build,Prospect,Active,2025-02-11,2025-12-12,153300,350,438
+Project 0607,Client 013,X Build,Qualified,Active,2026-08-08,2026-12-16,577400,200,2887
+Project 0608,Client 062,X Build,Closed Won,Completed,2026-02-13,2026-12-10,355600,350,1016
+Project 0609,Client 029,X Build,Closed Won,Completed,2025-08-03,2026-04-26,157500,350,450
+Project 0610,Client 056,X Build,Qualified,Active,2024-10-26,2025-03-07,205050,150,1367
+Project 0611,Client 071,X Design,In Delivery,Active,2025-04-13,2025-10-07,273150,150,1821
+Project 0612,Client 003,Digital Ventures,In Delivery,Active,2025-06-22,2026-05-18,171600,200,858
+Project 0613,Client 051,X Design,Prospect,Active,2026-01-05,2026-07-29,725550,150,4837
+Project 0614,Client 057,Digital Ventures,Prospect,Active,2024-09-08,2025-07-03,1112400,400,2781
+Project 0615,Client 066,X Build,Prospect,Active,2024-10-09,2025-02-27,460800,150,3072
+Project 0616,Client 093,Digital Ventures,Closed Won,Completed,2026-01-16,2026-07-17,774600,300,2582
+Project 0617,Client 060,Digital Ventures,Qualified,Active,2025-01-28,2025-08-07,101250,250,405
+Project 0618,Client 002,X Design,In Delivery,Active,2025-07-07,2026-04-27,716500,250,2866
+Project 0619,Client 048,X Build,Closed Won,Completed,2025-04-30,2026-01-21,261000,300,870
+Project 0620,Client 096,X Design,In Delivery,Active,2025-08-22,2026-08-11,89800,200,449
+Project 0621,Client 044,X Build,Closed Won,Completed,2026-01-26,2026-10-04,1269100,350,3626
+Project 0622,Client 095,Digital Ventures,Qualified,Active,2026-01-17,2026-10-18,504450,150,3363
+Project 0623,Client 086,X Design,Qualified,Active,2025-04-27,2026-02-25,200600,200,1003
+Project 0624,Client 054,Digital Ventures,Prospect,Active,2025-11-29,2026-10-21,666750,350,1905
+Project 0625,Client 076,X Design,Prospect,Active,2024-12-27,2025-10-04,230800,200,1154
+Project 0626,Client 012,Digital Ventures,In Delivery,Active,2025-03-29,2025-11-21,521700,150,3478
+Project 0627,Client 038,X Build,Closed Won,Completed,2025-08-21,2025-12-20,1981200,400,4953
+Project 0628,Client 001,X Design,Qualified,Active,2026-01-15,2026-05-15,731250,250,2925
+Project 0629,Client 013,Digital Ventures,Qualified,Active,2025-08-12,2026-01-28,1557850,350,4451
+Project 0630,Client 070,X Design,In Delivery,Active,2026-01-30,2027-01-03,1136100,350,3246
+Project 0631,Client 037,Digital Ventures,In Delivery,Active,2025-03-03,2026-01-13,60450,150,403
+Project 0632,Client 060,X Design,Qualified,Active,2025-01-11,2025-03-16,1175000,250,4700
+Project 0633,Client 029,Digital Ventures,In Delivery,Active,2026-06-30,2027-03-03,472350,150,3149
+Project 0634,Client 075,X Build,Closed Lost,Active,2025-12-10,2026-10-29,905000,200,4525
+Project 0635,Client 020,Digital Ventures,In Delivery,Active,2024-10-06,2024-12-31,1615600,400,4039
+Project 0636,Client 095,Digital Ventures,Closed Won,Completed,2025-05-24,2026-01-01,459900,350,1314
+Project 0637,Client 021,Digital Ventures,Qualified,Active,2025-05-23,2026-01-24,454200,150,3028
+Project 0638,Client 031,X Design,Qualified,Active,2025-01-04,2025-08-17,1681050,350,4803
+Project 0639,Client 058,Digital Ventures,Closed Won,Completed,2024-09-29,2025-06-22,1111200,300,3704
+Project 0640,Client 068,X Build,Closed Won,Completed,2025-09-20,2025-12-13,679200,200,3396
+Project 0641,Client 061,Digital Ventures,In Delivery,Active,2025-06-01,2025-10-12,54500,250,218
+Project 0642,Client 028,X Build,In Delivery,Active,2024-12-11,2025-08-10,614500,250,2458
+Project 0643,Client 042,X Design,In Delivery,Active,2025-02-09,2025-12-11,1341900,350,3834
+Project 0644,Client 055,X Design,In Delivery,Active,2026-02-17,2026-09-19,1145750,250,4583
+Project 0645,Client 089,X Build,Qualified,Active,2024-11-18,2025-03-16,454300,350,1298
+Project 0646,Client 065,Digital Ventures,Prospect,Active,2026-06-22,2027-05-07,279250,250,1117
+Project 0647,Client 050,X Design,Qualified,Active,2026-05-24,2026-12-11,1880400,400,4701
+Project 0648,Client 012,X Design,Closed Won,Completed,2026-07-13,2027-04-05,143500,250,574
+Project 0649,Client 094,X Build,In Delivery,Active,2026-02-22,2026-07-21,867000,300,2890
+Project 0650,Client 075,Digital Ventures,Prospect,Active,2025-06-13,2025-09-06,150600,150,1004
+Project 0651,Client 055,X Design,Prospect,Active,2024-11-23,2025-05-17,918200,200,4591
+Project 0652,Client 053,Digital Ventures,In Delivery,Active,2025-12-29,2026-07-31,968100,350,2766
+Project 0653,Client 095,Digital Ventures,Qualified,Active,2026-01-03,2026-10-28,1342200,300,4474
+Project 0654,Client 053,Digital Ventures,In Delivery,Active,2025-08-24,2026-07-25,500500,350,1430
+Project 0655,Client 098,X Design,Qualified,Active,2025-09-09,2025-11-18,811200,200,4056
+Project 0656,Client 088,X Design,Qualified,Active,2025-11-22,2026-03-11,563400,200,2817
+Project 0657,Client 072,Digital Ventures,Prospect,Active,2024-11-25,2025-11-15,838750,250,3355
+Project 0658,Client 010,Digital Ventures,Closed Won,Completed,2025-02-03,2025-06-02,108150,350,309
+Project 0659,Client 026,X Design,Qualified,Active,2026-07-20,2026-12-27,292600,350,836
+Project 0660,Client 011,X Design,Closed Won,Completed,2024-11-21,2025-02-19,1784400,400,4461
+Project 0661,Client 024,Digital Ventures,Closed Won,Completed,2025-12-02,2026-06-07,1080000,400,2700
+Project 0662,Client 095,X Design,Prospect,Active,2025-12-21,2026-09-29,512400,150,3416
+Project 0663,Client 009,X Design,Closed Won,Completed,2026-02-22,2026-12-04,823550,350,2353
+Project 0664,Client 015,Digital Ventures,Closed Won,Completed,2025-08-19,2026-01-31,177400,200,887
+Project 0665,Client 020,X Design,In Delivery,Active,2026-07-24,2026-10-31,1740900,350,4974
+Project 0666,Client 083,Digital Ventures,Prospect,Active,2025-06-04,2025-09-09,156600,150,1044
+Project 0667,Client 068,Digital Ventures,Prospect,Active,2025-06-12,2026-06-01,868600,200,4343
+Project 0668,Client 060,X Design,Closed Won,Completed,2026-01-08,2026-05-24,1076950,350,3077
+Project 0669,Client 025,X Build,Closed Won,Completed,2025-02-20,2025-07-01,1381500,300,4605
+Project 0670,Client 053,X Design,In Delivery,Active,2026-04-27,2027-01-31,1384800,400,3462
+Project 0671,Client 038,Digital Ventures,Closed Won,Completed,2024-09-04,2025-02-06,653100,350,1866
+Project 0672,Client 010,Digital Ventures,In Delivery,Active,2025-02-27,2025-08-04,901200,400,2253
+Project 0673,Client 052,X Build,Closed Won,Completed,2025-12-13,2026-08-19,359100,350,1026
+Project 0674,Client 045,Digital Ventures,Prospect,Active,2025-01-06,2025-03-19,1013600,400,2534
+Project 0675,Client 024,X Design,In Delivery,Active,2024-09-07,2025-08-05,142500,300,475
+Project 0676,Client 059,X Design,Qualified,Active,2025-10-01,2026-08-20,1761600,400,4404
+Project 0677,Client 016,Digital Ventures,Closed Won,Completed,2025-05-09,2026-01-12,516000,300,1720
+Project 0678,Client 096,X Design,In Delivery,Active,2025-11-12,2026-01-23,138150,150,921
+Project 0679,Client 021,Digital Ventures,Qualified,Active,2026-03-07,2026-08-07,263400,200,1317
+Project 0680,Client 095,X Build,In Delivery,Active,2026-02-26,2026-11-14,51300,150,342
+Project 0681,Client 054,Digital Ventures,Prospect,Active,2025-10-21,2026-05-05,706800,150,4712
+Project 0682,Client 009,Digital Ventures,Prospect,Active,2026-05-19,2027-02-10,746500,250,2986
+Project 0683,Client 062,X Build,In Delivery,Active,2026-06-14,2027-01-14,1403200,400,3508
+Project 0684,Client 043,Digital Ventures,In Delivery,Active,2026-04-08,2026-09-17,1325200,400,3313
+Project 0685,Client 006,X Design,Closed Won,Completed,2025-06-27,2025-10-20,532600,200,2663
+Project 0686,Client 049,Digital Ventures,Prospect,Active,2024-09-12,2025-07-01,173000,250,692
+Project 0687,Client 083,Digital Ventures,Qualified,Active,2026-05-02,2026-09-01,355600,350,1016
+Project 0688,Client 028,X Design,Qualified,Active,2026-03-31,2026-11-29,188800,400,472
+Project 0689,Client 086,X Design,In Delivery,Active,2025-12-24,2026-04-30,1147000,250,4588
+Project 0690,Client 032,X Build,Closed Won,Completed,2025-11-29,2026-03-26,789400,200,3947
+Project 0691,Client 099,X Design,Closed Won,Completed,2026-06-03,2027-02-03,1178800,400,2947
+Project 0692,Client 004,X Design,Prospect,Active,2024-12-24,2025-09-17,432200,200,2161
+Project 0693,Client 025,Digital Ventures,Prospect,Active,2025-11-11,2026-05-31,1329600,300,4432
+Project 0694,Client 026,X Design,In Delivery,Active,2024-12-03,2025-04-14,589200,400,1473
+Project 0695,Client 080,X Build,Prospect,Active,2026-02-11,2027-01-19,1556450,350,4447
+Project 0696,Client 026,Digital Ventures,Prospect,Active,2024-10-01,2025-01-12,713250,150,4755
+Project 0697,Client 087,Digital Ventures,Qualified,Active,2026-04-07,2026-10-15,519600,200,2598
+Project 0698,Client 003,X Design,Prospect,Active,2025-01-24,2025-08-29,220350,150,1469
+Project 0699,Client 015,X Design,In Delivery,Active,2025-05-13,2026-05-01,330800,400,827
+Project 0700,Client 088,X Build,Qualified,Active,2026-07-31,2027-07-02,469600,400,1174
+Project 0701,Client 018,X Build,Qualified,Active,2026-05-05,2026-10-02,347550,150,2317
+Project 0702,Client 010,X Build,Closed Won,Completed,2025-02-19,2025-12-17,743250,250,2973
+Project 0703,Client 005,X Design,Closed Won,Completed,2025-01-29,2025-10-07,995750,250,3983
+Project 0704,Client 093,X Build,In Delivery,Active,2026-06-30,2027-04-22,178500,350,510
+Project 0705,Client 051,X Design,Prospect,Active,2025-06-02,2026-02-04,599800,200,2999
+Project 0706,Client 094,X Build,Closed Won,Completed,2024-09-07,2025-06-13,841200,200,4206
+Project 0707,Client 052,X Build,Prospect,Active,2025-12-21,2026-03-21,383800,200,1919
+Project 0708,Client 063,X Design,In Delivery,Active,2026-05-06,2027-03-10,166950,350,477
+Project 0709,Client 099,X Build,Qualified,Active,2026-08-03,2027-03-16,705000,150,4700
+Project 0710,Client 013,X Build,Closed Won,Completed,2025-03-14,2025-08-10,593700,150,3958
+Project 0711,Client 035,X Design,Closed Won,Completed,2025-06-22,2026-05-09,1916400,400,4791
+Project 0712,Client 013,X Build,Prospect,Active,2024-11-08,2025-10-16,94850,350,271
+Project 0713,Client 069,X Design,Qualified,Active,2026-06-26,2026-08-30,303750,250,1215
+Project 0714,Client 090,X Design,Prospect,Active,2026-07-30,2026-10-02,90900,150,606
+Project 0715,Client 078,X Build,Prospect,Active,2025-12-19,2026-03-02,241650,150,1611
+Project 0716,Client 035,X Build,Qualified,Active,2025-01-27,2025-11-21,1212750,250,4851
+Project 0717,Client 048,X Build,In Delivery,Active,2024-10-19,2025-04-18,641700,300,2139
+Project 0718,Client 099,X Build,Qualified,Active,2026-07-06,2026-11-07,899500,250,3598
+Project 0719,Client 068,Digital Ventures,In Delivery,Active,2025-05-19,2026-03-13,540400,400,1351
+Project 0720,Client 066,Digital Ventures,Prospect,Active,2025-11-14,2026-09-06,944800,200,4724
+Project 0721,Client 045,X Design,Prospect,Active,2026-03-19,2026-12-04,1107750,250,4431
+Project 0722,Client 057,Digital Ventures,Closed Won,Completed,2025-08-19,2026-01-28,1132500,300,3775
+Project 0723,Client 039,X Design,Prospect,Active,2026-02-09,2026-11-16,700200,200,3501
+Project 0724,Client 004,X Build,Closed Won,Completed,2025-09-09,2026-03-09,1018500,350,2910
+Project 0725,Client 040,X Design,Closed Won,Completed,2026-04-01,2027-02-25,97400,200,487
+Project 0726,Client 063,Digital Ventures,In Delivery,Active,2026-01-25,2026-03-31,392800,200,1964
+Project 0727,Client 070,Digital Ventures,Closed Won,Completed,2025-07-05,2026-04-04,251250,150,1675
+Project 0728,Client 087,X Design,Closed Won,Completed,2025-03-28,2025-08-10,1700400,400,4251
+Project 0729,Client 047,X Build,In Delivery,Active,2026-06-03,2026-12-04,208000,200,1040
+Project 0730,Client 025,X Design,Qualified,Active,2025-12-31,2026-11-03,648750,150,4325
+Project 0731,Client 041,X Build,Closed Won,Completed,2025-10-15,2026-03-17,486400,400,1216
+Project 0732,Client 085,X Build,In Delivery,Active,2026-05-18,2026-07-27,63000,200,315
+Project 0733,Client 002,X Build,Closed Won,Completed,2025-06-03,2025-10-04,472500,150,3150
+Project 0734,Client 018,Digital Ventures,Qualified,Active,2025-12-27,2026-10-25,816500,250,3266
+Project 0735,Client 048,X Design,Prospect,Active,2025-08-26,2026-06-20,832400,400,2081
+Project 0736,Client 079,Digital Ventures,In Delivery,Active,2024-11-21,2025-10-29,466800,300,1556
+Project 0737,Client 013,X Design,Closed Won,Completed,2025-01-27,2025-04-08,840800,400,2102
+Project 0738,Client 085,X Build,Prospect,Active,2025-08-14,2026-07-31,682200,150,4548
+Project 0739,Client 076,X Build,Prospect,Active,2024-12-03,2025-07-25,915300,300,3051
+Project 0740,Client 037,X Build,Prospect,Active,2026-02-26,2026-08-28,409150,350,1169
+Project 0741,Client 077,X Design,Qualified,Active,2025-06-15,2026-05-15,1809200,400,4523
+Project 0742,Client 025,X Design,Qualified,Active,2025-11-13,2026-06-08,682200,300,2274
+Project 0743,Client 018,X Build,Qualified,Active,2026-01-13,2026-12-10,1667600,400,4169
+Project 0744,Client 013,Digital Ventures,Closed Won,Completed,2025-05-11,2025-08-12,61000,250,244
+Project 0745,Client 019,X Design,In Delivery,Active,2025-08-23,2026-06-09,834300,300,2781
+Project 0746,Client 032,X Design,Qualified,Active,2026-03-30,2026-06-06,540900,150,3606
+Project 0747,Client 022,X Design,Qualified,Active,2025-01-15,2025-08-27,446000,400,1115
+Project 0748,Client 009,X Design,Prospect,Active,2025-01-13,2026-01-05,714200,200,3571
+Project 0749,Client 035,X Build,In Delivery,Active,2025-04-22,2025-11-26,1218750,250,4875
+Project 0750,Client 032,X Design,In Delivery,Active,2024-12-26,2025-08-23,665500,250,2662

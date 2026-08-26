@@ -1,3 +1,5 @@
+import html
+
 import streamlit as st
 
 
@@ -37,6 +39,60 @@ def section_title(title, help_text=None):
         unsafe_allow_html=True,
     )
 
+
+def insight_card(category, metric, message, severity="INFO"):
+    severity = str(severity or "INFO").upper()
+    accent = {
+        "HIGH": "#f87171",
+        "MEDIUM": "#fbbf24",
+        "LOW": "#34d399",
+    }.get(severity, "#60a5fa")
+
+    st.markdown(
+        f"""
+        <article class="decision-card" style="--card-accent: {accent};">
+            <div class="card-kicker">{html.escape(severity)} · INSIGHT</div>
+            <h3>{html.escape(str(category))}</h3>
+            <div class="card-label">{html.escape(str(metric))}</div>
+            <p>{html.escape(str(message))}</p>
+        </article>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def recommendation_card(category, priority, action, rationale="", impact=None):
+    priority = str(priority or "LOW").upper()
+    accent = {
+        "HIGH": "#f87171",
+        "MEDIUM": "#fbbf24",
+        "LOW": "#34d399",
+    }.get(priority, "#60a5fa")
+    impact_text = ""
+    if impact is not None:
+        impact_text = (
+            f'<div class="card-impact">Financial impact: '
+            f'{html.escape(format_currency(impact))}</div>'
+        )
+
+    rationale_text = ""
+    if rationale:
+        rationale_text = (
+            f'<div class="card-rationale">{html.escape(str(rationale))}</div>'
+        )
+
+    st.markdown(
+        f"""
+        <article class="decision-card" style="--card-accent: {accent};">
+            <div class="card-kicker">{html.escape(priority)} · ACTION</div>
+            <h3>{html.escape(str(category))}</h3>
+            <p class="card-action">{html.escape(str(action))}</p>
+            {rationale_text}
+            {impact_text}
+        </article>
+        """,
+        unsafe_allow_html=True,
+    )
 
 def format_currency(
     value,
