@@ -1,9 +1,10 @@
 ./
 ├── gen_tree.py
-├── project_tree.txt
+├── README.md
 ├── requirements.txt
 ├── app/
 │   ├── config.py
+│   ├── finance_queries.py
 │   ├── main.py
 │   ├── __init__.py
 │   ├── db/
@@ -14,14 +15,56 @@
 │   │   ├── project.py
 │   │   ├── __init__.py
 │   ├── routers/
+│   │   ├── analytics.py
+│   │   ├── forecast.py
+│   │   ├── intelligence.py
+│   │   ├── projects.py
+│   │   ├── scenarios.py
 │   │   ├── __init__.py
 │   ├── services/
+│   │   ├── backlog_engine.py
+│   │   ├── business_unit_engine.py
+│   │   ├── finance_engine.py
+│   │   ├── finance_queries.py
+│   │   ├── finance_reasoning.py
+│   │   ├── forecast_accuracy.py
+│   │   ├── forecast_decomposition.py
+│   │   ├── forecast_engine.py
+│   │   ├── insight_engine.py
+│   │   ├── monte_carlo_engine.py
+│   │   ├── recommendation_engine.py
 │   │   ├── revenue_calc.py
+│   │   ├── risk_engine.py
+│   │   ├── scenario_engine.py
+│   │   ├── staffing_engine.py
+│   │   ├── staffing_insight_engine.py
+│   │   ├── staffing_recommendation_engine.py
+│   │   ├── variance_engine.py
 │   │   ├── __init__.py
+├── dashboard/
+│   ├── api.py
+│   ├── app.py
+│   ├── charts.py
+│   ├── components.py
+│   ├── intelligence.py
+│   ├── __init__.py
 ├── data/
+│   ├── actuals.csv
+│   ├── budgets.csv
+│   ├── pipeline.csv
+│   ├── projects.csv
 │   ├── synthetic_projects.csv
+├── docs/
+│   ├── API.md
+│   ├── ARCHITECTURE.md
+│   ├── DATA_MODEL.md
+│   ├── DEVELOPMENT.md
+│   ├── FORECAST_ENGINE.md
+│   ├── INTELLIGENCE.md
 ├── scripts/
 │   ├── generate_synthetic_data.py
 │   ├── load_data.py
 ├── tests/
+│   ├── test_forecast.py
+│   ├── test_variance.py
 │   ├── __init__.py

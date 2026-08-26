@@ -262,10 +262,10 @@ flowchart TD
         I_MAP --> I_RES
     end
 
-    subgraph Stage3["STAGE 3: ACTION RECOMMENDATIONS (recommendation_engine.py)"]
+    subgraph Stage3["STAGE 3: ACTION RECOMMENDATIONS (recommendation_engine.py + staffing engines)"]
         direction TB
-        REC_MAP["Evaluate 10 Decision Action Rules mapping operational deficits to prescriptive interventions"]
-        REC_RES["<b>Priority-Sorted Recommendations:</b><br/>Array of action objects with priority ('HIGH'|'MEDIUM'|'LOW'), action, rationale, and quantified INR impact"]
+        REC_MAP["Evaluate 10 Decision Action Rules mapping operational deficits to prescriptive interventions; merge staffing insights and recommendations"]
+        REC_RES["<b>Priority-Sorted Recommendations:</b><br/>Array of action objects with priority ('HIGH'|'MEDIUM'|'LOW'), action, rationale, and quantified INR impact<br/><b>Staffing Insights & Recommendations:</b><br/>Staffing utilization, data quality, and capacity validation alerts"]
         REC_MAP --> REC_RES
     end
 

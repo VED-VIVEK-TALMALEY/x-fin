@@ -5,22 +5,31 @@ def metric_card(
     label,
     value,
     delta=None,
+    help_text=None,
 ):
 
     st.metric(
         label=label,
         value=value,
         delta=delta,
+        help=help_text,
     )
 
 
-def section_title(title):
+def section_title(title, help_text=None):
+    description = help_text or (
+        f"{title}: Key dashboard section showing the most relevant "
+        "finance and operating metrics for this view."
+    )
 
     st.markdown(
         f"""
-        <h2 style="
-            margin-top: 1.5rem;
+        <h2 title="{description}" style="
+            margin-top: 2rem;
             margin-bottom: 0.5rem;
+            color: #f8fafc;
+            letter-spacing: 0.01em;
+            font-weight: 700;
         ">
         {title}
         </h2>

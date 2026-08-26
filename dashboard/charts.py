@@ -275,6 +275,7 @@ def forecast_decomposition_chart(
         or 0
     )
 
+    # API stores execution-risk contribution as a negative amount.
     risk_adjustment = float(
         decomposition.get(
             "risk_adjustment",
@@ -313,7 +314,7 @@ def forecast_decomposition_chart(
                 committed_backlog,
                 weighted_pipeline,
                 utilization_adjustment,
-                -risk_adjustment,
+                risk_adjustment,
                 forecast_revenue,
             ],
             connector={

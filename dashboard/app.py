@@ -6,7 +6,6 @@ from api import (
     get_monthly_revenue,
     get_backlog,
     get_variance,
-    get_forecast,
     get_forecast_accuracy,
     get_business_units,
     get_intelligence,
@@ -26,797 +25,724 @@ from charts import (
     backlog_chart,
     business_unit_chart,
     variance_chart,
-    forecast_decomposition_chart,
 )
 
 
-# --------------------------------------------------
-# PAGE CONFIG
-# --------------------------------------------------
-
 st.set_page_config(
-    page_title="X-Fin | BCG X Delivery Finance",
-    page_icon="",
+    page_title="X-Fin | Delivery Finance OS",
+    page_icon="X",
     layout="wide",
 )
 
+st.markdown(
+    """
+    <style>
+        .stApp {
+            background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+            color: #e5e7eb;
+        }
 
-# --------------------------------------------------
-# HEADER
-# --------------------------------------------------
+        .block-container {
+            padding-top: 2rem;
+            padding-bottom: 3rem;
+            max-width: 1600px;
+        }
 
-st.title(
-    "X-Fin — Delivery Finance OS"
+        div[data-testid="stMetric"] {
+            background: rgba(31, 41, 55, 0.88);
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            border-radius: 0.85rem;
+            padding: 0.75rem 0.9rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+        }
+
+        div[data-testid="stMetricLabel"] p,
+        div[data-testid="stMetricValue"] {
+            color: #f3f4f6;
+        }
+
+        .stCaption, [data-testid="stCaptionContainer"] {
+            color: #a7b0c0;
+        }
+
+        .stMarkdown, .stMarkdown p, label {
+            color: #e5e7eb;
+        }
+
+        [data-testid="stDataFrame"] {
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            border-radius: 0.85rem;
+            overflow: hidden;
+        }
+
+        div[data-testid="stVerticalBlock"] > div {
+            gap: 0.85rem;
+        }
+
+        .stDataFrame, .stPlotlyChart {
+            margin-top: 0.35rem;
+        }
+
+        .stAlert {
+            border-radius: 0.8rem;
+        }
+
+        h1 {
+            color: #f8fafc;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
 
+st.title("X-Fin — Delivery Finance OS")
 st.caption(
     "Finance performance, forecasting, backlog and scenario intelligence"
 )
 
 
-# --------------------------------------------------
+def money(value):
+    return format_currency(value)
+
+
+def pct(value):
+    return format_percentage(value)
+
+
+def title_case(value):
+    return str(value or "unknown").replace("_", " ").title()
+
+
+# ==================================================
 # LOAD DATA
-# --------------------------------------------------
+# ==================================================
 
 try:
-
     summary = get_summary()
-
-    monthly_revenue = (
-        get_monthly_revenue()
-    )
-
+    monthly_revenue = get_monthly_revenue()
     backlog = get_backlog()
-
     variance = get_variance()
+    forecast_accuracy = get_forecast_accuracy()
+    business_units = get_business_units()
 
-    forecast = get_forecast()
+    # IMPORTANT:
+    # All executive forecast/risk/intelligence KPIs come from this
+    # canonical endpoint. Do not recompute them from /forecast/current.
+    intelligence = get_intelligence()
 
-    forecast_accuracy = (
-        get_forecast_accuracy()
-    )
-
-    business_units = (
-        get_business_units()
-    )
-
-    intelligence = (
-        get_intelligence()
-    )
-
-except Exception as e:
-
-    show_error(
-        f"Unable to connect to the Finance API: {e}"
-    )
-
+except Exception as exc:
+    show_error(f"Unable to connect to the Finance API: {exc}")
     st.stop()
 
 
-# --------------------------------------------------
-# SUMMARY DATA
-# --------------------------------------------------
+reasoning = intelligence.get("reasoning", {})
+risk = intelligence.get("risk", {})
+forecast = intelligence.get("forecast", {})
+decomposition = intelligence.get("forecast_decomposition", {})
+monte_carlo = intelligence.get("monte_carlo", {})
+staffing = intelligence.get("staffing", {})
+insights = intelligence.get("insights", [])
+recommendations = intelligence.get("recommendations", [])
+data_quality = intelligence.get("data_quality", {})
 
-finance = summary.get(
-    "finance",
-    {},
+source_metrics = intelligence.get("source_metrics", {})
+
+# Canonical values
+actual_revenue = float(reasoning.get("actual_revenue", 0) or 0)
+budget_revenue = float(reasoning.get("budget_revenue", 0) or 0)
+canonical_forecast = float(
+    intelligence.get("canonical_forecast_revenue", 0) or 0
 )
-
-budget = summary.get(
-    "budget",
-    {},
-)
-
-backlog_summary = summary.get(
-    "backlog",
-    {},
-)
-
-forecast_data = forecast.get(
-    "forecast",
-    {},
-)
-
-pipeline = forecast.get(
-    "pipeline",
-    {},
-)
-
-
-actual_revenue = float(
-    finance.get(
-        "actual_revenue",
-        0,
-    )
-    or 0
-)
-
-
-budget_revenue = float(
-    budget.get(
-        "budget_revenue",
-        0,
-    )
-    or 0
-)
-
-
-forecast_revenue = float(
-    forecast_data.get(
-        "forecast_revenue",
-        0,
-    )
-    or 0
-)
-
-
 committed_backlog = float(
-    backlog_summary.get(
-        "committed_backlog",
-        0,
-    )
-    or 0
+    reasoning.get("committed_backlog", 0) or 0
 )
-
-
-pipeline_value = float(
-    pipeline.get(
-        "pipeline_value",
-        0,
-    )
-    or 0
-)
-
-
 weighted_pipeline = float(
-    pipeline.get(
-        "weighted_pipeline",
-        0,
-    )
-    or 0
+    reasoning.get("weighted_pipeline", 0) or 0
 )
-
-
-# --------------------------------------------------
-# DERIVED METRICS
-# --------------------------------------------------
-
+pipeline_value = float(
+    source_metrics.get("pipeline_value", 0) or 0
+)
 actual_cost = float(
-    finance.get(
-        "actual_cost",
-        0,
-    )
-    or 0
+    source_metrics.get("actual_cost", 0) or 0
 )
 
-
-gross_margin = (
-    actual_revenue
-    - actual_cost
-)
-
-
+gross_margin = actual_revenue - actual_cost
 gross_margin_pct = (
-    gross_margin
-    / actual_revenue
-    * 100
+    gross_margin / actual_revenue * 100
     if actual_revenue
     else 0
 )
 
 
-revenue_variance_pct = (
-    (
-        actual_revenue
-        - budget_revenue
-    )
-    / budget_revenue
-    * 100
-    if budget_revenue
-    else 0
-)
-
-
-utilization = 0.74
-
-
-# --------------------------------------------------
-# KPI ROW
-# --------------------------------------------------
+# ==================================================
+# EXECUTIVE PERFORMANCE
+# ==================================================
 
 section_title(
-    "Executive Performance"
+    "Executive Performance",
+    "Core operating view of actual revenue, budget variance, forecast, backlog, utilization, and margin performance.",
 )
 
 cols = st.columns(8)
 
-
 with cols[0]:
-
     metric_card(
         "Actual Revenue",
-        format_currency(
-            actual_revenue
-        ),
+        money(actual_revenue),
+        help_text="Recognized revenue delivered to date across the practice.",
     )
-
 
 with cols[1]:
-
     metric_card(
         "vs Budget",
-        format_percentage(
-            revenue_variance_pct
-        ),
+        pct(reasoning.get("budget_gap_pct", 0)),
+        help_text="Actual performance versus budget, expressed as a percent variance.",
     )
-
 
 with cols[2]:
-
     metric_card(
         "Forecast Revenue",
-        format_currency(
-            forecast_revenue
-        ),
+        money(canonical_forecast),
+        help_text="The current risk-adjusted revenue forecast after backlog, pipeline, utilization, and execution-risk effects.",
     )
-
 
 with cols[3]:
-
     metric_card(
         "Committed Backlog",
-        format_currency(
-            committed_backlog
-        ),
+        money(committed_backlog),
+        help_text="Revenue already locked in through active delivery or closed-won work.",
     )
-
 
 with cols[4]:
-
     metric_card(
         "Pipeline",
-        format_currency(
-            pipeline_value
-        ),
+        money(pipeline_value),
+        help_text="Total value of the active pipeline before probability weighting.",
     )
-
 
 with cols[5]:
-
     metric_card(
         "Weighted Pipeline",
-        format_currency(
-            weighted_pipeline
-        ),
+        money(weighted_pipeline),
+        help_text="Probability-adjusted pipeline value, reflecting the likely conversion contribution.",
     )
-
 
 with cols[6]:
-
     metric_card(
-        "Utilization",
-        format_percentage(
-            utilization * 100
+        "Budget Utilization",
+        pct(
+            float(
+                source_metrics.get(
+                    "budget_utilization", 0
+                )
+                or 0
+            )
+            * 100
+            if float(
+                source_metrics.get(
+                    "budget_utilization", 0
+                )
+                or 0
+            ) <= 1
+            else float(
+                source_metrics.get(
+                    "budget_utilization", 0
+                )
+                or 0
+            )
         ),
+        help_text="Planned utilization target used in the forecast model and delivery-capacity assumptions.",
     )
-
 
 with cols[7]:
-
     metric_card(
         "Gross Margin",
-        format_percentage(
-            gross_margin_pct
-        ),
+        pct(gross_margin_pct),
+        help_text="Actual gross margin percentage based on delivered revenue less direct delivery cost.",
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # EXECUTIVE INTELLIGENCE
-# --------------------------------------------------
+# ==================================================
 
 section_title(
-    "Executive Intelligence"
+    "Executive Intelligence",
+    "Summary of performance, risk status, forecast health, and coverage signals used by leadership.",
 )
 
+cols = st.columns(6)
 
-reasoning = intelligence.get(
-    "reasoning",
-    {},
-)
-
-
-insights = intelligence.get(
-    "insights",
-    [],
-)
-
-
-recommendations = intelligence.get(
-    "recommendations",
-    [],
-)
-
-
-intelligence_status = (
-    intelligence.get(
-        "status",
-        "unknown",
-    )
-)
-
-
-intelligence_cols = st.columns(4)
-
-
-with intelligence_cols[0]:
-
-    performance = reasoning.get(
-        "performance",
-        "unknown",
-    )
-
+with cols[0]:
     st.metric(
         "Performance",
-        str(
-            performance
-        ).replace(
-            "_",
-            " ",
-        ).title(),
+        title_case(reasoning.get("performance")),
+        help="Overall operating health based on actual revenue, pipeline, and risk posture.",
     )
 
-
-with intelligence_cols[1]:
-
-    forecast_status = reasoning.get(
-        "forecast_status",
-        "unknown",
-    )
-
+with cols[1]:
     st.metric(
         "Forecast Status",
-        str(
-            forecast_status
-        ).replace(
-            "_",
-            " ",
-        ).title(),
+        title_case(reasoning.get("forecast_status")),
+        help="Current forecast quality signal showing whether the forecast is tracking to plan.",
     )
 
-
-with intelligence_cols[2]:
-
-    confidence = reasoning.get(
-        "forecast_confidence_base",
-        None,
-    )
-
-    if confidence is not None:
-
-        st.metric(
-            "Committed Coverage",
-            f"{float(confidence):.1f}%",
-        )
-
-    else:
-
-        st.metric(
-            "Committed Coverage",
-            "N/A",
-        )
-
-
-with intelligence_cols[3]:
-
-    forward_coverage = reasoning.get(
-        "forward_coverage",
-        None,
-    )
-
-    if forward_coverage is not None:
-
-        st.metric(
-            "Forward Coverage",
-            f"{float(forward_coverage):.1f}%",
-        )
-
-    else:
-
-        st.metric(
-            "Forward Coverage",
-            "N/A",
-        )
-
-
-# --------------------------------------------------
-# INTELLIGENCE FINANCIAL POSITION
-# --------------------------------------------------
-
-intelligence_fin_cols = st.columns(4)
-
-
-with intelligence_fin_cols[0]:
-
-    budget_gap = reasoning.get(
-        "budget_gap",
-        0,
-    )
-
+with cols[2]:
     st.metric(
-        "Actual vs Budget",
-        format_currency(
-            budget_gap
-        ),
+        "Committed Coverage",
+        pct(risk.get("committed_forecast_coverage")),
+        help="Share of forecast covered by committed backlog versus the total forecast value.",
     )
 
-
-with intelligence_fin_cols[1]:
-
-    budget_gap_pct = reasoning.get(
-        "budget_gap_pct",
-        0,
-    )
-
+with cols[3]:
     st.metric(
-        "Budget Gap %",
-        f"{float(budget_gap_pct):.1f}%",
+        "Forward Coverage",
+        pct(reasoning.get("forward_coverage")),
+        help="Forward-looking coverage of remaining revenue against the upcoming period demand.",
     )
 
-
-with intelligence_fin_cols[2]:
-
-    forecast_gap = reasoning.get(
-        "forecast_gap",
-        0,
-    )
-
+with cols[4]:
     st.metric(
-        "Forecast vs Budget",
-        format_currency(
-            forecast_gap
-        ),
+        "Composite Risk Score",
+        f"{float(risk.get('risk_score', 0)):.1f}/100",
+        help="A blended quantitative risk score from forecast, coverage, and pipeline dependency inputs.",
     )
 
-
-with intelligence_fin_cols[3]:
-
-    forecast_gap_pct = reasoning.get(
-        "forecast_gap_pct",
-        0,
-    )
-
+with cols[5]:
     st.metric(
-        "Forecast Gap %",
-        f"{float(forecast_gap_pct):.1f}%",
+        "Overall Risk",
+        title_case(risk.get("overall_risk")),
+        help="Qualitative classification of overall risk based on the operating and forecast signals.",
     )
 
+st.caption(
+    "Composite risk score and qualitative risk classification are "
+    "separate measures: the score is continuous; qualitative risk "
+    "is driven by forecast commitment and pipeline dependency."
+)
 
-# --------------------------------------------------
+
+# ==================================================
 # FORECAST DECOMPOSITION
-# --------------------------------------------------
+# ==================================================
 
 section_title(
-    "Forecast Decomposition"
+    "Forecast Decomposition",
+    "Breakdown of how committed backlog, weighted pipeline, utilization, and execution risk combine into the final forecast.",
 )
 
+dcols = st.columns(5)
 
-forecast_decomposition = (
-    intelligence.get(
-        "forecast_decomposition",
-        {},
-    )
-)
-
-
-decomposition_cols = st.columns(5)
-
-
-with decomposition_cols[0]:
-
+with dcols[0]:
     st.metric(
         "Committed Backlog",
-        format_currency(
-            forecast_decomposition.get(
-                "committed_backlog",
-                0,
-            )
-        ),
+        money(decomposition.get("committed_backlog")),
+        help="Revenue that is already contractually or operationally committed to delivery.",
     )
 
-
-with decomposition_cols[1]:
-
+with dcols[1]:
     st.metric(
         "Weighted Pipeline",
-        format_currency(
-            forecast_decomposition.get(
-                "weighted_pipeline",
-                0,
-            )
-        ),
+        money(decomposition.get("weighted_pipeline")),
+        help="Probability-adjusted pipeline contribution. This is the pipeline after conversion weighting.",
     )
 
-
-with decomposition_cols[2]:
-
+with dcols[2]:
     st.metric(
         "Utilization Adjustment",
-        format_currency(
-            forecast_decomposition.get(
-                "utilization_adjustment",
-                0,
-            )
-        ),
+        money(decomposition.get("utilization_adjustment")),
+        help="Adjustment for expected utilization or capacity conversion impact on forecast performance.",
     )
 
-
-with decomposition_cols[3]:
-
+with dcols[3]:
     st.metric(
-        "Risk Adjustment",
-        format_currency(
-            forecast_decomposition.get(
-                "risk_adjustment",
-                0,
-            )
-        ),
+        "Execution Risk",
+        money(decomposition.get("risk_adjustment")),
+        help="Risk adjustment representing execution uncertainty or downside probability in the forecast.",
     )
 
-
-with decomposition_cols[4]:
-
+with dcols[4]:
     st.metric(
         "Final Forecast",
-        format_currency(
-            forecast_decomposition.get(
-                "forecast_revenue",
-                forecast_revenue,
-            )
-        ),
+        money(decomposition.get("forecast_revenue")),
+        help="Final forecast after all decomposition components are combined into one operating number.",
     )
 
+st.caption(
+    "Forecast = committed backlog + weighted pipeline + utilization "
+    "adjustment + execution-risk contribution. The execution-risk "
+    "contribution is displayed as a negative amount."
+)
 
-if forecast_decomposition:
 
-    st.plotly_chart(
-        forecast_decomposition_chart(
-            forecast_decomposition
-        ),
-        width="stretch",
+# ==================================================
+# FORECAST RISK
+# ==================================================
+
+section_title(
+    "Forecast Risk & Revenue Quality",
+    "Measures of forecast confidence, coverage, dependency, and headroom used to judge revenue quality.",
+)
+
+rcols = st.columns(6)
+
+with rcols[0]:
+    st.metric(
+        "Risk Score",
+        f"{float(risk.get('risk_score', 0)):.1f}/100",
+        help="Continuous risk score used to compare the forecast quality against the operating baseline.",
+    )
+
+with rcols[1]:
+    st.metric(
+        "Score Band",
+        title_case(risk.get("risk_score_status")),
+        help="Categorized risk band based on the underlying numeric risk score.",
+    )
+
+with rcols[2]:
+    st.metric(
+        "Committed Coverage",
+        pct(risk.get("committed_forecast_coverage")),
+        help="Coverage of the forecast by committed backlog. Higher values indicate stronger delivery certainty.",
+    )
+
+with rcols[3]:
+    st.metric(
+        "Pipeline Dependency",
+        pct(risk.get("pipeline_dependency")),
+        help="Share of the forecast depending on pipeline conversion versus already committed work.",
+    )
+
+with rcols[4]:
+    st.metric(
+        "Forecast Headroom",
+        money(risk.get("forecast_headroom")),
+        help="How much cushion remains between current forecast and the plan or risk threshold.",
+    )
+
+with rcols[5]:
+    st.metric(
+        "Headroom %",
+        pct(risk.get("forecast_headroom_pct")),
+        help="Percentage cushion compared with the forecast or plan threshold.",
+    )
+
+detail = st.columns(3)
+
+with detail[0]:
+    st.write("**Overall Risk**")
+    st.write(title_case(risk.get("overall_risk")))
+
+with detail[1]:
+    st.write("**Forecast Risk**")
+    st.write(title_case(risk.get("forecast_risk")))
+
+with detail[2]:
+    st.write("**Pipeline Risk**")
+    st.write(title_case(risk.get("pipeline_risk")))
+
+
+# ==================================================
+# MONTE CARLO
+# ==================================================
+
+section_title(
+    "Monte Carlo Forecast",
+    "Probability distribution of outcomes across thousands of simulations to estimate revenue confidence bands.",
+)
+
+if monte_carlo:
+    distribution = monte_carlo.get("distribution", {})
+    budget_analysis = monte_carlo.get("budget_analysis", {})
+
+    mcols = st.columns(6)
+
+    with mcols[0]:
+        st.metric(
+            "P10",
+            money(distribution.get("p10")),
+            help="Lower-bound forecast outcome at the 10th percentile of simulated results.",
+        )
+
+    with mcols[1]:
+        st.metric(
+            "P50",
+            money(distribution.get("p50")),
+            help="Median simulated revenue outcome, representing the most balanced scenario.",
+        )
+
+    with mcols[2]:
+        st.metric(
+            "P90",
+            money(distribution.get("p90")),
+            help="Upper-bound forecast outcome at the 90th percentile of simulated results.",
+        )
+
+    with mcols[3]:
+        st.metric(
+            "Probability ≥ Budget",
+            pct(budget_analysis.get("probability_above_budget")),
+            help="Likelihood that the forecast exceeds budget under simulation assumptions.",
+        )
+
+    with mcols[4]:
+        st.metric(
+            "Probability < Budget",
+            pct(budget_analysis.get("probability_below_budget")),
+            help="Likelihood that the forecast lands below budget under simulation assumptions.",
+        )
+
+    with mcols[5]:
+        st.metric(
+            "Simulation Risk",
+            title_case(monte_carlo.get("risk", {}).get("risk_level")),
+            help="Overall risk classification derived from the simulation distribution and budget sensitivity.",
+        )
+
+    st.caption(
+        f"5,000 deterministic-seed simulations using backlog, pipeline, "
+        f"utilization and execution-risk volatility."
     )
 
 else:
+    st.info("Monte Carlo results are not available.")
 
-    st.info(
-        "Forecast decomposition is not available."
+
+# ==================================================
+# STAFFING
+# ==================================================
+
+section_title(
+    "Staffing & Capacity",
+    "Actual and planned staffing hours, cost, and capacity health used to validate delivery assumptions.",
+)
+
+scols = st.columns(5)
+
+with scols[0]:
+    st.metric(
+        "Actual Hours",
+        f"{float(staffing.get('actual_hours', 0) or 0):,.0f}",
+        help="Actual staffed hours consumed in the current period for delivery capacity tracking.",
+    )
+
+with scols[1]:
+    st.metric(
+        "Hours Budget",
+        f"{float(staffing.get('budget_hours', 0) or 0):,.0f}",
+        help="Planned staffing-hours budget used as the baseline for capacity comparisons.",
+    )
+
+with scols[2]:
+    st.metric(
+        "Hours vs Budget",
+        pct(staffing.get("hours_attainment_pct")),
+        help="Actual hours relative to budget, indicating whether staffing is under or over plan.",
+    )
+
+with scols[3]:
+    st.metric(
+        "Blended Cost / Hour",
+        money(staffing.get("blended_cost_per_hour")),
+        help="Average cost per staffed hour, including mix of labor classes and rate assumptions.",
+    )
+
+with scols[4]:
+    st.metric(
+        "Capacity Status",
+        title_case(staffing.get("capacity_status")),
+        help="Overall staffing capacity classification for the current operating pattern.",
+    )
+
+st.warning(
+    staffing.get(
+        "capacity_measurement_note",
+        "Capacity measurement note unavailable.",
+    )
+)
+
+
+# ==================================================
+# FINANCIAL POSITION
+# ==================================================
+
+section_title(
+    "Financial Position",
+    "Gap between actual, forecast, and budget performance to understand operating shortfall or upside.",
+)
+
+fcols = st.columns(4)
+
+with fcols[0]:
+    st.metric(
+        "Actual vs Budget",
+        money(reasoning.get("budget_gap")),
+        help="Difference between actual revenue and budget as a dollar gap.",
+    )
+
+with fcols[1]:
+    st.metric(
+        "Budget Gap %",
+        pct(reasoning.get("budget_gap_pct")),
+        help="Variance between actual and budget performance as a percentage of plan.",
+    )
+
+with fcols[2]:
+    st.metric(
+        "Forecast vs Budget",
+        money(reasoning.get("forecast_gap")),
+        help="Difference between forecast revenue and the original budget position.",
+    )
+
+with fcols[3]:
+    st.metric(
+        "Forecast Gap %",
+        pct(reasoning.get("forecast_gap_pct")),
+        help="Forecast-to-budget gap expressed as a percentage, highlighting material upside or downside.",
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # INSIGHTS
-# --------------------------------------------------
+# ==================================================
+
+section_title(
+    "Key Insights",
+    "Priority findings surfaced from the finance and forecast analysis, including operational risk and performance deviations.",
+)
 
 if insights:
-
-    st.subheader(
-        "Key Insights"
-    )
-
     for insight in insights:
-
         severity = str(
-            insight.get(
-                "severity",
-                "INFO",
-            )
+            insight.get("severity", "INFO")
         ).upper()
-
-        category = insight.get(
-            "category",
-            "General",
-        )
-
-        metric = insight.get(
-            "metric",
-            "",
-        )
-
-        message = insight.get(
-            "message",
-            "",
-        )
-
         content = (
-            f"**{category} — {metric}**\n\n"
-            f"{message}"
+            f"**{insight.get('category', 'General')} — "
+            f"{insight.get('metric', '')}**\n\n"
+            f"{insight.get('message', '')}"
         )
 
         if severity == "HIGH":
-
-            st.error(
-                content
-            )
-
+            st.error(content)
         elif severity == "MEDIUM":
-
-            st.warning(
-                content
-            )
-
+            st.warning(content)
         else:
+            st.info(content)
+else:
+    st.info("No material insights detected.")
 
-            st.info(
-                content
-            )
 
-
-# --------------------------------------------------
+# ==================================================
 # RECOMMENDATIONS
-# --------------------------------------------------
-
-if recommendations:
-
-    st.subheader(
-        "Recommended Actions"
-    )
-
-    for recommendation in recommendations:
-
-        priority = str(
-            recommendation.get(
-                "priority",
-                "LOW",
-            )
-        ).upper()
-
-        category = recommendation.get(
-            "category",
-            "Action",
-        )
-
-        action = recommendation.get(
-            "action",
-            "",
-        )
-
-        rationale = recommendation.get(
-            "rationale",
-            "",
-        )
-
-        financial_impact = (
-            recommendation.get(
-                "financial_impact",
-                None,
-            )
-        )
-
-        st.markdown(
-            f"### {category}"
-        )
-
-        st.write(
-            f"**Priority:** {priority}"
-        )
-
-        st.write(
-            f"**Action:** {action}"
-        )
-
-        if rationale:
-
-            st.write(
-                f"**Rationale:** {rationale}"
-            )
-
-        if financial_impact is not None:
-
-            st.write(
-                "**Financial Impact:** "
-                + format_currency(
-                    float(
-                        financial_impact
-                    )
-                )
-            )
-
-
-# --------------------------------------------------
-# REVENUE PERFORMANCE
-# --------------------------------------------------
+# ==================================================
 
 section_title(
-    "Revenue Performance"
+    "Recommended Actions",
+    "Suggested next steps to address risk, improve forecast quality, and act on the current operating conditions.",
 )
 
+if recommendations:
+    for recommendation in recommendations:
+        priority = str(
+            recommendation.get("priority", "LOW")
+        ).upper()
+
+        category = recommendation.get("category", "Action")
+        action = recommendation.get("action", "")
+        rationale = recommendation.get("rationale", "")
+        impact = recommendation.get("financial_impact")
+
+        st.markdown(f"### {category}")
+        st.write(f"**Priority:** {priority}")
+        st.write(f"**Action:** {action}")
+
+        if rationale:
+            st.write(f"**Rationale:** {rationale}")
+
+        if impact is not None:
+            st.write(
+                "**Financial Impact:** "
+                + money(impact)
+            )
+else:
+    st.info("No recommendations generated.")
+
+
+# ==================================================
+# REVENUE PERFORMANCE
+# ==================================================
+
+section_title(
+    "Revenue Performance",
+    "Trend of monthly revenue performance used to validate the operating forecast and business momentum.",
+)
 
 if monthly_revenue:
-
     st.plotly_chart(
-        revenue_chart(
-            monthly_revenue
-        ),
+        revenue_chart(monthly_revenue),
         width="stretch",
     )
-
 else:
-
-    st.info(
-        "No monthly revenue data available."
-    )
+    st.info("No monthly revenue data available.")
 
 
-# --------------------------------------------------
-# FORECAST + VARIANCE
-# --------------------------------------------------
+# ==================================================
+# FORECAST + BACKLOG
+# ==================================================
 
 left, right = st.columns(2)
 
-
 with left:
-
     section_title(
-        "Forecast Position"
+        "Forecast Position",
+        "Current revenue forecast compared to backlog and pipeline to understand deliverability and coverage.",
     )
 
     st.metric(
-        "Forecast Revenue",
-        format_currency(
-            forecast_revenue
-        ),
+        "Canonical Forecast Revenue",
+        money(canonical_forecast),
+        help="The single canonical revenue forecast used in the executive scorecard and dashboard summary.",
     )
-
     st.metric(
         "Committed Backlog",
-        format_currency(
-            committed_backlog
-        ),
+        money(committed_backlog),
+        help="Backlog already committed to delivery and contributing to the forecast base.",
     )
-
     st.metric(
         "Weighted Pipeline",
-        format_currency(
-            weighted_pipeline
-        ),
+        money(weighted_pipeline),
+        help="Consideration of pipeline value after probability adjustment and conversion weighting.",
     )
 
     st.plotly_chart(
-        variance_chart(
-            variance
-        ),
+        variance_chart(variance),
         width="stretch",
     )
-
 
 with right:
-
     section_title(
-        "Backlog Position"
+        "Backlog Position",
+        "Backlog profile and delivery mix across the current book of work and committed demand.",
     )
 
     st.plotly_chart(
-        backlog_chart(
-            backlog
-        ),
+        backlog_chart(backlog),
         width="stretch",
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # BUSINESS UNIT PERFORMANCE
-# --------------------------------------------------
+# ==================================================
 
 section_title(
-    "Business Unit Performance"
+    "Business Unit Performance",
+    "Revenue, variance, and margin performance by business unit to compare operating outcomes across the portfolio.",
 )
 
-
 if business_units:
-
-    bu_df = pd.DataFrame(
-        business_units
-    )
+    bu_df = pd.DataFrame(business_units)
 
     display_columns = [
         "business_unit",
@@ -833,116 +759,91 @@ if business_units:
         if column in bu_df.columns
     ]
 
-    st.dataframe(
-        bu_df[
-            available_columns
-        ],
-        width="stretch",
-        hide_index=True,
-    )
+    if available_columns:
+        st.dataframe(
+            bu_df[available_columns],
+            width="stretch",
+            hide_index=True,
+        )
 
     st.plotly_chart(
-        business_unit_chart(
-            business_units
-        ),
+        business_unit_chart(business_units),
         width="stretch",
     )
-
 else:
-
-    st.info(
-        "No business-unit data available."
-    )
+    st.info("No business-unit data available.")
 
 
-# --------------------------------------------------
+# ==================================================
 # FORECAST ACCURACY
-# --------------------------------------------------
+# ==================================================
 
 section_title(
-    "Historical Forecast / Budget Accuracy"
+    "Historical Forecast / Budget Accuracy",
+    "Recent forecast and budget accuracy history to understand performance consistency and model reliability.",
 )
 
-
 if forecast_accuracy:
-
-    accuracy_df = pd.DataFrame(
-        forecast_accuracy
-    )
-
     st.dataframe(
-        accuracy_df,
+        pd.DataFrame(forecast_accuracy),
         width="stretch",
         hide_index=True,
     )
-
 else:
-
-    st.info(
-        "No historical forecast data available."
-    )
+    st.info("No historical forecast data available.")
 
 
-# --------------------------------------------------
+# ==================================================
 # SCENARIO SIMULATOR
-# --------------------------------------------------
+# ==================================================
 
-section_title(
-    "Scenario Simulator"
-)
-
+section_title("Scenario Simulator")
 
 st.caption(
-    "Pressure-test revenue under pipeline, utilization, "
-    "pricing and delivery-slippage assumptions."
+    "Pressure-test revenue under pipeline, utilization, pricing "
+    "and delivery-slippage assumptions."
 )
 
-
-scenario_left, scenario_right = (
-    st.columns(2)
-)
-
+scenario_left, scenario_right = st.columns(2)
 
 with scenario_left:
-
     base_revenue = st.number_input(
         "Base Revenue",
         min_value=0.0,
-        value=float(
-            actual_revenue
-        ),
+        value=float(actual_revenue),
         step=1_000_000.0,
     )
 
     scenario_pipeline = st.number_input(
         "Pipeline Revenue",
         min_value=0.0,
-        value=float(
-            pipeline_value
-        ),
+        value=float(pipeline_value),
         step=1_000_000.0,
     )
+
+    current_budget_utilization = float(
+        source_metrics.get("budget_utilization", 0) or 0
+    )
+    if current_budget_utilization <= 1:
+        current_budget_utilization *= 100
 
     scenario_utilization = st.slider(
         "Current Utilization",
         min_value=0.0,
-        max_value=1.5,
-        value=0.74,
-        step=0.01,
+        max_value=150.0,
+        value=float(current_budget_utilization),
+        step=1.0,
+        format="%.0f%%",
     )
 
-
 with scenario_right:
-
-    pipeline_conversion_change = (
-        st.slider(
-            "Pipeline Conversion Change",
-            min_value=-0.50,
-            max_value=0.50,
-            value=0.0,
-            step=0.01,
-            format="%.0f%%",
-        )
+    pipeline_conversion_change = st.slider(
+        "Pipeline Conversion Change",
+        min_value=-0.50,
+        max_value=0.50,
+        value=0.0,
+        step=0.01,
+        format="%.0f%%",
     )
 
     utilization_change = st.slider(
@@ -972,101 +873,85 @@ with scenario_right:
         format="%.0f%%",
     )
 
-
-if st.button(
-    "Run Scenario",
-    type="primary",
-):
-
+if st.button("Run Scenario", type="primary"):
     payload = {
         "base_revenue": base_revenue,
         "pipeline_revenue": scenario_pipeline,
-        "utilization": scenario_utilization,
-        "pipeline_conversion_change": (
-            pipeline_conversion_change
-        ),
-        "utilization_change": (
-            utilization_change
-        ),
-        "billing_rate_change": (
-            billing_rate_change
-        ),
+        "utilization": scenario_utilization / 100,
+        "pipeline_conversion_change": pipeline_conversion_change,
+        "utilization_change": utilization_change,
+        "billing_rate_change": billing_rate_change,
         "slippage_rate": slippage_rate,
     }
 
     try:
-
-        scenario = run_scenario(
-            payload
-        )
-
-        st.subheader(
-            "Scenario Result"
-        )
+        scenario = run_scenario(payload)
 
         result_cols = st.columns(4)
 
-
         with result_cols[0]:
-
             st.metric(
                 "Base Revenue",
-                format_currency(
-                    scenario[
-                        "base_revenue"
-                    ]
-                ),
+                money(scenario.get("base_revenue")),
             )
-
 
         with result_cols[1]:
-
             st.metric(
                 "Scenario Revenue",
-                format_currency(
-                    scenario[
-                        "scenario_revenue"
-                    ]
-                ),
+                money(scenario.get("scenario_revenue")),
             )
-
 
         with result_cols[2]:
-
             st.metric(
                 "Revenue Impact",
-                format_currency(
-                    scenario[
-                        "revenue_change"
-                    ]
-                ),
+                money(scenario.get("revenue_change")),
             )
-
 
         with result_cols[3]:
-
             st.metric(
                 "Impact %",
-                format_percentage(
-                    scenario[
-                        "revenue_change_pct"
-                    ]
-                ),
+                pct(scenario.get("revenue_change_pct")),
             )
 
-    except Exception as e:
+    except Exception as exc:
+        show_error(f"Scenario calculation failed: {exc}")
 
-        show_error(
-            f"Scenario calculation failed: {e}"
+
+# ==================================================
+# DATA QUALITY
+# ==================================================
+
+if data_quality.get("flags"):
+    section_title("Data Quality")
+
+    for flag in data_quality["flags"]:
+        message = (
+            f"**{flag.get('area', 'data').title()}** — "
+            f"{flag.get('message', '')}"
         )
+        if str(flag.get("severity", "")).upper() == "HIGH":
+            st.error(message)
+        else:
+            st.warning(message)
 
 
-# --------------------------------------------------
-# FOOTER
-# --------------------------------------------------
+# ==================================================
+# SOURCE DATA
+# ==================================================
+
+with st.expander("Canonical Source Metrics"):
+    source_df = pd.DataFrame(
+        [
+            {"Metric": key, "Value": value}
+            for key, value in source_metrics.items()
+        ]
+    )
+    st.dataframe(
+        source_df,
+        width="stretch",
+        hide_index=True,
+    )
+
 
 st.divider()
-
-st.caption(
-    "X-Fin | Finance Analytics & Forecasting Engine"
-)
+st.caption("X-Fin | Delivery Finance Intelligence")

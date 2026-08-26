@@ -1,392 +1,289 @@
-﻿from typing import Dict, List
+﻿from typing import Dict, List, Optional
+
+
+def _num(value) -> float:
+    try:
+        return float(value or 0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _add(recommendations: List[Dict], item: Dict) -> None:
+    key = (
+        item.get("category"),
+        item.get("action"),
+    )
+    if not any(
+        (x.get("category"), x.get("action")) == key
+        for x in recommendations
+    ):
+        recommendations.append(item)
 
 
 def generate_recommendations(
     reasoning: Dict,
     insights: List[Dict],
+    risk: Optional[Dict] = None,
+    monte_carlo: Optional[Dict] = None,
 ) -> List[Dict]:
+    """Generate deduplicated, decision-oriented finance actions."""
 
+    risk = risk or {}
+    monte_carlo = monte_carlo or {}
     recommendations: List[Dict] = []
 
-    # --------------------------------------------------
-    # CORE METRICS
-    # --------------------------------------------------
-
-    budget_gap = float(
-        reasoning.get("budget_gap", 0.0) or 0.0
-    )
-
-    forecast_gap = float(
-        reasoning.get("forecast_gap", 0.0) or 0.0
-    )
-
-    forward_coverage = float(
-        reasoning.get("forward_coverage", 0.0) or 0.0
-    )
-
-    weighted_pipeline = float(
-        reasoning.get("weighted_pipeline", 0.0) or 0.0
-    )
-
-    committed_backlog = float(
-        reasoning.get("committed_backlog", 0.0) or 0.0
-    )
-
-    committed_forecast_coverage = float(
-        reasoning.get(
+    budget_gap = _num(reasoning.get("budget_gap"))
+    forecast_gap = _num(reasoning.get("forecast_gap"))
+    forward_coverage = _num(reasoning.get("forward_coverage"))
+    weighted_pipeline = _num(reasoning.get("weighted_pipeline"))
+    committed_backlog = _num(reasoning.get("committed_backlog"))
+    committed_coverage = _num(
+        risk.get(
             "committed_forecast_coverage",
-            reasoning.get(
-                "forecast_confidence_base",
-                0.0,
-            ),
+            reasoning.get("committed_forecast_coverage"),
         )
-        or 0.0
     )
-
-    pipeline_dependency = float(
-        reasoning.get(
+    pipeline_dependency = _num(
+        risk.get(
             "pipeline_dependency",
-            0.0,
+            reasoning.get("pipeline_dependency"),
         )
-        or 0.0
+    )
+    forecast_risk = str(
+        risk.get("forecast_risk", reasoning.get("forecast_risk", "unknown"))
+    ).lower()
+    overall_risk = str(
+        risk.get("overall_risk", "unknown")
+    ).lower()
+
+    # 1. Revenue gap
+    if budget_gap < 0:
+        _add(
+            recommendations,
+            {
+                "priority": "HIGH",
+                "category": "Revenue Recovery",
+                "action": (
+                    "Prioritize qualified pipeline conversion and identify "
+                    "near-term commercial actions required to close the "
+                    "revenue shortfall."
+                ),
+                "rationale": (
+                    f"Actual revenue is ₹{abs(budget_gap):,.0f} below budget."
+                ),
+                "financial_impact": round(abs(budget_gap), 2),
+            },
+        )
+
+    # 2. Forecast gap
+    if forecast_gap < 0:
+        _add(
+            recommendations,
+            {
+                "priority": "HIGH",
+                "category": "Forecast Protection",
+                "action": (
+                    "Increase conversion of high-probability pipeline and "
+                    "revalidate delivery assumptions behind the forecast."
+                ),
+                "rationale": (
+                    f"Forecast is ₹{abs(forecast_gap):,.0f} below budget."
+                ),
+                "financial_impact": round(abs(forecast_gap), 2),
+            },
+        )
+
+    # 3. Coverage
+    if forward_coverage < 100:
+        _add(
+            recommendations,
+            {
+                "priority": "HIGH",
+                "category": "Pipeline Coverage",
+                "action": (
+                    "Increase qualified pipeline and accelerate conversion "
+                    "of high-probability opportunities."
+                ),
+                "rationale": (
+                    f"Forward coverage is {forward_coverage:.1f}%, below "
+                    "the 100% budget coverage threshold."
+                ),
+                "financial_impact": round(weighted_pipeline, 2),
+            },
+        )
+    elif forward_coverage < 120:
+        _add(
+            recommendations,
+            {
+                "priority": "MEDIUM",
+                "category": "Coverage Protection",
+                "action": (
+                    "Maintain pipeline generation and selectively accelerate "
+                    "qualified opportunities to build additional buffer."
+                ),
+                "rationale": (
+                    f"Forward coverage is {forward_coverage:.1f}%, leaving "
+                    "limited buffer."
+                ),
+                "financial_impact": round(weighted_pipeline, 2),
+            },
+        )
+
+    # 4. Commitment quality
+    if committed_coverage < 50:
+        _add(
+            recommendations,
+            {
+                "priority": "HIGH",
+                "category": "Forecast Quality",
+                "action": (
+                    "Increase committed-revenue visibility and revalidate "
+                    "the forecast assumptions before using it as a planning "
+                    "baseline."
+                ),
+                "rationale": (
+                    f"Only {committed_coverage:.1f}% of forecast revenue is "
+                    "supported by committed backlog."
+                ),
+                "financial_impact": round(committed_backlog, 2),
+            },
+        )
+    elif committed_coverage < 70:
+        _add(
+            recommendations,
+            {
+                "priority": "MEDIUM",
+                "category": "Forecast Quality",
+                "action": (
+                    "Strengthen committed revenue coverage and improve "
+                    "visibility into pipeline conversion."
+                ),
+                "rationale": (
+                    f"{committed_coverage:.1f}% of forecast revenue is "
+                    "currently supported by committed backlog."
+                ),
+                "financial_impact": round(committed_backlog, 2),
+            },
+        )
+
+    # 5. Pipeline dependency
+    if pipeline_dependency > 50:
+        _add(
+            recommendations,
+            {
+                "priority": "HIGH",
+                "category": "Pipeline Risk",
+                "action": (
+                    "Prioritize conversion of the highest-probability "
+                    "opportunities and reduce dependence on lower-confidence "
+                    "pipeline."
+                ),
+                "rationale": (
+                    f"{pipeline_dependency:.1f}% of forward revenue depends "
+                    "on weighted pipeline."
+                ),
+                "financial_impact": round(weighted_pipeline, 2),
+            },
+        )
+    elif pipeline_dependency >= 40:
+        _add(
+            recommendations,
+            {
+                "priority": "MEDIUM",
+                "category": "Pipeline Management",
+                "action": (
+                    "Monitor pipeline conversion closely and focus commercial "
+                    "activity on opportunities with the highest probability "
+                    "of realization."
+                ),
+                "rationale": (
+                    f"{pipeline_dependency:.1f}% of forward revenue depends "
+                    "on weighted pipeline."
+                ),
+                "financial_impact": round(weighted_pipeline, 2),
+            },
+        )
+
+    # 6. Downside / risk
+    budget_analysis = monte_carlo.get("budget_analysis", {})
+    probability_below = _num(
+        budget_analysis.get("probability_below_budget")
     )
 
-    forecast_risk = str(
-        reasoning.get(
-            "forecast_risk",
-            "unknown",
-        )
-    ).lower()
-
-    pipeline_risk = str(
-        reasoning.get(
-            "pipeline_risk",
-            "unknown",
-        )
-    ).lower()
-
-    # --------------------------------------------------
-    # 1. REVENUE SHORTFALL
-    # --------------------------------------------------
-
-    if budget_gap < 0:
-
-        shortfall = abs(budget_gap)
-
-        recommendations.append({
-            "priority": "HIGH",
-            "category": "Revenue Recovery",
-            "action": (
-                "Prioritize conversion of qualified "
-                "pipeline opportunities and identify "
-                "near-term revenue actions required to "
-                "close the budget shortfall."
-            ),
-            "rationale": (
-                f"Actual revenue is ₹{shortfall:,.0f} "
-                "below budget."
-            ),
-            "financial_impact": round(
-                shortfall,
-                2,
-            ),
-        })
-
-    # --------------------------------------------------
-    # 2. FORECAST SHORTFALL
-    # --------------------------------------------------
-
-    if forecast_gap < 0:
-
-        shortfall = abs(forecast_gap)
-
-        recommendations.append({
-            "priority": "HIGH",
-            "category": "Forecast Protection",
-            "action": (
-                "Increase conversion of high-probability "
-                "pipeline and review delivery assumptions "
-                "behind the current forecast."
-            ),
-            "rationale": (
-                f"Forecast is ₹{shortfall:,.0f} "
-                "below budget."
-            ),
-            "financial_impact": round(
-                shortfall,
-                2,
-            ),
-        })
-
-    # --------------------------------------------------
-    # 3. FORWARD COVERAGE
-    # --------------------------------------------------
-
-    if forward_coverage < 100:
-
-        coverage_gap = (
-            100
-            - forward_coverage
+    if probability_below >= 25:
+        _add(
+            recommendations,
+            {
+                "priority": "HIGH" if probability_below >= 50 else "MEDIUM",
+                "category": "Scenario Risk",
+                "action": (
+                    "Use the Monte Carlo downside range to stress-test the "
+                    "planning baseline and identify the pipeline assumptions "
+                    "that must hold to protect budget."
+                ),
+                "rationale": (
+                    f"Monte Carlo simulations show a "
+                    f"{probability_below:.1f}% probability of finishing "
+                    "below budget."
+                ),
+                "financial_impact": round(
+                    abs(_num(budget_analysis.get("p10_vs_budget"))),
+                    2,
+                ),
+            },
         )
 
-        recommendations.append({
-            "priority": "HIGH",
-            "category": "Pipeline Coverage",
-            "action": (
-                "Increase qualified pipeline and accelerate "
-                "conversion of high-probability opportunities "
-                "to restore forward revenue coverage."
-            ),
-            "rationale": (
-                f"Forward coverage is "
-                f"{forward_coverage:.1f}%, leaving a "
-                f"{coverage_gap:.1f}% coverage gap."
-            ),
-            "financial_impact": round(
-                weighted_pipeline,
-                2,
-            ),
-        })
+    # 7. High qualitative risk, but avoid duplicate "run downside forecast"
+    if overall_risk == "high" and not any(
+        item.get("category") == "Scenario Risk"
+        for item in recommendations
+    ):
+        _add(
+            recommendations,
+            {
+                "priority": "HIGH",
+                "category": "Forecast Risk Management",
+                "action": (
+                    "Revalidate the highest-value pipeline opportunities "
+                    "and use the downside scenario as the planning guardrail."
+                ),
+                "rationale": (
+                    f"Overall risk is high with {committed_coverage:.1f}% "
+                    f"committed coverage and {pipeline_dependency:.1f}% "
+                    "pipeline dependency."
+                ),
+                "financial_impact": round(weighted_pipeline, 2),
+            },
+        )
 
-    # --------------------------------------------------
-    # 4. MODERATE COVERAGE
-    # --------------------------------------------------
-
-    elif forward_coverage < 120:
-
-        recommendations.append({
-            "priority": "MEDIUM",
-            "category": "Coverage Protection",
-            "action": (
-                "Maintain pipeline generation and selectively "
-                "accelerate qualified opportunities to build "
-                "additional forward revenue buffer."
-            ),
-            "rationale": (
-                f"Forward coverage is "
-                f"{forward_coverage:.1f}%, providing "
-                "limited buffer against execution risk."
-            ),
-            "financial_impact": round(
-                weighted_pipeline,
-                2,
-            ),
-        })
-
-    # --------------------------------------------------
-    # 5. HIGH PIPELINE DEPENDENCY
-    # --------------------------------------------------
-
-    if pipeline_dependency >= 60:
-
-        recommendations.append({
-            "priority": "HIGH",
-            "category": "Pipeline Risk",
-            "action": (
-                "Reduce dependence on weighted pipeline by "
-                "prioritizing conversion of high-probability "
-                "opportunities and protecting committed backlog."
-            ),
-            "rationale": (
-                f"{pipeline_dependency:.1f}% of forward "
-                "revenue depends on weighted pipeline."
-            ),
-            "financial_impact": round(
-                weighted_pipeline,
-                2,
-            ),
-        })
-
-    elif pipeline_dependency >= 40:
-
-        recommendations.append({
-            "priority": "MEDIUM",
-            "category": "Pipeline Management",
-            "action": (
-                "Monitor pipeline conversion closely and "
-                "focus commercial activity on opportunities "
-                "with the highest probability of realization."
-            ),
-            "rationale": (
-                f"{pipeline_dependency:.1f}% of forward "
-                "revenue depends on weighted pipeline."
-            ),
-            "financial_impact": round(
-                weighted_pipeline,
-                2,
-            ),
-        })
-
-    # --------------------------------------------------
-    # 6. FORECAST COMMITMENT RISK
-    # --------------------------------------------------
-
-    if committed_forecast_coverage < 50:
-
-        recommendations.append({
-            "priority": "HIGH",
-            "category": "Forecast Quality",
-            "action": (
-                "Increase committed revenue visibility and "
-                "revalidate forecast assumptions before "
-                "relying on the current forecast for planning."
-            ),
-            "rationale": (
-                f"Only {committed_forecast_coverage:.1f}% "
-                "of forecast revenue is backed by committed "
-                "backlog."
-            ),
-            "financial_impact": round(
-                committed_backlog,
-                2,
-            ),
-        })
-
-    elif committed_forecast_coverage < 70:
-
-        recommendations.append({
-            "priority": "MEDIUM",
-            "category": "Forecast Quality",
-            "action": (
-                "Increase visibility into pipeline conversion "
-                "and strengthen committed revenue coverage "
-                "behind the forecast."
-            ),
-            "rationale": (
-                f"{committed_forecast_coverage:.1f}% of "
-                "forecast revenue is currently supported "
-                "by committed backlog."
-            ),
-            "financial_impact": round(
-                committed_backlog,
-                2,
-            ),
-        })
-
-    # --------------------------------------------------
-    # 7. FORECAST RISK
-    # --------------------------------------------------
-
-    if forecast_risk == "high":
-
-        recommendations.append({
-            "priority": "HIGH",
-            "category": "Forecast Risk",
-            "action": (
-                "Run a downside forecast and review the "
-                "largest assumptions driving forecast revenue."
-            ),
-            "rationale": (
-                "Forecast commitment coverage is low, "
-                "indicating elevated execution risk."
-            ),
-            "financial_impact": round(
-                weighted_pipeline,
-                2,
-            ),
-        })
-
-    # --------------------------------------------------
-    # 8. HEALTHY PERFORMANCE
-    # --------------------------------------------------
-
+    # 8. Healthy position
     if (
-        budget_gap >= 0
+        not recommendations
+        and budget_gap >= 0
         and forecast_gap >= 0
         and forward_coverage >= 100
-        and pipeline_risk != "high"
     ):
+        _add(
+            recommendations,
+            {
+                "priority": "LOW",
+                "category": "Performance Protection",
+                "action": (
+                    "Protect current delivery performance while selectively "
+                    "converting the highest-probability pipeline."
+                ),
+                "rationale": (
+                    f"Actual revenue is ₹{budget_gap:,.0f} above budget and "
+                    f"forward coverage is {forward_coverage:.1f}%."
+                ),
+                "financial_impact": round(budget_gap, 2),
+            },
+        )
 
-        recommendations.append({
-            "priority": "LOW",
-            "category": "Performance Protection",
-            "action": (
-                "Protect current delivery performance while "
-                "selectively converting the highest-probability "
-                "pipeline and preserving forecast headroom."
-            ),
-            "rationale": (
-                f"Revenue is ₹{budget_gap:,.0f} above budget, "
-                f"forecast is ₹{forecast_gap:,.0f} above budget, "
-                f"and forward coverage is "
-                f"{forward_coverage:.1f}%."
-            ),
-            "financial_impact": round(
-                budget_gap,
-                2,
-            ),
-        })
-
-    # --------------------------------------------------
-    # 9. STRONG FORWARD POSITION
-    # --------------------------------------------------
-
-    if (
-        forward_coverage >= 120
-        and forecast_gap >= 0
-        and pipeline_dependency < 60
-    ):
-
-        recommendations.append({
-            "priority": "LOW",
-            "category": "Growth Optimization",
-            "action": (
-                "Use the strong forward position to prioritize "
-                "higher-margin opportunities and protect "
-                "delivery capacity rather than pursuing "
-                "low-quality pipeline."
-            ),
-            "rationale": (
-                f"Forward coverage is "
-                f"{forward_coverage:.1f}% with "
-                f"{pipeline_dependency:.1f}% pipeline dependency."
-            ),
-            "financial_impact": round(
-                weighted_pipeline,
-                2,
-            ),
-        })
-
-    # --------------------------------------------------
-    # 10. FALLBACK
-    # --------------------------------------------------
-
-    if not recommendations:
-
-        recommendations.append({
-            "priority": "LOW",
-            "category": "Management Review",
-            "action": (
-                "Continue monitoring revenue performance, "
-                "forecast assumptions, backlog realization "
-                "and pipeline conversion."
-            ),
-            "rationale": (
-                "No material threshold breach was identified "
-                "by the current intelligence rules."
-            ),
-            "financial_impact": 0.0,
-        })
-
-    # --------------------------------------------------
-    # PRIORITY ORDER
-    # --------------------------------------------------
-
-    priority_rank = {
-        "HIGH": 0,
-        "MEDIUM": 1,
-        "LOW": 2,
-    }
-
+    priority_rank = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
     recommendations.sort(
         key=lambda item: priority_rank.get(
-            str(
-                item.get(
-                    "priority",
-                    "LOW",
-                )
-            ).upper(),
-            3,
+            str(item.get("priority", "LOW")).upper(), 3
         )
     )
 

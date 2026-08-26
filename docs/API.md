@@ -77,13 +77,14 @@ sequenceDiagram
     participant DB as PostgreSQL Database
 
     Dashboard->>Gateway: GET /intelligence/overview
-    Gateway->>DB: Query Actuals, Budgets, Pipeline Snapshots
-    DB-->>Gateway: Rowset (actual_revenue, budget_revenue, pipeline_value, etc.)
+    Gateway->>DB: Query Actuals, Budgets, Pipeline Snapshots, Staffing Data
+    DB-->>Gateway: Rowset (actual_revenue, budget_revenue, pipeline_value, staffing_metrics, etc.)
     Gateway->>Engine: build_forecast() & explain_financial_position()
-    Engine->>Engine: Evaluate 9 Insights & 10 Recommendations
-    Engine-->>Gateway: Consolidated Intelligence Package
+    Engine->>Engine: Evaluate 9 Insights, 10 Recommendations, Staffing Insights, & Staffing Recommendations
+    Engine->>Engine: Merge staffing components into consolidated recommendations
+    Engine-->>Gateway: Consolidated Intelligence Package (reasoning, insights, recommendations, staffing)
     Gateway-->>Dashboard: 200 OK JSON Payload
-    Dashboard->>Dashboard: Render KPI Cards, Charts & Action Alerts
+    Dashboard->>Dashboard: Render KPI Cards, Charts & Action Alerts (including staffing alerts)
 ```
 
 ---
@@ -142,7 +143,7 @@ Calculates the current deterministic revenue forecast.
 ---
 
 ### 4. `GET /intelligence/overview`
-Returns the complete financial reasoning, insights, and recommendations payload.
+Returns the complete financial reasoning, insights, recommendations, staffing insights, and staffing recommendations payload.
 
 ```mermaid
 flowchart TD
@@ -150,7 +151,9 @@ flowchart TD
         ST["status: 'healthy'"]
         R["reasoning: 20+ derived metrics (budget_gap, forward_coverage, risk profiles)"]
         IN["insights: Array of 9 evaluated insight objects (severity, message, value)"]
-        RC["recommendations: Array of 10 prioritized actions (priority, action, INR impact)"]
+        RC["recommendations: Array of 10+ prioritized actions (priority, action, INR impact); includes main operational recommendations and merged staffing recommendations"]
+        SC["staffing_insights: Array of staffing-specific insights (severity, category, metric, message)"]
+        SRC["staffing_recommendations: Array of staffing data validation recommendations"]
         SM["source_metrics: Raw input values"]
         FC["forecast: Forecast construction components"]
     end

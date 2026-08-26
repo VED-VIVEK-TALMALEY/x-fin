@@ -47,6 +47,9 @@ graph TB
         S_BU["<b>business_unit_engine.py</b><br/>get_bu_performance()"]
         S_FA["<b>forecast_accuracy.py</b><br/>get_forecast_accuracy()"]
         S_FQ["<b>finance_queries.py</b><br/>get_finance_summary(), get_pipeline_summary(), get_budget_summary(), get_monthly_revenue()"]
+        S_STF["<b>staffing_engine.py</b><br/>calculate_staffing_position()"]
+        S_STI["<b>staffing_insight_engine.py</b><br/>generate_staffing_insights()"]
+        S_STR["<b>staffing_recommendation_engine.py</b><br/>generate_staffing_recommendations()"]
     end
 
     subgraph DataTier["DATA PERSISTENCE TIER (PostgreSQL 14+)"]
@@ -134,16 +137,16 @@ flowchart TD
         I1 --> I_OUT["<b>Array of Scored Insight Dictionaries</b><br/>[{severity: 'HIGH'|'MEDIUM'|'LOW', category, metric, message, value}]"]
     end
 
-    subgraph RecommendationStage["5. ACTION RECOMMENDATIONS (recommendation_engine.py)"]
-        REC1["<b>recommendation_engine.generate_recommendations()</b><br/>Evaluates 10 Action Rules with Priority Sorting:<br/>1. Revenue Recovery (budget_gap < 0)<br/>2. Forecast Protection (forecast_gap < 0)<br/>3. Pipeline Acceleration (coverage < 100%)<br/>4. Coverage Buffer (100% <= coverage < 120%)<br/>5. Pipeline Risk Surge (dependency >= 60%)<br/>6. Velocity Management (40% <= dependency < 60%)<br/>7. Backlog Fortification (committed_coverage < 50%)<br/>8. Backlog Hardening (50% <= committed_coverage < 70%)<br/>9. Delivery Audit (forecast_risk == 'high')<br/>10. Growth Optimization (coverage >= 120% & pipeline < 60%)"]
+    subgraph RecommendationStage["5. ACTION RECOMMENDATIONS (recommendation_engine.py + staffing engines)"]
+        REC1["<b>recommendation_engine.generate_recommendations()</b><br/>Evaluates 10 Action Rules with Priority Sorting<br/><br/><b>PLUS: staffing_insight_engine.generate_staffing_insights()</b><br/>Generates staffing-specific insights<br/><br/><b>PLUS: staffing_recommendation_engine.generate_staffing_recommendations()</b><br/>Generates staffing data validation recommendations<br/><br/>Merge all components by priority and uniqueness"]
         R_OUT & I_OUT --> REC1
-        REC1 --> REC_OUT["<b>Array of Action Recommendation Dictionaries</b><br/>[{priority: 'HIGH'|'MEDIUM'|'LOW', category, action, rationale, financial_impact}]"]
+        REC1 --> REC_OUT["<b>Merged Array of Recommendation Dictionaries</b><br/>10+ items: [{priority: 'HIGH'|'MEDIUM'|'LOW', category, action, rationale, financial_impact}]<br/>Staffing recommendations merged when category unique"]
     end
 
     subgraph DeliveryStage["6. API RESPONSE DISPATCH"]
-        EP["<b>GET /intelligence/overview</b><br/>JSON Package: status, reasoning, insights, recommendations, source_metrics, forecast"]
+        EP["<b>GET /intelligence/overview</b><br/>JSON Package: status, reasoning, insights, recommendations, staffing_insights, staffing_recommendations, source_metrics, forecast"]
         R_OUT & I_OUT & REC_OUT --> EP
-        EP --> ST["<b>dashboard/intelligence.py</b><br/>Render Executive Streamlit UI"]
+        EP --> ST["<b>dashboard/intelligence.py</b><br/>Render Executive Streamlit UI with staffing alerts"]
     end
 
     Ingestion --> ForecastStage --> ReasoningStage --> InsightStage --> RecommendationStage --> DeliveryStage

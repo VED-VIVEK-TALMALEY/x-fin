@@ -9,31 +9,6 @@ class ForecastResult:
     risk_adjustment: float
     forecast_revenue: float
 
-    @property
-    def decomposition(self):
-        return {
-            "committed_backlog": round(
-                self.committed_backlog,
-                2,
-            ),
-            "weighted_pipeline": round(
-                self.weighted_pipeline,
-                2,
-            ),
-            "utilization_adjustment": round(
-                self.utilization_adjustment,
-                2,
-            ),
-            "risk_adjustment": round(
-                self.risk_adjustment,
-                2,
-            ),
-            "forecast_revenue": round(
-                self.forecast_revenue,
-                2,
-            ),
-        }
-
 
 def build_forecast(
     committed_backlog: float,
@@ -43,164 +18,95 @@ def build_forecast(
     risk_rate: float = 0.05,
 ) -> ForecastResult:
     """
-    Build the deterministic revenue forecast.
+    Build the X-Fin deterministic revenue forecast.
 
-    Forecast logic:
+    Forecast construction:
 
-        Forward Revenue
-        = Committed Backlog
+        Forecast
+        =
+        Committed Backlog
         + Weighted Pipeline
-
-        Utilization Adjustment
-        = Forward Revenue
-        * (Utilization - Target Utilization)
-
-        Risk Adjustment
-        = Forward Revenue
-        * Risk Rate
-
-        Forecast Revenue
-        = Forward Revenue
         + Utilization Adjustment
-        - Risk Adjustment
+        - Execution Risk Adjustment
 
-    All monetary values are expected in the same currency/unit.
-    Utilization values are decimal percentages:
-        0.75 = 75%
+    All monetary values are expected to be in the same currency
+    and units as the source financial data.
     """
 
-    committed_backlog = float(
-        committed_backlog or 0
+    committed_backlog = float(committed_backlog or 0.0)
+    weighted_pipeline = float(weighted_pipeline or 0.0)
+    utilization = float(utilization or 0.0)
+    target_utilization = float(target_utilization or 0.0)
+    risk_rate = float(risk_rate or 0.0)
+
+    # --------------------------------------------------
+    # UTILIZATION ADJUSTMENT
+    # --------------------------------------------------
+    #
+    # Positive utilization variance produces upside.
+    # Negative utilization variance produces downside.
+    #
+    # We apply the utilization delta to the weighted
+    # pipeline because pipeline realization is the
+    # component most exposed to delivery capacity.
+    #
+    utilization_delta = utilization - target_utilization
+
+    utilization_adjustment = (
+        weighted_pipeline * utilization_delta
     )
 
-    weighted_pipeline = float(
-        weighted_pipeline or 0
-    )
-
-    utilization = float(
-        utilization or 0
-    )
-
-    target_utilization = float(
-        target_utilization or 0
-    )
-
-    risk_rate = float(
-        risk_rate or 0
-    )
-
+    # --------------------------------------------------
+    # EXECUTION RISK
+    # --------------------------------------------------
+    #
+    # Risk is applied to the forward revenue base.
+    #
     forward_revenue = (
         committed_backlog
         + weighted_pipeline
     )
 
-    utilization_delta = (
-        utilization
-        - target_utilization
-    )
-
-    utilization_adjustment = (
-        forward_revenue
-        * utilization_delta
-    )
-
     risk_adjustment = (
-        forward_revenue
-        * risk_rate
+        forward_revenue * risk_rate
     )
+
+    # --------------------------------------------------
+    # FINAL FORECAST
+    # --------------------------------------------------
 
     forecast_revenue = (
-        forward_revenue
+        committed_backlog
+        + weighted_pipeline
         + utilization_adjustment
         - risk_adjustment
     )
 
+    # Prevent pathological negative forecasts.
+    forecast_revenue = max(
+        forecast_revenue,
+        0.0,
+    )
+
     return ForecastResult(
-        committed_backlog=committed_backlog,
-        weighted_pipeline=weighted_pipeline,
-        utilization_adjustment=utilization_adjustment,
-        risk_adjustment=risk_adjustment,
-        forecast_revenue=forecast_revenue,
-    )
-
-
-def calculate_forecast_accuracy(db):
-    """
-    Calculate historical actual-vs-budget performance by month.
-
-    Kept here for compatibility with the existing dashboard/API.
-    """
-
-    from sqlalchemy import text
-
-    query = text(
-        """
-        WITH monthly_actuals AS (
-            SELECT
-                DATE_TRUNC('month', month) AS month,
-                SUM(actual_revenue) AS actual_revenue
-            FROM project_actuals
-            GROUP BY DATE_TRUNC('month', month)
+        committed_backlog=round(
+            committed_backlog,
+            2,
         ),
-
-        monthly_budgets AS (
-            SELECT
-                DATE_TRUNC('month', month) AS month,
-                SUM(revenue_budget) AS budget_revenue
-            FROM budgets
-            GROUP BY DATE_TRUNC('month', month)
-        )
-
-        SELECT
-            a.month,
-            a.actual_revenue,
-            b.budget_revenue,
-
-            CASE
-                WHEN b.budget_revenue = 0
-                THEN 0
-
-                ELSE
-                    (
-                        a.actual_revenue
-                        - b.budget_revenue
-                    )
-                    / b.budget_revenue
-                    * 100
-            END AS variance_pct
-
-        FROM monthly_actuals a
-
-        LEFT JOIN monthly_budgets b
-            ON a.month = b.month
-
-        ORDER BY a.month
-        """
+        weighted_pipeline=round(
+            weighted_pipeline,
+            2,
+        ),
+        utilization_adjustment=round(
+            utilization_adjustment,
+            2,
+        ),
+        risk_adjustment=round(
+            risk_adjustment,
+            2,
+        ),
+        forecast_revenue=round(
+            forecast_revenue,
+            2,
+        ),
     )
-
-    rows = db.execute(
-        query
-    ).mappings().all()
-
-    results = []
-
-    for row in rows:
-        results.append(
-            {
-                "month": row["month"],
-                "actual_revenue": float(
-                    row["actual_revenue"] or 0
-                ),
-                "budget_revenue": float(
-                    row["budget_revenue"] or 0
-                ),
-                "variance_pct": round(
-                    float(
-                        row["variance_pct"] or 0
-                    ),
-                    2,
-                ),
-            }
-        )
-
-    return results
