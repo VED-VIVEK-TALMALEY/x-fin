@@ -41,3 +41,7 @@ build/
 
 # Test artifacts
 .pytest_cache/
+
+.env
+.env.*
+!.env.example
