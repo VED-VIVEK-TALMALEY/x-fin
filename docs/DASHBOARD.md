@@ -8,7 +8,7 @@
 
 ```mermaid
 flowchart TD
-    subgraph S1["1. DECISION SNAPSHOT & LEADERSHIP READOUT"]
+    subgraph S1["1. DECISION SNAPSHOT & READOUT"]
         D1["<b>Forecast Confidence (%)</b><br/>Monte Carlo Probability"]
         D2["<b>Revenue at Risk (INR)</b><br/>Conversion-Dependent Pipe"]
         D3["<b>Delivery Signal</b><br/>Capacity Attainment & Guardrail"]
@@ -16,32 +16,24 @@ flowchart TD
     end
 
     subgraph S2["2. EXECUTIVE KPI PERFORMANCE BANNER"]
-        K1["Actual Revenue"]
-        K2["Operating Budget"]
-        K3["Net Forecast"]
-        K4["Forward Coverage"]
-        K5["Committed Mix"]
-        K6["Pipeline Risk"]
-        K7["Utilization Target"]
+        K1["Actual Revenue · Operating Budget · Net Forecast · Forward Coverage · Committed Mix · Pipeline Risk"]
     end
 
-    subgraph S3["3. ANALYTICAL VISUALIZATION & RISK DECOMPOSITION"]
-        V1["<b>Forecast Waterfall Chart</b><br/>Backlog -> Pipe -> Util Adj -> Haircut -> Net"]
-        V2["<b>Monte Carlo Density Plot</b><br/>P10, P25, P50, P75, P90 vs Budget Target"]
-        V3["<b>Risk-Driver Gauge Comparison</b><br/>Coverage vs Dependency vs Headroom"]
-        V4["<b>Staffing & Capacity Attainment</b><br/>Delivered Hours vs Budget with Caveat Banner"]
+    subgraph S3["3. ANALYTICAL CHARTS & DECOMPOSITION"]
+        V1["<b>Forecast Waterfall</b><br/>Backlog to Net Forecast"]
+        V2["<b>Monte Carlo Density Plot</b><br/>P10, P50, P90 vs Budget"]
+        V3["<b>Staffing & Capacity Attainment</b><br/>Delivered Hours vs Budget"]
     end
 
-    subgraph S4["4. PRACTICE PERFORMANCE & ACCURACY MATRIX"]
-        P1["<b>Business Unit Performance</b><br/>Revenue, Gross Margin %, Project Count Heatmap"]
-        P2["<b>Historical Forecast Accuracy</b><br/>Month-by-month recognized vs planned variance"]
-        P3["<b>Monthly Revenue Trajectory</b><br/>Time series trends across billing cycles"]
+    subgraph S4["4. PRACTICE PERFORMANCE & ACCURACY"]
+        P1["<b>Business Unit Performance</b><br/>Revenue, Margin %, Project Count Heatmap"]
+        P2["<b>Historical Forecast Accuracy</b><br/>Monthly planned vs recognized variance"]
     end
 
-    subgraph S5["5. ACTIONABLE DECISION INTELLIGENCE & SCENARIO SIMULATOR"]
-        I1["<b>9 Scored Diagnostic Insight Cards</b><br/>Color-coded HIGH / MEDIUM / LOW severity badges"]
-        I2["<b>10 Prioritized Action Remediations</b><br/>Prescriptive playbooks with quantified INR financial impact"]
-        I3["<b>Interactive What-If Scenario Simulator</b><br/>Sensitivity sliders for conversion, rates, util, and slippage"]
+    subgraph S5["5. ACTIONABLE INTELLIGENCE & SCENARIOS"]
+        I1["<b>9 Scored Diagnostic Insight Cards</b><br/>HIGH / MEDIUM / LOW severity badges"]
+        I2["<b>10 Prioritized Action Remediations</b><br/>Quantified INR financial impact"]
+        I3["<b>Interactive Scenario Simulator</b><br/>Sliders for conversion, rates, util, and slippage"]
     end
 
     S1 --> S2 --> S3 --> S4 --> S5
@@ -84,13 +76,13 @@ flowchart LR
     end
 
     subgraph Engine["FastAPI POST /scenarios/run"]
-        E_CALC["Calculate Parametric Revenue Adjustments"]
+        E_CALC["Calculate Parametric Adjustments"]
     end
 
     subgraph Output["Dashboard Impact Render"]
-        O_REV["<b>Simulated Revenue ($R_{sim}$)</b>"]
-        O_DEL["<b>Absolute Delta ($\Delta_{\text{INR}}$)</b>"]
-        O_PCT["<b>Percentage Delta ($\Delta_{\%}$)</b>"]
+        O_REV["<b>Simulated Revenue</b>"]
+        O_DEL["<b>Absolute Delta (INR)</b>"]
+        O_PCT["<b>Percentage Delta (%)</b>"]
     end
 
     Sliders --> Engine --> Output

@@ -7,61 +7,34 @@
 ## API Route Architecture
 
 ```mermaid
-graph LR
-    API["FastAPI Gateway (:8000)"]
+flowchart TB
+    API["<b>FastAPI Gateway (:8000)</b>"]
 
-    subgraph Analytics["/analytics/*"]
-        A1["GET /analytics/summary"]
-        A2["GET /analytics/monthly-revenue"]
-        A3["GET /analytics/backlog"]
-        A4["GET /analytics/variance"]
-        A5["GET /analytics/forecast-accuracy"]
-        A6["GET /analytics/business-units"]
+    subgraph CoreRoutes["Core Analytics & Forecast"]
+        A1["/analytics/* (/summary, /monthly-revenue, /backlog, /variance, /forecast-accuracy, /business-units)"]
+        F1["/forecast/current"]
     end
 
-    subgraph Forecast["/forecast/*"]
-        F1["GET /forecast/current"]
+    subgraph DecisionRoutes["Intelligence & Decision Routes"]
+        I1["/intelligence/* (/health, /overview)"]
+        E1["/executive/* (/health, /briefing)"]
+        D1["/decisions/overview"]
+        S1["/scenarios/run"]
+        P1["/projects"]
     end
 
-    subgraph Intelligence["/intelligence/*"]
-        I1["GET /intelligence/health"]
-        I2["GET /intelligence/overview"]
-    end
-
-    subgraph Executive["/executive/*"]
-        E1["GET /executive/health"]
-        E2["GET /executive/briefing"]
-    end
-
-    subgraph Decisions["/decisions/*"]
-        D1["GET /decisions/overview"]
-    end
-
-    subgraph Scenarios["/scenarios/*"]
-        S1["POST /scenarios/run"]
-    end
-
-    subgraph Projects["/projects"]
-        P1["GET /projects"]
-    end
-
-    subgraph System["/"]
-        SYS1["GET /"]
-        SYS2["GET /health"]
-        SYS3["GET /health/db"]
-    end
-
-    API --> Analytics & Forecast & Intelligence & Executive & Decisions & Scenarios & Projects & System
+    API --> CoreRoutes & DecisionRoutes
 
     style API fill:#1E293B,stroke:#0F172A,stroke-width:2px,color:#FFFFFF
-    style Analytics fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
-    style Forecast fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
-    style Intelligence fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
-    style Executive fill:#FDF4FF,stroke:#C026D3,stroke-width:2px,color:#86198F
-    style Decisions fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
-    style Scenarios fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#991B1B
-    style Projects fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#15803D
-    style System fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
+    style CoreRoutes fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style DecisionRoutes fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+    style A1 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
+    style F1 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style I1 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style E1 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style D1 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style S1 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
+    style P1 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
 ```
 
 ---
@@ -73,10 +46,10 @@ sequenceDiagram
     autonumber
     actor Dashboard as Streamlit UI (dashboard/api.py)
     participant Gateway as FastAPI Router (/intelligence/overview)
-    participant DB as PostgreSQL / SQLite Database
+    participant DB as Database (PostgreSQL / SQLite)
     participant EngFC as forecast_engine.py
     participant EngMC as monte_carlo_engine.py
-    participant EngRS as finance_reasoning.py & risk_engine.py
+    participant EngRS as finance_reasoning.py
     participant EngIN as insight_engine.py
     participant EngRC as recommendation_engine.py
 
