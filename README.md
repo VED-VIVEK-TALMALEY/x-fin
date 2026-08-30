@@ -428,8 +428,8 @@ flowchart LR
 
 ---
 
-## Local Development & Operations
 
+<<<<<<< HEAD
 ```bash
 # 1. Enter x-fin directory
 cd consulting-forecast-engine/x-fin
@@ -451,6 +451,8 @@ pytest tests/ -v
 ```
 
 ---
+=======
+>>>>>>> 2cf98977284ac948c626d1271915ba23dd008caa
 
 ## Technical Documentation Directory
 
