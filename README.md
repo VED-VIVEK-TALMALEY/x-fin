@@ -631,58 +631,7 @@ flowchart LR
 
 ---
 
-## Local Development & Operations
 
-### 1. Environment Setup
-
-```bash
-# Clone repository and enter project directory
-cd consulting-forecast-engine/x-fin
-
-# Create and activate Python virtual environment
-python -m venv .venv
-
-# On Windows:
-.venv\Scripts\activate
-# On Linux/macOS:
-source .venv/bin/activate
-
-# Install all production and development dependencies
-pip install -r requirements.txt
-```
-
-### 2. Database Initialization (Zero-Config SQLite or PostgreSQL)
-
-The system automatically initializes an embedded SQLite database if PostgreSQL is not active. To use PostgreSQL:
-
-```bash
-# Apply schema
-psql -U postgres -d consulting_forecast -f app/db/schema.sql
-
-# Generate synthetic practice data (750 projects across 24 months)
-python scripts/generate_synthetic_data.py
-python scripts/load_data.py
-```
-
-### 3. Service Execution
-
-```bash
-# Terminal 1: Start FastAPI REST Gateway
-uvicorn app.main:app --reload --port 8000
-
-# Terminal 2: Start Streamlit Leadership Dashboard
-cd dashboard
-streamlit run app.py
-```
-
-### 4. Verification & Testing
-
-```bash
-# Run complete automated test suite
-pytest tests/ -v
-```
-
----
 
 ## Comprehensive Documentation Index
 
