@@ -1,110 +1,114 @@
-# X-Fin Dashboard Guide
+# X-Fin Leadership Decision Surface Guide
 
-## Purpose
+> **Module Path:** `dashboard/app.py` · **Supporting Modules:** `dashboard/intelligence.py`, `dashboard/charts.py`, `dashboard/components.py`, `dashboard/api.py`
 
-The Streamlit dashboard is the decision-support surface for X-Fin. It keeps the complete operating dataset visible while organizing it around the questions a practice leader needs to answer:
+---
 
-- Are we above or below plan?
-- How much of the forecast is dependable?
-- How much growth depends on pipeline conversion?
-- Can delivery capacity support the plan?
-- What should management do next?
+## Decision Dashboard Architecture & Layout
 
-The dashboard reads existing FastAPI endpoints through `dashboard/api.py`. It does not duplicate or replace backend calculations.
+```mermaid
+flowchart TD
+    subgraph S1["1. DECISION SNAPSHOT & LEADERSHIP READOUT"]
+        D1["<b>Forecast Confidence (%)</b><br/>Monte Carlo Probability"]
+        D2["<b>Revenue at Risk (INR)</b><br/>Conversion-Dependent Pipe"]
+        D3["<b>Delivery Signal</b><br/>Capacity Attainment & Guardrail"]
+        D4["<b>Leadership Readout</b><br/>Plain-language executive summary"]
+    end
 
-## Start the Dashboard
+    subgraph S2["2. EXECUTIVE KPI PERFORMANCE BANNER"]
+        K1["Actual Revenue"]
+        K2["Operating Budget"]
+        K3["Net Forecast"]
+        K4["Forward Coverage"]
+        K5["Committed Mix"]
+        K6["Pipeline Risk"]
+        K7["Utilization Target"]
+    end
 
-From the `x-fin` directory:
+    subgraph S3["3. ANALYTICAL VISUALIZATION & RISK DECOMPOSITION"]
+        V1["<b>Forecast Waterfall Chart</b><br/>Backlog -> Pipe -> Util Adj -> Haircut -> Net"]
+        V2["<b>Monte Carlo Density Plot</b><br/>P10, P25, P50, P75, P90 vs Budget Target"]
+        V3["<b>Risk-Driver Gauge Comparison</b><br/>Coverage vs Dependency vs Headroom"]
+        V4["<b>Staffing & Capacity Attainment</b><br/>Delivered Hours vs Budget with Caveat Banner"]
+    end
 
-```powershell
-.\venv\Scripts\python.exe -m streamlit run dashboard\app.py
+    subgraph S4["4. PRACTICE PERFORMANCE & ACCURACY MATRIX"]
+        P1["<b>Business Unit Performance</b><br/>Revenue, Gross Margin %, Project Count Heatmap"]
+        P2["<b>Historical Forecast Accuracy</b><br/>Month-by-month recognized vs planned variance"]
+        P3["<b>Monthly Revenue Trajectory</b><br/>Time series trends across billing cycles"]
+    end
+
+    subgraph S5["5. ACTIONABLE DECISION INTELLIGENCE & SCENARIO SIMULATOR"]
+        I1["<b>9 Scored Diagnostic Insight Cards</b><br/>Color-coded HIGH / MEDIUM / LOW severity badges"]
+        I2["<b>10 Prioritized Action Remediations</b><br/>Prescriptive playbooks with quantified INR financial impact"]
+        I3["<b>Interactive What-If Scenario Simulator</b><br/>Sensitivity sliders for conversion, rates, util, and slippage"]
+    end
+
+    S1 --> S2 --> S3 --> S4 --> S5
+
+    style S1 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style S2 fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+    style S3 fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style S4 fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#15803D
+    style S5 fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
 ```
 
-The API must be running at `http://127.0.0.1:8000`. Streamlit normally opens at `http://localhost:8501`; if that port is busy, use the port shown by Streamlit.
+---
 
-## Page Model
+## Leadership Decision Pillars & UI Component Directory
 
-### Decision Snapshot
+| Section Name | Key Visual Components | Telemetry Source | Primary Leadership Decision Question |
+|:-------------|:----------------------|:-----------------|:-------------------------------------|
+| **Decision Snapshot** | 3 Metric Gauges + Text Card | `monte_carlo`, `risk`, `staffing` | What is our aggregate forecast confidence and primary watchpoint? |
+| **Executive Performance** | 8 KPI Metric Cards with deltas | `finance_summary`, `budgets` | Are we on track to hit our annual revenue and gross margin targets? |
+| **Forecast Waterfall** | Plotly Step-by-Step Waterfall | `forecast_decomposition` | How is the net deliverable forecast mathematically constructed? |
+| **Monte Carlo Distribution** | Plotly Bell-Curve / Quantile Area | `monte_carlo_engine` | What is our downside exposure (P10/VaR) vs upside capture (P90)? |
+| **Risk-Driver Comparison** | Multi-Bar Risk Ratio Comparison | `finance_reasoning` | What portion of our forward book is secured by locked contracts? |
+| **Staffing & Capacity** | Bar Chart + Warning Banner | `staffing_engine` | Can current delivery staffing hours support pipeline demand? |
+| **BU Heatmap & Trends** | Interactive Heatmap & Line Plots | `business_unit_engine` | Which regional delivery practice hub is lagging behind plan? |
+| **Diagnostic Insights** | 9 Expandable Severity Cards | `insight_engine` | What specific operational vulnerabilities require investigation? |
+| **Action Recommendations**| 10 Quantified Remediation Cards | `recommendation_engine` | What concrete operational actions will yield the highest financial return? |
+| **Scenario Simulator** | 5 Sensitivity Sliders + Delta Card | `scenario_engine` | What happens if pipeline conversion drops 10% or projects slip 30 days? |
 
-The first section turns the intelligence payload into three leadership signals:
+---
 
-- **Forecast Confidence:** Monte Carlo probability of finishing at or above budget.
-- **Revenue at Risk:** Weighted pipeline that is still dependent on conversion.
-- **Delivery Signal:** Staffing-hours status and its data-quality caveat.
+## Interactive Scenario Simulator Controls
 
-The leadership readout below these signals summarizes the positive position and the primary watchpoint in plain language.
+```mermaid
+flowchart LR
+    subgraph Sliders["User Input Controls (Streamlit Sliders)"]
+        S_CONV["<b>Pipeline Conversion Change</b><br/>Range: -50% to +50%"]
+        S_UTIL["<b>Staffing Utilization Change</b><br/>Range: -15% to +15%"]
+        S_RATE["<b>Billing Rate Adjustment</b><br/>Range: -20% to +20%"]
+        S_SLIP["<b>Delivery Slippage Rate</b><br/>Range: 0% to 30%"]
+    end
 
-### Executive Performance
+    subgraph Engine["FastAPI POST /scenarios/run"]
+        E_CALC["Calculate Parametric Revenue Adjustments"]
+    end
 
-This section shows actual revenue, budget variance, canonical forecast, committed backlog, pipeline, weighted pipeline, budget utilization, and gross margin. These are the core practice economics indicators.
+    subgraph Output["Dashboard Impact Render"]
+        O_REV["<b>Simulated Revenue ($R_{sim}$)</b>"]
+        O_DEL["<b>Absolute Delta ($\Delta_{\text{INR}}$)</b>"]
+        O_PCT["<b>Percentage Delta ($\Delta_{\%}$)</b>"]
+    end
 
-### Executive Intelligence
+    Sliders --> Engine --> Output
 
-This section presents qualitative and quantitative status together. The composite score is continuous; the qualitative risk labels are rule-based classifications of coverage and dependency.
+    style Sliders fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style Engine fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+    style Output fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+```
 
-### Forecast Decomposition
+---
 
-The metric row and waterfall chart show how the final forecast is constructed from committed backlog, weighted pipeline, utilization adjustment, and execution-risk adjustment.
+## Design System & Semantic Color Tokens
 
-### Forecast Risk and Revenue Quality
-
-The risk-driver chart makes the forecast mix visible. Committed coverage and headroom are positive certainty signals; pipeline dependency is a dependency signal and should be read with its qualitative risk label.
-
-The confidence distribution shows P10, P25, P50, P75, and P90 simulated outcomes against the budget line.
-
-### Staffing and Capacity
-
-Actual hours are compared with the hours budget. This is intentionally labeled as hours-versus-budget analysis. The current schema does not provide a true capacity-hours denominator, so the dashboard does not claim that hours attainment equals utilization.
-
-### Insights and Recommended Actions
-
-Insights are severity-coded findings from the API. Recommendations preserve their priority, rationale, and financial impact. These are management prompts, not automatic approvals or workflow assignments.
-
-### Revenue, Forecast, Backlog, and Business Units
-
-Charts provide trend and comparison views while the tables preserve the underlying detail:
-
-- Monthly revenue trend
-- Forecast variance
-- Backlog position
-- Business-unit revenue and margin
-- Business-unit performance heatmap
-- Historical forecast and budget accuracy
-
-### Scenario Simulator
-
-The existing scenario simulator sends user assumptions to `POST /scenarios/run`. It supports base revenue, pipeline revenue, utilization, pipeline conversion change, utilization change, billing-rate change, and project slippage. Results are shown as a comparison against the supplied baseline.
-
-## Visual Language
-
-The dashboard uses a dark charcoal presentation with restrained semantic colors:
-
-- Cyan or blue: neutral forecast and operating information
-- Green: favorable or committed position
-- Amber: attention, uncertainty, or dependency
-- Red: material risk or urgent review
-
-Cards and charts are deliberately separated by whitespace. Tables remain available for auditability, while charts expose patterns faster than a dense metric wall.
-
-## Hover Help
-
-Section headings and important metrics expose hover help. Each explanation is written to answer:
-
-1. What does this measure mean?
-2. What data does it represent?
-3. Why should a decision-maker care?
-
-Plotly charts also provide point-level hover values.
-
-## Data Availability Behavior
-
-Every chart checks for missing or incomplete data and returns an empty chart or an informational message instead of failing the page. This matters for historical accuracy, business-unit fields, and staffing capacity fields that may not be populated in every environment.
-
-## Design Principles
-
-- Keep all material data accessible.
-- Lead with decisions, not database fields.
-- Distinguish forecast confidence from forecast upside.
-- Do not call hours-versus-budget utilization without a capacity denominator.
-- Keep narrative text short and traceable to API values.
-- Preserve the backend as the single source of truth.
+| Semantic Role | Hex Code | Visual Meaning | Usage in Dashboard |
+|:--------------|:--------:|:---------------|:-------------------|
+| **Primary Brand** | `#2563EB` | Blue / Cyan | Baseline metrics, headers, neutral forecast trajectories |
+| **Positive / Favorable** | `#16A34A` | Emerald Green | Beating budget, committed backlog, low-risk classifications |
+| **Warning / Attention** | `#D97706` | Amber Gold | Pipeline dependency 40–60%, moderate headroom, conversion drag |
+| **Critical Risk / Deficit** | `#DC2626` | Crimson Red | Budget deficit, high forecast risk, staffing data quality review |
+| **Dark Canvas Background** | `#0F172A` | Slate 900 | Main viewport canvas background |
+| **Elevated Surface Card** | `#1E293B` | Slate 800 | Container card background with subtle border radius |

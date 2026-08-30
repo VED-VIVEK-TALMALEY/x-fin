@@ -1,127 +1,92 @@
-# X-Fin Production Runbook
+# X-Fin Production Deployment & Runbook
 
-## Production topology
+> **Target Environment:** Render Web Services & PostgreSQL / Streamlit Community Cloud
 
-X-Fin uses a two-service deployment:
+---
 
-- **Frontend:** Streamlit Community Cloud
-- **Backend:** FastAPI on Render
-- **Database:** PostgreSQL managed by Render
+## Production Deployment Topology
 
-Production API:
+```mermaid
+graph LR
+    subgraph StreamlitCloud["Streamlit Community Cloud"]
+        ST_APP["<b>Frontend Application</b><br/>https://x-finance.streamlit.app/"]
+    end
 
-`https://x-fin-api.onrender.com`
+    subgraph RenderPlatform["Render Cloud Infrastructure"]
+        subgraph WebService["FastAPI Web Service"]
+            FAST_API["<b>FastAPI ASGI Service</b><br/>https://x-fin-api.onrender.com"]
+        end
 
-Frontend:
+        subgraph ManagedDB["Managed PostgreSQL"]
+            PG_DB[("PostgreSQL 14+ Instance")]
+        end
+    end
 
-`https://x-finance.streamlit.app/`
+    User(["Practice Leadership / Partner"]) -->|HTTPS Web Traffic| ST_APP
+    ST_APP -->|Secure REST Calls (API_BASE_URL)| FAST_API
+    FAST_API -->|TCP SSL :5432| PG_DB
 
-The Streamlit frontend must use `API_BASE_URL` pointing to the Render API. It must not fall back to `127.0.0.1:8000` in production.
-
-## Render API configuration
-
-Required environment variables:
-
-```text
-DATABASE_URL=<Render PostgreSQL connection string>
-ENVIRONMENT=production
+    style StreamlitCloud fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style RenderPlatform fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#15803D
+    style WebService fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
+    style ManagedDB fill:#FAF5FF,stroke:#9333EA,stroke-width:1px,color:#6B21A8
+    style User fill:#FEF3CD,stroke:#D97706,stroke-width:2px,color:#92400E
 ```
 
-`DATABASE_URL` must be the current Render PostgreSQL connection string. Do not commit the database URL to Git.
+---
 
-The application normalizes `postgres://` and `postgresql://` URLs to the SQLAlchemy `postgresql+psycopg2://` form.
+## Environment Configuration Matrix
 
-## Streamlit configuration
+| Variable Name | Environment | Sample Value | Security Level | Purpose |
+|:--------------|:-----------:|:-------------|:--------------:|:--------|
+| `DATABASE_URL` | Render / Backend | `postgresql://user:pass@host:5432/dbname` | **Secret** | Connection string for PostgreSQL database |
+| `ENVIRONMENT` | Render / Backend | `production` | Public | Toggles production logging and strict error handling |
+| `API_PORT` | Render / Backend | `8000` | Public | Target internal port for Uvicorn ASGI server |
+| `API_BASE_URL` | Streamlit Cloud | `https://x-fin-api.onrender.com` | **Secret** | Base URL for frontend REST connector |
 
-In Streamlit Community Cloud, configure:
+---
 
-```toml
-API_BASE_URL = "https://x-fin-api.onrender.com"
+## Production Health Check Verification Runbook
+
+```mermaid
+flowchart TD
+    subgraph Checks["HEALTH CHECK VERIFICATION PIPELINE"]
+        C1["<b>1. Root & Base Health</b><br/><code>GET /</code> & <code>GET /health</code><br/>Expected: 200 OK {'status': 'healthy'}"]
+        C2["<b>2. Database Connectivity</b><br/><code>GET /health/db</code><br/>Expected: 200 OK {'database': 'connected'}"]
+        C3["<b>3. Financial Intelligence</b><br/><code>GET /intelligence/health</code> & <code>GET /intelligence/overview</code><br/>Expected: 200 OK with full reasoning bundle"]
+        C4["<b>4. Executive Briefing</b><br/><code>GET /executive/briefing</code><br/>Expected: 200 OK with decision summary"]
+    end
+
+    C1 --> C2 --> C3 --> C4
+
+    style Checks fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
 ```
 
-Keep this value in Streamlit Secrets rather than hard-coding the production URL into application code.
-
-## Deployment checks
-
-After deploying the API:
-
-```text
-GET /
-GET /health
-GET /health/db
-GET /intelligence/health
-GET /analytics/summary
-GET /analytics/monthly-revenue
-GET /analytics/backlog
-GET /analytics/variance
-GET /analytics/forecast-accuracy
-GET /analytics/business-units
-GET /forecast/current
-GET /intelligence/overview
-```
-
-The core endpoints should return HTTP 200.
-
-After deploying the Streamlit frontend, verify that the dashboard no longer reports:
-
-```text
-127.0.0.1:8000
-```
-
-If it does, check that `API_BASE_URL` exists in Streamlit Secrets and that the latest frontend commit has been pushed.
-
-## Data loading
-
-The production startup command runs:
+### Verification Command Sequence
 
 ```bash
-python scripts/bootstrap_db.py
+# Verify API service is reachable
+curl -f https://x-fin-api.onrender.com/health
+
+# Verify PostgreSQL connection pool
+curl -f https://x-fin-api.onrender.com/health/db
+
+# Verify intelligence pipeline returns status ok
+curl -f https://x-fin-api.onrender.com/intelligence/health
+
+# Verify executive briefing endpoint
+curl -f https://x-fin-api.onrender.com/executive/health
 ```
 
-followed by Uvicorn.
+---
 
-Do not run the full synthetic data loader automatically on every deployment unless replacing the production dataset is intentional.
+## Production Data Loading & Bootstrapping
 
-## Git hygiene
-
-The repository ignores:
-
-- virtual environments
-- `.env` files
-- Streamlit secrets
-- local databases
-- logs
-- Python caches
-- build artifacts
-
-If a secret or virtual environment was committed previously, `.gitignore` alone is not sufficient. Remove the tracked files and rewrite Git history if the sensitive material must disappear from repository history.
-
-## Staffing-model limitation
-
-The current schema contains `hours_budget` and `utilization_budget`, but not a true capacity-hours denominator.
-
-Therefore:
-
-- `actual_hours / budget_hours` is **hours attainment**, not utilization.
-- `actual_utilization` remains unavailable.
-- bench hours and bench percentage remain unavailable.
-- management-facing staffing conclusions should explicitly carry the data-quality limitation.
-
-This is intentional model governance: the system does not fabricate utilization from an invalid denominator.
-
-## Pre-release validation
-
-Run:
+The production startup command automatically runs:
 
 ```bash
-pytest tests/ -v
+python scripts/bootstrap_db.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
 
-Then perform a production smoke test against:
-
-```text
-https://x-fin-api.onrender.com/health
-https://x-fin-api.onrender.com/intelligence/overview
-```
-
-Finally open the Streamlit application and verify KPI cards, forecast, risk, scenarios, charts, and intelligence panels.
+> [!CAUTION]
+> **Production Data Safety:** Do NOT execute `scripts/load_data.py` or `scripts/generate_synthetic_data.py` in production unless you intend to completely replace the active database dataset.

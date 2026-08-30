@@ -1,6 +1,6 @@
 # X-Fin Forecast & Variance Engine Specification
 
-> **Module Path:** `app/services/forecast_engine.py` · **Router:** `app/routers/forecast.py`
+> **Module Paths:** `app/services/forecast_engine.py`, `app/services/forecast_decomposition.py`, `app/services/monte_carlo_engine.py`, `app/services/variance_engine.py`
 
 ---
 
@@ -8,32 +8,32 @@
 
 ```mermaid
 flowchart TD
-    subgraph S1["INPUT EXTRACTION"]
-        IN_B["<b>Committed Backlog</b><br/><code>backlog_engine.calculate_backlog()</code><br/>SUM(pipeline_value) WHERE stage IN ('In Delivery', 'Closed Won')"]
-        IN_P["<b>Weighted Pipeline</b><br/><code>finance_queries.get_pipeline_summary()</code><br/>SUM(pipeline_value * probability) [Latest Snapshot]"]
-        IN_U["<b>Actual Utilization</b><br/><code>finance_queries.get_budget_summary()</code><br/>AVG(budgets.utilization_budget)"]
-        IN_TU["<b>Target Utilization Benchmark</b><br/><code>target_utilization = 0.75</code> (75% Baseline)"]
+    subgraph S1["1. INPUT INGESTION & DATA SANITIZATION"]
+        IN_B["<b>Committed Backlog ($B_{comm}$)</b><br/><code>backlog_engine.calculate_backlog()</code><br/>SUM(pipeline_value) WHERE stage IN ('In Delivery', 'Closed Won')"]
+        IN_P["<b>Weighted Pipeline ($P_{wt}$)</b><br/><code>finance_queries.get_pipeline_summary()</code><br/>SUM(pipeline_value * probability) [Latest Snapshot]"]
+        IN_U["<b>Actual Utilization ($U_{act}$)</b><br/><code>finance_queries.get_budget_summary()</code><br/>AVG(budgets.utilization_budget)"]
+        IN_TU["<b>Target Utilization Benchmark ($U_{tgt}$)</b><br/>Fixed Constant: <code>target_utilization = 0.75</code> (75%)"]
     end
 
-    subgraph S2["UTILIZATION ADJUSTMENT CALCULATION"]
-        F_CALC["<b>1. Compute Utilization Factor</b><br/><code>factor = actual_utilization / target_utilization</code><br/><i>(e.g., 0.75 / 0.75 = 1.00)</i>"]
-        UA_CALC["<b>2. Compute Utilization Adjustment</b><br/><code>adj_util = committed_backlog * (factor - 1.0)</code><br/><i>(Delta applied to committed backlog base)</i>"]
+    subgraph S2["2. UTILIZATION FACTOR & ADJUSTMENT CALCULATION"]
+        F_CALC["<b>1. Compute Utilization Factor</b><br/>$$\text{Factor}_{\text{util}} = \frac{U_{\text{act}}}{U_{\text{tgt}}}$$<br/><i>(e.g., 0.75 / 0.75 = 1.00)</i>"]
+        UA_CALC["<b>2. Compute Utilization Adjustment</b><br/>$$\text{Adj}_{\text{util}} = B_{\text{comm}} \times (\text{Factor}_{\text{util}} - 1.0)$$<br/><i>(Positive = Staffing Over-Utilization Upside; Negative = Under-Utilization Drag)</i>"]
         IN_U & IN_TU --> F_CALC --> UA_CALC
         IN_B --> UA_CALC
     end
 
-    subgraph S3["GROSS FORECAST SYNTHESIS"]
-        GF_CALC["<b>3. Compute Gross Forecast</b><br/><code>gross_forecast = committed_backlog + weighted_pipeline + adj_util</code>"]
+    subgraph S3["3. GROSS FORECAST SYNTHESIS"]
+        GF_CALC["<b>3. Compute Gross Forecast Revenue</b><br/>$$R_{\text{gross}} = B_{\text{comm}} + P_{\text{wt}} + \text{Adj}_{\text{util}}$$"]
         IN_B & IN_P & UA_CALC --> GF_CALC
     end
 
-    subgraph S4["RISK HAIRCUT CALCULATION"]
-        RH_CALC["<b>4. Apply 5% Flat Execution Haircut</b><br/><code>risk_rate = 0.05</code><br/><code>adj_risk = gross_forecast * 0.05</code>"]
+    subgraph S4["4. EXECUTION RISK HAIRCUT"]
+        RH_CALC["<b>4. Apply 5% Flat Execution Haircut</b><br/>$$\text{Adj}_{\text{risk}} = R_{\text{gross}} \times 0.05$$<br/><i>(Protects against scope slip & delivery delays)</i>"]
         GF_CALC --> RH_CALC
     end
 
-    subgraph S5["NET FORECAST OUTPUT"]
-        NF_CALC["<b>5. Compute Net Forecast Revenue</b><br/><code>forecast_revenue = round(gross_forecast - adj_risk, 2)</code>"]
+    subgraph S5["5. NET DELIVERABLE FORECAST"]
+        NF_CALC["<b>5. Compute Net Forecast Revenue</b><br/>$$R_{\text{net}} = \text{round}(R_{\text{gross}} - \text{Adj}_{\text{risk}}, 2)$$"]
         GF_CALC & RH_CALC --> NF_CALC
     end
 
@@ -62,161 +62,140 @@ flowchart TD
 
 ## Mathematical Formulation
 
+### 1. Utilization Multiplier & Adjustment
+
 $$\text{Factor}_{\text{util}} = \frac{U_{\text{actual}}}{U_{\text{target}}}$$
 
 $$\text{Adj}_{\text{util}} = \text{Backlog}_{\text{committed}} \times \left( \text{Factor}_{\text{util}} - 1.0 \right)$$
 
+### 2. Gross Forecast Synthesis
+
 $$\text{Gross Forecast} = \text{Backlog}_{\text{committed}} + \text{Pipeline}_{\text{weighted}} + \text{Adj}_{\text{util}}$$
 
+### 3. Execution Risk Haircut
+
 $$\text{Adj}_{\text{risk}} = \text{Gross Forecast} \times 0.05$$
+
+### 4. Net Deliverable Forecast Revenue
 
 $$\text{Forecast Revenue} = \text{Gross Forecast} - \text{Adj}_{\text{risk}}$$
 
 ---
 
-## Input & Output Parameter Specifications
+## Numerical Step-by-Step Trace Matrix
 
-### Input Parameters
-
-| Parameter Name | Python Type | Default Value | Source Query | Description |
-|:---------------|:-----------:|:-------------:|:-------------|:------------|
-| `committed_backlog` | `float` | Required | `backlog_engine.calculate_backlog()` | Sum of deals in `In Delivery` and `Closed Won` stages |
-| `weighted_pipeline` | `float` | Required | `finance_queries.get_pipeline_summary()` | Probability-weighted sum of active pipeline deals |
-| `utilization` | `float` | `0.74` | `finance_queries.get_budget_summary()` | Current billable staffing utilization rate |
-| `target_utilization` | `float` | `0.75` | Hard-coded Constant | Benchmark target utilization rate (Raises `ValueError` if <= 0) |
-| `risk_rate` | `float` | `0.05` | Hard-coded Constant | Standard 5% execution risk discount |
-
-### Output Dataclass (`ForecastResult`)
-
-| Field Name | Type | Precision | Example Value | Description |
-|:-----------|:----:|:---------:|:--------------|:------------|
-| `committed_backlog` | `float` | 2 decimal places | `100000.00` | Input committed backlog volume |
-| `weighted_pipeline` | `float` | 2 decimal places | `50000.00` | Input probability-weighted pipeline |
-| `utilization_adjustment` | `float` | 2 decimal places | `0.00` | Revenue adjustment derived from utilization delta |
-| `risk_adjustment` | `float` | 2 decimal places | `7500.00` | 5% execution risk haircut |
-| `forecast_revenue` | `float` | 2 decimal places | `142500.00` | **Final net deliverable forecast revenue** |
+| Step Number | Calculation Stage | Mathematical Operation | Baseline Numerical Inputs | Computed Output |
+|:-----------:|:------------------|:-----------------------|:--------------------------|:----------------|
+| **1** | Backlog Ingestion | Extract locked contract value | Sum of In Delivery + Closed Won | **INR 100,000.00** |
+| **2** | Pipeline Weighting | $\sum (\text{Value} \times \text{Probability})$ | Sum of active commercial proposals | **INR 50,000.00** |
+| **3** | Utilization Delta | $100,000 \times \left(\frac{0.75}{0.75} - 1.0\right)$ | Utilization at target (75.0%) | **INR 0.00** |
+| **4** | Gross Synthesis | $100,000 + 50,000 + 0$ | Aggregation of revenue layers | **INR 150,000.00** |
+| **5** | Risk Haircut | $150,000 \times 0.05$ | 5% delivery execution haircut | **INR -7,500.00** |
+| **6** | **Net Deliverable**| $\mathbf{150,000 - 7,500}$ | **Risk-adjusted period forecast** | **INR 142,500.00** |
 
 ---
 
-## Numerical Trace Verification
+## Monte Carlo Stochastic Engine Mechanics
 
-```mermaid
-graph TD
-    subgraph Given["Given Financial State"]
-        G1["Committed Backlog: INR 100,000.00"]
-        G2["Weighted Pipeline: INR 50,000.00"]
-        G3["Actual Utilization: 0.75 (75%)"]
-        G4["Target Utilization: 0.75 (75%)"]
-        G5["Risk Rate: 0.05 (5%)"]
-    end
-
-    subgraph StepTrace["Step-by-Step Execution Trace"]
-        T1["1. Factor = 0.75 / 0.75 = 1.00"]
-        T2["2. Util Adj = 100,000 * (1.00 - 1.0) = INR 0.00"]
-        T3["3. Gross = 100,000 + 50,000 + 0 = INR 150,000.00"]
-        T4["4. Risk Haircut = 150,000 * 0.05 = INR 7,500.00"]
-        T5["5. Net Forecast = 150,000 - 7,500 = INR 142,500.00"]
-    end
-
-    Given --> StepTrace
-
-    style Given fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
-    style StepTrace fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
-
-    style G1 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-    style G2 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-    style G3 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-    style G4 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-    style G5 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-
-    style T1 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
-    style T2 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
-    style T3 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
-    style T4 fill:#FECACA,stroke:#DC2626,stroke-width:1px,color:#991B1B
-    style T5 fill:#A7F3D0,stroke:#047857,stroke-width:2px,color:#064E3B
-```
-
-> **Automated Verification:** Validated by `pytest tests/test_forecast.py`.
-
----
-
-## Utilization Sensitivity Model
-
-```mermaid
-graph LR
-    subgraph Scenarios["Sensitivity on INR 100,000 Backlog (Target = 75%)"]
-        U1["Actual = 80% (+5% Upside)<br/>Factor = 1.0667<br/>Util Adj = +INR 6,666.67"]
-        U2["Actual = 75% (Target)<br/>Factor = 1.0000<br/>Util Adj = INR 0.00"]
-        U3["Actual = 70% (-5% Downside)<br/>Factor = 0.9333<br/>Util Adj = -INR 6,666.67"]
-        U4["Actual = 60% (-15% Severe)<br/>Factor = 0.8000<br/>Util Adj = -INR 20,000.00"]
-    end
-
-    style Scenarios fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
-    style U1 fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#15803D
-    style U2 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
-    style U3 fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#92400E
-    style U4 fill:#FEE2E2,stroke:#DC2626,stroke-width:2px,color:#991B1B
-```
-
----
-
-## Variance Engine & Bridge Decomposition
-
-The variance engine (`app/services/variance_engine.py`) provides exact variance calculation and waterfall bridge analysis:
-
-```mermaid
-flowchart TD
-    subgraph Bridge["Waterfall Variance Bridge Decomposition"]
-        B_BUDGET["Budget Revenue Target"]
-        V_SLIP["- Project Slippage Delta"]
-        V_PIPE["+/- Pipeline Conversion Delta"]
-        V_UTIL["+/- Staffing Utilization Delta"]
-        V_RATE["+/- Hourly Billing Rate Delta"]
-        V_UNEXP["+/- Unexplained Residual Variance"]
-        B_ACTUAL["= Final Delivered Actual Revenue"]
-
-        B_BUDGET --> V_SLIP --> V_PIPE --> V_UTIL --> V_RATE --> V_UNEXP --> B_ACTUAL
-    end
-
-    style Bridge fill:#F8FAFC,stroke:#334155,stroke-width:2px,color:#0F172A
-    style B_BUDGET fill:#DBEAFE,stroke:#1E40AF,stroke-width:2px,color:#1E3A8A
-    style V_SLIP fill:#FEE2E2,stroke:#DC2626,stroke-width:1px,color:#991B1B
-    style V_PIPE fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
-    style V_UTIL fill:#EDE9FE,stroke:#7C3AED,stroke-width:1px,color:#5B21B6
-    style V_RATE fill:#EDE9FE,stroke:#7C3AED,stroke-width:1px,color:#5B21B6
-    style V_UNEXP fill:#E2E8F0,stroke:#64748B,stroke-width:1px,color:#334155
-    style B_ACTUAL fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#15803D
-```
-
-### Variance Calculation Formulas (`VarianceResult`)
-
-| Metric Field | Precision | Exact Formula | Functional Description |
-|:-------------|:---------:|:--------------|:-----------------------|
-| `actual_vs_budget` | `Decimal(2dp)` | `Actual - Budget` | Absolute variance delivered against budget |
-| `actual_vs_budget_pct` | `Decimal(2dp)` | `(Actual - Budget) / Budget * 100` | Percentage variance delivered against budget |
-| `forecast_vs_budget` | `Decimal(2dp)` | `Forecast - Budget` | Expected variance at period completion |
-| `forecast_vs_budget_pct`| `Decimal(2dp)` | `(Forecast - Budget) / Budget * 100` | Projected percentage variance at completion |
-
----
-
-## Scenario Simulation Logic
-
-`app/services/scenario_engine.py` models revenue sensitivities against delivery and market variables:
+`app/services/monte_carlo_engine.py` executes 5,000 stochastic iterations to quantify forecast volatility:
 
 ```mermaid
 flowchart LR
-    P_IN["Pipeline Revenue"] -->|"*(1 + conversion_change)"| P_ADJ["Adjusted Pipeline"]
-    B_IN["Base Revenue"] -->|"* ((util + util_change)/util) * (1 + rate_change)"| B_ADJ["Adjusted Delivery Base"]
+    subgraph Distributions["1. RANDOM VARIABLE DISTRIBUTIONS"]
+        D_PIP["<b>Pipeline Conversion Rate</b><br/>Beta Distribution: $\alpha, \beta$<br/>Centered on historical stage win rates"]
+        D_UTL["<b>Staffing Utilization</b><br/>Gaussian Normal Distribution<br/>$\mu = U_{\text{act}}, \sigma = 0.035$"]
+        D_SLP["<b>Milestone Delivery Slippage</b><br/>Log-Normal Distribution<br/>Skewed right (0% to 15% slippage)"]
+    end
 
-    P_ADJ & B_ADJ --> COMB["Combined Pre-Slippage Revenue"]
-    COMB -->|"*(1 - slippage_rate)"| SCENARIO["Net Scenario Revenue"]
-    SCENARIO & B_IN --> DELTA["Revenue Delta & Percentage Change"]
+    subgraph Simulation["2. STOCHASTIC SIMULATION ENGINE"]
+        S_LOOP["5,000 Independent Trials (Random Seed = 42)<br/>Calculate simulated gross, haircut, and net revenue per trial"]
+    end
 
-    style P_IN fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
-    style B_IN fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
-    style P_ADJ fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
-    style B_ADJ fill:#EDE9FE,stroke:#7C3AED,stroke-width:1px,color:#5B21B6
-    style COMB fill:#DBEAFE,stroke:#2563EB,stroke-width:1px,color:#1E40AF
-    style SCENARIO fill:#DCFCE7,stroke:#16A34A,stroke-width:2px,color:#15803D
-    style DELTA fill:#A7F3D0,stroke:#059669,stroke-width:1px,color:#065F46
+    subgraph Quantiles["3. STATISTICAL QUANTILES & VaR"]
+        Q_P10["<b>P10 (Downside)</b><br/>90% confidence floor"]
+        Q_P50["<b>P50 (Median)</b><br/>Stochastic median"]
+        Q_P90["<b>P90 (Upside)</b><br/>10% exceedance target"]
+        Q_VAR["<b>Value-at-Risk (VaR)</b><br/>$\text{Deterministic} - \text{P10}$"]
+    end
+
+    Distributions --> Simulation --> Quantiles
+
+    style Distributions fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style Simulation fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+    style Quantiles fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
 ```
+
+### Monte Carlo Distribution Breakdown
+
+| Quantile | Statistical Definition | Meaning for Practice Leadership | Remediation Playbook |
+|:---------|:-----------------------|:--------------------------------|:---------------------|
+| **P10** | 10th Percentile of outcomes | Stress-tested worst-case deliverable revenue | Set emergency staffing freeze & contractor cuts |
+| **P50** | 50th Percentile of outcomes | Probabilistic median expectation | Benchmark against deterministic net forecast |
+| **P90** | 90th Percentile of outcomes | Optimistic commercial capture | Pre-allocate recruiting & contractor pipeline |
+| **VaR (P10)** | Deterministic Net - P10 | Total downside revenue at risk under market shocks | Monitor top 3 accounts for early warning signs |
+
+---
+
+## Variance Bridge Engine Specification
+
+`app/services/variance_engine.py` components variances between Actual vs. Budget and Forecast vs. Budget:
+
+```mermaid
+flowchart TD
+    subgraph BridgeActual["ACTUAL VS. BUDGET VARIANCE BRIDGE"]
+        ACT_REV["Delivered Revenue ($R_{\text{act}}$)"]
+        BDG_REV["Operating Budget ($R_{\text{bdg}}$)"]
+        
+        GAP_ACT["<b>Budget Gap ($\Delta_{\text{actual}}$)</b><br/>$$R_{\text{act}} - R_{\text{bdg}}$$"]
+        PCT_ACT["<b>Budget Gap % ($\%_{\text{actual}}$)</b><br/>$$\left(\frac{\Delta_{\text{actual}}}{R_{\text{bdg}}}\right) \times 100$$"]
+        
+        ACT_REV & BDG_REV --> GAP_ACT --> PCT_ACT
+    end
+
+    subgraph BridgeForecast["FORECAST VS. BUDGET VARIANCE BRIDGE"]
+        FC_REV["Net Forecast ($R_{\text{fc}}$)"]
+        
+        GAP_FC["<b>Forecast Headroom ($\Delta_{\text{fc}}$)</b><br/>$$R_{\text{fc}} - R_{\text{bdg}}$$"]
+        PCT_FC["<b>Forecast Headroom % ($\%_{\text{fc}}$)</b><br/>$$\left(\frac{\Delta_{\text{fc}}}{R_{\text{bdg}}}\right) \times 100$$"]
+        
+        FC_REV & BDG_REV --> GAP_FC --> PCT_FC
+    end
+
+    style BridgeActual fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style BridgeForecast fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+```
+
+### Variance Classification Matrix
+
+| Variance Metric | Range Condition | Classification | Management Interpretation |
+|:----------------|:----------------|:---------------|:--------------------------|
+| **Budget Gap %** | $\ge 0.0\%$ | Ahead of Plan | Practice revenue exceeds budgeted baseline |
+| **Budget Gap %** | $-10.0\% \le \text{gap} < 0.0\%$ | Within Tolerance | Minor lag; operational corrective measures required |
+| **Budget Gap %** | $< -10.0\%$ | Significant Deficit | Critical delivery shortfall; partner review triggered |
+| **Forecast Headroom %** | $\ge 10.0\%$ | Strong Buffer | High probability of beating annual operating plan |
+| **Forecast Headroom %** | $0.0\% \le \text{gap} < 10.0\%$ | Moderate Headroom | On-plan; minor vulnerability to deal slippage |
+| **Forecast Headroom %** | $< 0.0\%$ | Revenue Deficit | Forward plan insufficient to achieve approved budget |
+
+---
+
+## Input & Output Parameter Specifications
+
+### Input Parameters (`build_forecast`)
+
+| Parameter Name | Python Type | Default | Validation Constraint | Description |
+|:---------------|:-----------:|:-------:|:----------------------|:------------|
+| `committed_backlog` | `float` | Required | $\ge 0.0$ | Sum of pipeline values for 'In Delivery' and 'Closed Won' |
+| `weighted_pipeline` | `float` | Required | $\ge 0.0$ | Sum of $(\text{pipeline\_value} \times \text{win\_probability})$ |
+| `utilization` | `float` | `0.74` | $0.0 \le U \le 2.0$ | Current average consultant billable utilization rate |
+| `target_utilization` | `float` | `0.75` | $> 0.0$ (Raises `ValueError` if $\le 0$) | Practice benchmark target utilization |
+| `risk_rate` | `float` | `0.05` | $0.0 \le \text{rate} \le 1.0$ | Execution risk discount rate |
+
+### Output Dataclass (`ForecastResult`)
+
+| Field Name | Type | Precision | Sample Value | Description |
+|:-----------|:----:|:---------:|:-------------|:------------|
+| `committed_backlog` | `float` | 2 decimal places | `100000.00` | Input committed backlog volume |
+| `weighted_pipeline` | `float` | 2 decimal places | `50000.00` | Input probability-weighted pipeline |
+| `utilization_adjustment` | `float` | 2 decimal places | `0.00` | Revenue delta from utilization variance |
+| `risk_adjustment` | `float` | 2 decimal places | `7500.00` | 5% execution risk haircut |
+| `forecast_revenue` | `float` | 2 decimal places | `142500.00` | **Net risk-adjusted deliverable forecast** |

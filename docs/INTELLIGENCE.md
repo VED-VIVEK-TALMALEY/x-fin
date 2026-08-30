@@ -1,202 +1,188 @@
-# X-Fin Intelligence Layer Specification
+# X-Fin Intelligence & Reasoning Subsystem
 
-> **Service Modules:** `finance_reasoning.py` · `insight_engine.py` · `recommendation_engine.py` · `staffing_insight_engine.py` · `staffing_recommendation_engine.py`
-> **Router:** `app/routers/intelligence.py` · **Endpoint:** `GET /intelligence/overview`
+> **Module Paths:** `app/services/finance_reasoning.py`, `app/services/insight_engine.py`, `app/services/recommendation_engine.py`, `app/services/intelligence_engine.py`, `app/services/executive_briefing_engine.py`
 
 ---
 
-## 3-Stage Intelligence Pipeline Architecture
+## Intelligence Subsystem Workflow
 
 ```mermaid
 flowchart TD
-    subgraph DataInputs["1. FINANCIAL TELEMETRY INGESTION"]
-        D1["actual_revenue"]
-        D2["budget_revenue"]
-        D3["forecast_revenue"]
-        D4["committed_backlog"]
-        D5["weighted_pipeline"]
+    subgraph S1["1. TELEMETRY EXTRACTION"]
+        T1["actual_revenue"]
+        T2["budget_revenue"]
+        T3["forecast_revenue"]
+        T4["committed_backlog"]
+        T5["weighted_pipeline"]
     end
 
-    subgraph Stage1["STAGE 1: FINANCE REASONING (finance_reasoning.py)"]
+    subgraph S2["2. FINANCIAL REASONING ENGINE (finance_reasoning.py)"]
         direction TB
-        R_METRICS["<b>Compute 20+ Financial Derived Metrics:</b><br/>• budget_gap = actual_revenue - budget_revenue<br/>• budget_gap_pct = (budget_gap / budget_revenue) * 100<br/>• forecast_gap = forecast_revenue - budget_revenue<br/>• forecast_gap_pct = (forecast_gap / budget_revenue) * 100<br/>• forward_revenue = committed_backlog + weighted_pipeline<br/>• forward_coverage = (forward_revenue / budget_revenue) * 100<br/>• committed_forecast_coverage = (committed_backlog / forecast_revenue) * 100<br/>• pipeline_dependency = (weighted_pipeline / forward_revenue) * 100<br/>• committed_revenue_mix = (committed_backlog / forward_revenue) * 100<br/>• forecast_headroom = forecast_gap<br/>• forecast_headroom_pct = (forecast_headroom / budget_revenue) * 100"]
-        R_CLASSIFY["<b>Classify Operational Risk Profiles:</b><br/>• forecast_risk: 'low' (>=70%), 'moderate' (50-69%), 'high' (<50%)<br/>• pipeline_risk: 'low' (<=30%), 'moderate' (31-50%), 'high' (>50%)<br/>• forward_position: 'strong' (>=120%), 'adequate' (100-119%), 'watch' (80-99%), 'weak' (<80%)<br/>• performance: 'ahead_of_plan' (>0), 'below_plan' (<0), 'on_plan' (==0)<br/>• forecast_status: 'on_or_above_plan' (>0), 'below_plan' (<0), 'on_plan' (==0)"]
-        R_METRICS --> R_CLASSIFY
+        R1["<b>Variance & Gap Ratios:</b><br/>• budget_gap = actual_revenue - budget_revenue<br/>• budget_gap_pct = (budget_gap / budget_revenue) * 100<br/>• forecast_gap = forecast_revenue - budget_revenue<br/>• forecast_gap_pct = (forecast_gap / budget_revenue) * 100"]
+        R2["<b>Coverage & Composition Ratios:</b><br/>• forward_revenue = committed_backlog + weighted_pipeline<br/>• forward_coverage = (forward_revenue / budget_revenue) * 100<br/>• committed_forecast_coverage = (committed_backlog / forecast_revenue) * 100<br/>• pipeline_dependency = (weighted_pipeline / forward_revenue) * 100<br/>• committed_revenue_mix = (committed_backlog / forward_revenue) * 100"]
+        R3["<b>Operational Health Classifications:</b><br/>• forecast_risk ('low'|'moderate'|'high')<br/>• pipeline_risk ('low'|'moderate'|'high')<br/>• forward_position ('strong'|'adequate'|'watch'|'weak')"]
+        R1 --> R2 --> R3
     end
 
-    subgraph Stage2["STAGE 2: INSIGHT EVALUATION (insight_engine.py)"]
-        direction TB
-        I_EVAL["<b>Evaluate 9 Deterministic Severity Rules:</b><br/>1. Actual vs Budget Gap<br/>2. Forecast vs Budget Trajectory<br/>3. Forward Revenue Coverage<br/>4. Committed Forecast Coverage<br/>5. Pipeline Dependency Concentration<br/>6. Committed Revenue Mix Share<br/>7. Forecast Risk Profile<br/>8. Forward Market Position<br/>9. Forecast Headroom Buffer"]
-        I_OUT["<b>Array of Scored Insight Objects:</b><br/>severity: 'HIGH' | 'MEDIUM' | 'LOW'<br/>category, metric, message, value"]
-        I_EVAL --> I_OUT
+    subgraph S3["3. DIAGNOSTIC INSIGHT ENGINE (insight_engine.py)"]
+        I_EVAL["Evaluate 9 Severity Heuristic Rules Across Performance, Coverage, Quality, and Risk"]
+        I_SCORED["<b>Array of Scored Diagnostic Insights:</b><br/>[{severity: 'HIGH'|'MEDIUM'|'LOW', category, metric, message, value}]"]
+        I_EVAL --> I_SCORED
     end
 
-    subgraph Stage3["STAGE 3: ACTION RECOMMENDATIONS (recommendation_engine.py)"]
-        direction TB
-        REC_EVAL["<b>Evaluate 10 Prioritized Action Rules:</b><br/>1. Revenue Recovery Plan<br/>2. Forecast Protection Protocol<br/>3. Pipeline Acceleration Surge<br/>4. Coverage Buffer Maintenance<br/>5. Late-Stage Deal Closing Surge<br/>6. Pipeline Velocity Management<br/>7. Backlog Quality Fortification<br/>8. Backlog Hardening Initiative<br/>9. Portfolio Delivery Audit<br/>10. High-Margin Growth Optimization"]
-        REC_OUT["<b>Priority-Sorted Action Items:</b><br/>priority: 'HIGH' | 'MEDIUM' | 'LOW'<br/>category, action, rationale, financial_impact (INR)"]
-        REC_EVAL --> REC_OUT
+    subgraph S4["4. ACTION RECOMMENDATION ENGINE (recommendation_engine.py)"]
+        A_EVAL["Evaluate 10 Prescriptive Action Rules Mapping Deficits to Remediation Tasks with Quantified INR Impact"]
+        A_MERGE["Merge Staffing Guardrail Actions & Sort by Priority (HIGH -> MEDIUM -> LOW)"]
+        A_EVAL --> A_MERGE
     end
 
-    DataInputs --> Stage1 --> Stage2 --> Stage3
+    subgraph S5["5. EXECUTIVE BRIEFING SYNTHESIS (executive_briefing_engine.py)"]
+        B_GEN["Generate Strategic Status Summary, Headroom Stance, Critical Interventions, and Leadership Takeaways"]
+    end
 
-    style DataInputs fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
-    style Stage1 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
-    style Stage2 fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
-    style Stage3 fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+    S1 --> S2 --> S3 --> S4 --> S5
 
-    style D1 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
-    style D2 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
-    style D3 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
-    style D4 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
-    style D5 fill:#E2E8F0,stroke:#334155,stroke-width:1px,color:#0F172A
-
-    style R_METRICS fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-    style R_CLASSIFY fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-
-    style I_EVAL fill:#FEF3C7,stroke:#B45309,stroke-width:1px,color:#78350F
-    style I_OUT fill:#FDE68A,stroke:#B45309,stroke-width:1px,color:#78350F
-
-    style REC_EVAL fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
-    style REC_OUT fill:#A7F3D0,stroke:#047857,stroke-width:2px,color:#064E3B
+    style S1 fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
+    style S2 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style S3 fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style S4 fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+    style S5 fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
 ```
 
 ---
 
-## Stage 1: Financial Reasoning Metrics Specification
+## Complete Financial Reasoning Metric Catalog (20+ Ratios)
 
-| Metric Identifier | Exact Mathematical Formula | Data Types | Interpretation |
-|:------------------|:---------------------------|:----------:|:---------------|
-| `budget_gap` | `actual_revenue - budget_revenue` | `float` | Absolute delivered revenue surplus or deficit against budget |
-| `budget_gap_pct` | `(budget_gap / budget_revenue) * 100` | `float` | Percentage performance delivered against plan |
-| `forecast_gap` | `forecast_revenue - budget_revenue` | `float` | Expected net surplus or deficit at period completion |
-| `forecast_gap_pct` | `(forecast_gap / budget_revenue) * 100` | `float` | Expected percentage trajectory vs budget |
-| `forward_revenue` | `committed_backlog + weighted_pipeline` | `float` | Total forward addressable revenue volume |
-| `forward_coverage`| `(forward_revenue / budget_revenue) * 100` | `float` | Ratio of forward pipeline depth to target budget |
-| `committed_forecast_coverage` | `(committed_backlog / forecast_revenue) * 100` | `float` | Percentage of forecast revenue backed by committed contracts |
-| `pipeline_dependency` | `(weighted_pipeline / forward_revenue) * 100` | `float` | Proportion of forward revenue contingent on unclosed pipeline |
-| `committed_revenue_mix` | `(committed_backlog / forward_revenue) * 100` | `float` | Proportion of forward revenue contractually locked |
-| `forecast_headroom` | `forecast_gap` | `float` | Buffer above or below target budget |
+| Metric Key | Category | Formula / Definition | Healthy Benchmark | Strategic Operational Meaning |
+|:-----------|:---------|:---------------------|:-----------------:|:------------------------------|
+| `budget_gap` | Variance | $\text{actual\_revenue} - \text{budget\_revenue}$ | $\ge 0.0$ | Recognized fee surplus or deficit vs approved operating budget |
+| `budget_gap_pct` | Variance | $(\text{budget\_gap} / \text{budget\_revenue}) \times 100$ | $\ge 0.0\%$ | Relative percentage variance of actual revenue to budget |
+| `forecast_gap` | Variance | $\text{forecast\_revenue} - \text{budget\_revenue}$ | $\ge 0.0$ | Expected net deliverable surplus or deficit vs target budget |
+| `forecast_gap_pct` | Variance | $(\text{forecast\_gap} / \text{budget\_revenue}) \times 100$ | $\ge 0.0\%$ | Relative headroom percentage above approved plan |
+| `forecast_headroom` | Forecast | $\text{forecast\_revenue} - \text{budget\_revenue}$ | $> 0.0$ | Absolute buffer above target revenue baseline |
+| `forecast_headroom_pct` | Forecast | $(\text{forecast\_headroom} / \text{budget\_revenue}) \times 100$ | $\ge 10.0\%$ | Relative headroom buffer above budget |
+| `forward_revenue` | Coverage | $\text{committed\_backlog} + \text{weighted\_pipeline}$ | $\ge \text{budget}$ | Total forward book of business supporting future revenue |
+| `forward_coverage` | Coverage | $(\text{forward\_revenue} / \text{budget\_revenue}) \times 100$ | $\ge 120.0\%$ | Multiple of forward revenue available relative to budget target |
+| `committed_forecast_coverage` | Quality | $(\text{committed\_backlog} / \text{forecast\_revenue}) \times 100$ | $\ge 70.0\%$ | Proportion of period forecast secured by executed contracts |
+| `committed_revenue_mix` | Quality | $(\text{committed\_backlog} / \text{forward\_revenue}) \times 100$ | $\ge 60.0\%$ | Proportion of total forward book secured by signed SOWs |
+| `pipeline_dependency` | Risk | $(\text{weighted\_pipeline} / \text{forward\_revenue}) \times 100$ | $\le 40.0\%$ | Share of forward book dependent on open proposal wins |
+| `forecast_risk` | Classification | Evaluates `committed_forecast_coverage` | `"low"` ($\ge 70\%$) | Qualitative confidence in forecast delivery attainment |
+| `pipeline_risk` | Classification | Evaluates `pipeline_dependency` | `"low"` ($\le 30\%$) | Qualitative exposure to commercial pipeline conversion |
+| `forward_position` | Classification | Evaluates `forward_coverage` | `"strong"` ($\ge 120\%$) | Comprehensive market stance and capacity health |
+| `performance` | Classification | Evaluates `budget_gap` | `"ahead_of_plan"` ($>0$) | Current period revenue realization performance |
+| `forecast_status` | Classification | Evaluates `forecast_gap` | `"on_or_above_plan"` | Projected year-end delivery target attainment |
+| `headroom_status` | Classification | Evaluates `forecast_headroom_pct` | `"strong"` ($\ge 10\%$) | Practice buffer rating above operating plan |
+| `p10_revenue` | Stochastic | Monte Carlo 10th percentile outcome | $\approx 0.90 \times \text{Net}$ | Downside revenue floor under adverse market conditions |
+| `p50_revenue` | Stochastic | Monte Carlo 50th percentile outcome | $\approx \text{Net Forecast}$ | Median expected probabilistic outcome |
+| `p90_revenue` | Stochastic | Monte Carlo 90th percentile outcome | $\approx 1.10 \times \text{Net}$ | High-conversion upside revenue potential |
+| `var_p10` | Stochastic | $\text{Deterministic Net} - \text{P10 Outcome}$ | Minimize | Downside value-at-risk exposure |
 
 ---
 
-## Risk Classification Decision Logic
+## Practice Lead Diagnostic Insights Matrix (9 Rules)
+
+| # | Diagnostic Dimension | Telemetry Metric | [HIGH] Severity Condition | [MEDIUM] Severity Condition | [LOW] Severity Condition | Management Diagnostic Action |
+|:--:|:---------------------|:-----------------|:--------------------------|:----------------------------|:-------------------------|:-----------------------------|
+| **1** | Revenue Performance | `budget_gap_pct` | $\le -10.0\%$ | $-10.0\% < \text{gap} < 0.0\%$ | $\ge 0.0\%$ | Audit billable hours recognition & scope creep on active cases |
+| **2** | Forecast Trajectory | `forecast_gap_pct` | $\le -10.0\%$ | $-10.0\% < \text{gap} < 0.0\%$ | $\ge 0.0\%$ | Mobilize partner commercial bandwidth to accelerate deals |
+| **3** | Forward Coverage | `forward_coverage` | $< 100.0\%$ | $100.0\% \le \text{cov} < 120.0\%$ | $\ge 120.0\%$ | Originate new proposals in tier-1 client accounts |
+| **4** | Forecast Quality | `committed_forecast_coverage` | $< 50.0\%$ | $50.0\% \le \text{cov} < 70.0\%$ | $\ge 70.0\%$ | Expedite client execution of pending Statements of Work (SOWs) |
+| **5** | Pipeline Dependency | `pipeline_dependency` | $\ge 60.0\%$ | $40.0\% \le \text{dep} < 60.0\%$ | $< 40.0\%$ | Mitigate risk by securing firm commitments on top 3 opportunities |
+| **6** | Committed Revenue Mix| `committed_revenue_mix` | $< 40.0\%$ | $40.0\% \le \text{mix} < 60.0\%$ | $\ge 60.0\%$ | Convert verbal client confirmations into binding commitments |
+| **7** | Forecast Risk Profile| `forecast_risk` | $== \text{"high"}$ | $== \text{"moderate"}$ | $== \text{"low"}$ | Institute weekly milestone health checks with delivery leads |
+| **8** | Market Stance | `forward_position` | $\in \{\text{"watch"}, \text{"weak"}\}$ | $== \text{"adequate"}$ | $== \text{"strong"}$ | Align practice hiring and bench models with pipeline demand |
+| **9** | Headroom Buffer | `forecast_headroom` | $< 0.0$ | — | $> 0.0$ | Allocate partner commercial capacity to bridge revenue deficit |
+
+---
+
+## Action Recommendation Engine (10 Rules + Staffing Actions)
 
 ```mermaid
-graph TD
-    subgraph FC["Forecast Risk (committed_forecast_coverage)"]
-        FC1{"Coverage %"}
-        FC1 -->|">= 70%"| FC_L["[LOW] low"]
-        FC1 -->|"50% - 69%"| FC_M["[MEDIUM] moderate"]
-        FC1 -->|"< 50%"| FC_H["[HIGH] high"]
+flowchart LR
+    subgraph TriggerMatrix["TRIGGER CONDITIONS"]
+        T1["budget_gap < 0"]
+        T2["forecast_gap < 0"]
+        T3["forward_coverage < 100%"]
+        T4["100% <= forward_coverage < 120%"]
+        T5["pipeline_dependency >= 60%"]
+        T6["40% <= pipeline_dependency < 60%"]
+        T7["committed_forecast_coverage < 50%"]
+        T8["50% <= committed_forecast_coverage < 70%"]
+        T9["forecast_risk == 'high'"]
+        T10["forward_coverage >= 120% & pipeline < 60%"]
     end
 
-    subgraph PR["Pipeline Risk (pipeline_dependency)"]
-        PR1{"Dependency %"}
-        PR1 -->|"<= 30%"| PR_L["[LOW] low"]
-        PR1 -->|"31% - 50%"| PR_M["[MEDIUM] moderate"]
-        PR1 -->|"> 50%"| PR_H["[HIGH] high"]
+    subgraph Actions["PRESCRIPTIVE ACTION ITEMS"]
+        A1["Partner Revenue Recovery Mobilization"]
+        A2["Forecast Protection & Extension Lock-in"]
+        A3["Fast-Track Proposal Origination"]
+        A4["Coverage Buffer Momentum Maintenance"]
+        A5["Executive Closing Surge on Qualified Deals"]
+        A6["Weekly Stage-Gate Velocity Reviews"]
+        A7["Priority Legal Hardening of MSAs/SOWs"]
+        A8["Milestone Sign-Off Acceleration"]
+        A9["Portfolio-Wide Deliverable Slippage Audit"]
+        A10["High-Margin Premium Rate Prioritization"]
     end
 
-    subgraph FP["Forward Position (forward_coverage)"]
-        FP1{"Forward Coverage %"}
-        FP1 -->|">= 120%"| FP_S["[STRONG] strong"]
-        FP1 -->|"100% - 119%"| FP_A["[ADEQUATE] adequate"]
-        FP1 -->|"80% - 99%"| FP_W["[WATCH] watch"]
-        FP1 -->|"< 80%"| FP_WK["[WEAK] weak"]
-    end
+    T1 --> A1
+    T2 --> A2
+    T3 --> A3
+    T4 --> A4
+    T5 --> A5
+    T6 --> A6
+    T7 --> A7
+    T8 --> A8
+    T9 --> A9
+    T10 --> A10
 
-    style FC fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
-    style PR fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
-    style FP fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
-
-    style FC1 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-    style FC_L fill:#DCFCE7,stroke:#16A34A,stroke-width:1px,color:#15803D
-    style FC_M fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
-    style FC_H fill:#FEE2E2,stroke:#DC2626,stroke-width:1px,color:#991B1B
-
-    style PR1 fill:#FEF3C7,stroke:#B45309,stroke-width:1px,color:#78350F
-    style PR_L fill:#DCFCE7,stroke:#16A34A,stroke-width:1px,color:#15803D
-    style PR_M fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
-    style PR_H fill:#FEE2E2,stroke:#DC2626,stroke-width:1px,color:#991B1B
-
-    style FP1 fill:#F3E8FF,stroke:#7E22CE,stroke-width:1px,color:#581C87
-    style FP_S fill:#DCFCE7,stroke:#16A34A,stroke-width:1px,color:#15803D
-    style FP_A fill:#EFF6FF,stroke:#2563EB,stroke-width:1px,color:#1E40AF
-    style FP_W fill:#FEF3C7,stroke:#D97706,stroke-width:1px,color:#92400E
-    style FP_WK fill:#FEE2E2,stroke:#DC2626,stroke-width:1px,color:#991B1B
+    style TriggerMatrix fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style Actions fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
 ```
 
----
+### Action Recommendation Catalog & Financial Valuation
 
-## Stage 2: Diagnostic Insights Matrix (9 Rules)
-
-| # | Rule Category | Metric Evaluated | [HIGH] Trigger Condition | [MEDIUM] Trigger Condition | [LOW] Trigger Condition |
-|:--:|:--------------|:-----------------|:-------------------------|:---------------------------|:------------------------|
-| **1** | Revenue Performance | `budget_gap_pct` | `<= -10.0%` | `-10.0% < gap < 0.0%` | `>= 0.0%` |
-| **2** | Forecast Position | `forecast_gap_pct` | `<= -10.0%` | `-10.0% < gap < 0.0%` | `>= 0.0%` |
-| **3** | Forward Coverage | `forward_coverage` | `< 100.0%` | `100.0% – 119.9%` | `>= 120.0%` |
-| **4** | Forecast Quality | `committed_forecast_coverage` | `< 50.0%` | `50.0% – 69.9%` | `>= 70.0%` |
-| **5** | Pipeline Risk | `pipeline_dependency` | `>= 60.0%` | `40.0% – 59.9%` | `< 40.0%` |
-| **6** | Revenue Mix | `committed_revenue_mix` | `< 40.0%` | `40.0% – 59.9%` | `>= 60.0%` |
-| **7** | Forecast Risk | `forecast_risk` | `=="high"` | `=="moderate"` | `=="low"` |
-| **8** | Market Stance | `forward_position` | `in ("watch", "weak")` | `=="adequate"` | `=="strong"` |
-| **9** | Headroom Buffer | `forecast_headroom` | `< 0.0` (Deficit) | — | `> 0.0` (Surplus) |
-
----
-
-## Stage 3: Action Recommendations Matrix (10 Core Rules)
-
-> **Note:** These 10 core operational recommendation rules are generated by `recommendation_engine.py`. Additionally, `staffing_recommendation_engine.py` generates simplified staffing data quality and capacity recommendations that are merged into the final prioritized recommendations list. Staffing insights are also generated by `staffing_insight_engine.py` and returned separately in the intelligence package.
-
-| Priority | Category | Activation Condition | Triggered Action Item | Financial Impact |
-|:---------|:---------|:---------------------|:----------------------|:-----------------|
-| **[HIGH]** | Revenue Recovery | `budget_gap < 0` | Deploy aggressive revenue recovery plan to bridge actuals deficit | `abs(budget_gap)` |
-| **[HIGH]** | Forecast Protection | `forecast_gap < 0` | Accelerate pipeline conversion and prevent project scope reduction | `abs(forecast_gap)` |
-| **[HIGH]** | Pipeline Coverage | `forward_coverage < 100%` | Secure qualified opportunities immediately to meet baseline budget | `budget_revenue - forward_revenue` |
-| **[MEDIUM]** | Coverage Protection | `100% <= forward_coverage < 120%` | Maintain active pipeline velocity to preserve forward revenue buffer | `forward_revenue - budget_revenue` |
-| **[HIGH]** | Pipeline Risk | `pipeline_dependency >= 60%` | De-risk revenue plan by accelerating contract closure on late-stage deals | `weighted_pipeline` |
-| **[MEDIUM]** | Pipeline Management | `40% <= pipeline_dependency < 60%` | Monitor pipeline conversion velocity and track stage progression | `weighted_pipeline` |
-| **[HIGH]** | Forecast Quality | `committed_forecast_coverage < 50%` | Increase proportion of committed backlog securing the active forecast | `forecast_revenue - committed_backlog` |
-| **[MEDIUM]** | Forecast Quality | `50% <= committed_forecast_coverage < 70%` | Strengthen backlog conversion to bolster forecast certainty | `forecast_revenue - committed_backlog` |
-| **[HIGH]** | Forecast Risk | `forecast_risk == "high"` | Conduct immediate portfolio delivery review to reduce delivery variance | `forecast_revenue` |
-| **[LOW]** | Growth Optimization | `forward_coverage >= 120%` & `pipeline < 60%` | Leverage strong forward position to target high-margin opportunities | `forecast_gap` |
+| Priority | Strategy Category | Activation Rule | Action Description | Quantified Financial Impact (INR) |
+|:---------|:------------------|:----------------|:-------------------|:----------------------------------|
+| **[HIGH]** | Revenue Recovery | `budget_gap < 0` | Mobilize partner-led revenue recovery plan on lagging accounts | $\text{abs}(\text{budget\_gap})$ |
+| **[HIGH]** | Forecast Protection | `forecast_gap < 0` | Lock in pending contract extensions and prevent scope reduction | $\text{abs}(\text{forecast\_gap})$ |
+| **[HIGH]** | Pipeline Coverage | `forward_coverage < 100%` | Fast-track high-probability proposals to achieve baseline budget | $\text{budget} - \text{forward\_revenue}$ |
+| **[MEDIUM]** | Coverage Buffer | `100% <= forward_coverage < 120%` | Maintain business development momentum to preserve safety buffer | $\text{forward\_revenue} - \text{budget}$ |
+| **[HIGH]** | Deal Closure Surge | `pipeline_dependency >= 60%` | Conduct executive closing sessions on all deals in Qualified stage | $\text{weighted\_pipeline}$ |
+| **[MEDIUM]** | Velocity Management| `40% <= pipeline_dependency < 60%` | Review stage-gate progression weekly with client teams | $\text{weighted\_pipeline}$ |
+| **[HIGH]** | Backlog Fortification| `committed_forecast_coverage < 50%`| Prioritize execution of MSAs and SOWs currently under legal review | $\text{forecast} - \text{backlog}$ |
+| **[MEDIUM]** | Backlog Hardening | `50% <= committed_forecast_coverage < 70%`| Expedite client sign-offs on milestone deliverables | $\text{forecast} - \text{backlog}$ |
+| **[HIGH]** | Delivery Audit | `forecast_risk == "high"` | Conduct portfolio-wide review to prevent deliverable slippage | $\text{forecast\_revenue}$ |
+| **[LOW]** | Margin Optimization| `forward_coverage >= 120%` & `pipeline < 60%`| Prioritize higher-margin, premium-rate engagements | $\text{forecast\_gap}$ |
 
 ---
 
-## Note on Terminology & Auditability
+## Staffing & Utilization Data-Quality Guardrails
 
-> **`committed_forecast_coverage` vs Statistical Confidence**
->
-> `committed_forecast_coverage` (and legacy alias `forecast_confidence_base`) measures:
->
-> $$\text{Coverage Ratio} = \frac{\text{Committed Backlog}}{\text{Forecast Revenue}} \times 100$$
->
-> It is an operational auditability metric reflecting the contractual backing of the forecast revenue figure, not a Gaussian or stochastic probability interval.
+`app/services/staffing_engine.py` and `app/services/staffing_insight_engine.py` evaluate capacity vs hours budget boundaries:
 
----
+```mermaid
+flowchart TD
+    subgraph Telemetry["Staffing Telemetry"]
+        ACT_HRS["actual_hours (Delivered)"]
+        BDG_HRS["hours_budget (Capacity Target)"]
+        UTIL_BDG["utilization_budget (75% Baseline)"]
+    end
 
-## Staffing Insights & Recommendations
+    subgraph Eval["Data Quality Evaluation"]
+        CHK["Check: Is hours_budget true consultant capacity or planned billable demand?"]
+        FLAG["If schema lacks head-count capacity denominator:<br/><b>utilization_data_quality = 'review_required'</b>"]
+        CHK --> FLAG
+    end
 
-### Overview
+    subgraph Actions["Staffing Remediations"]
+        STF_INS["Surface explicit Data Quality Warning Banner in Streamlit UI"]
+        STF_REC["Recommend establishing standard denominator across all delivery hubs"]
+    end
 
-The intelligence package includes **supplementary staffing-focused insights and recommendations** that are generated and merged separately from the main 9-insight and 10-recommendation framework:
+    Telemetry --> Eval --> Actions
 
-- **Staffing Insights** (`staffing_insight_engine.py`): Generates 1-3 staffing-specific insights focusing on hours budget attainment, hours variance, budget utilization, and data quality issues.
-- **Staffing Recommendations** (`staffing_recommendation_engine.py`): Generates simplified staffing recommendations focused on **data validation and capacity denominator issues** rather than operational prescriptions.
-
-Both components are merged into the consolidated `recommendations` array by priority (HIGH → MEDIUM → LOW), and returned separately as `staffing_insights` and `staffing_recommendations` in the intelligence payload for transparency.
-
-### Staffing Insight Categories
-
-| Category | Metric | Condition | Severity |
-|:---------|:-------|:----------|:---------|
-| Staffing Data Quality | Capacity Denominator | Missing or limited capacity hours data | HIGH/MEDIUM |
-| Staffing | Hours vs Budget | Hours attainment variance >= 20% | HIGH; 10-19% = MEDIUM; < 10% = LOW |
-| Staffing | Budget Utilization | Planning assumption (informational only) | LOW |
-
-### Staffing Recommendation Categories
-
-| Category | Trigger Condition | Action |
-|:---------|:------------------|:-------|
-| Staffing Data Validation | `utilization_data_quality` in {'review_required', 'limited', 'missing_capacity_denominator'} | Recommend adding/validating capacity-hours denominator |
+    style Telemetry fill:#F8FAFC,stroke:#475569,stroke-width:2px,color:#1E293B
+    style Eval fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#92400E
+    style Actions fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+```

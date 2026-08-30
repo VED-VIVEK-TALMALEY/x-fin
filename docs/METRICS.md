@@ -1,84 +1,108 @@
-# X-Fin Dashboard Metrics
+# X-Fin Financial Telemetry & Metrics Specification
 
-This document defines the metrics shown in the Streamlit dashboard. Values are supplied by the FastAPI intelligence and analytics endpoints unless explicitly described as presentation-only.
+> **Audience:** Practice Finance Officers, Engagement Directors, Technical Leads
 
-## Revenue and Plan
+---
 
-| Metric | Definition | Decision use |
-|---|---|---|
-| Actual Revenue | Recognized revenue delivered to date. | Measures realized performance. |
-| Budget Revenue | Approved revenue target for the reporting period. | Baseline for plan comparison. |
-| Budget Gap | Actual revenue minus budget revenue. | Shows absolute upside or shortfall. |
-| Budget Gap % | Budget gap divided by budget revenue, expressed as a percentage. | Normalizes performance across periods. |
-| Forecast Revenue | Canonical risk-adjusted revenue forecast. | Primary forward-looking operating number. |
-| Forecast Gap | Forecast revenue minus budget revenue. | Shows expected upside or shortfall. |
-| Forecast Gap % | Forecast gap divided by budget revenue. | Compares forecast position with plan. |
-| Gross Margin | Actual revenue minus actual direct cost. | Shows contribution before other operating costs. |
-| Gross Margin % | Gross margin divided by actual revenue. | Compares profitability quality. |
+## Financial Metric Taxonomy & Relationships
 
-## Coverage and Risk
+```mermaid
+graph TD
+    subgraph RevenuePillar["1. REVENUE & FINANCIAL ACTUALS"]
+        M_ACT["<b>Actual Revenue ($R_{\text{act}}$)</b><br/>$\sum \text{actual\_revenue}$"]
+        M_BDG["<b>Budget Target ($R_{\text{bdg}}$)</b><br/>$\sum \text{revenue\_budget}$"]
+        M_GAP["<b>Budget Gap ($\Delta_{\text{bdg}}$)</b><br/>$R_{\text{act}} - R_{\text{bdg}}$"]
+        M_GM["<b>Gross Margin ($GM$)</b><br/>$R_{\text{act}} - \text{Cost}_{\text{act}}$"]
+        M_GMP["<b>Gross Margin % ($GM_{\%}$)</b><br/>$(GM / R_{\text{act}}) \times 100$"]
 
-| Metric | Definition | Decision use |
-|---|---|---|
-| Committed Backlog | Pipeline value in committed delivery or closed-won stages. | Indicates revenue with stronger delivery certainty. |
-| Weighted Pipeline | Pipeline value multiplied by opportunity probability. | Estimates likely pipeline contribution. |
-| Forward Revenue | Committed backlog plus weighted pipeline. | Shows the forward revenue base. |
-| Forward Coverage | Forward revenue divided by budget revenue. | Indicates whether the forward position covers plan. |
-| Committed Coverage | Committed backlog divided by forecast revenue. | Indicates how much forecast is already supported. |
-| Pipeline Dependency | Weighted pipeline divided by forward revenue. | Shows reliance on future conversion. |
-| Forecast Headroom | Forecast revenue minus budget revenue. | Shows the absolute cushion above or below plan. |
-| Risk Score | Composite quantitative risk score from coverage and dependency signals. | Provides a continuous comparison measure. |
-| Overall Risk | Qualitative classification from the intelligence rules. | Communicates the management attention level. |
+        M_ACT & M_BDG --> M_GAP
+        M_ACT --> M_GM --> M_GMP
+    end
 
-## Forecast Distribution
+    subgraph ForecastPillar["2. DELIVERABLE FORECAST & HAIRCUTS"]
+        M_CB["<b>Committed Backlog ($B_{\text{comm}}$)</b><br/>Signed SOWs & In Delivery"]
+        M_WP["<b>Weighted Pipeline ($P_{\text{wt}}$)</b><br/>$\sum (\text{Value} \times \text{Prob})$"]
+        M_UA["<b>Util Adjustment ($A_{\text{util}}$)</b><br/>$B_{\text{comm}} \times (U / 0.75 - 1)$"]
+        M_GF["<b>Gross Forecast ($R_{\text{gross}}$)</b><br/>$B_{\text{comm}} + P_{\text{wt}} + A_{\text{util}}$"]
+        M_NF["<b>Net Forecast ($R_{\text{net}}$)</b><br/>$R_{\text{gross}} \times 0.95$"]
 
-The Monte Carlo section uses deterministic inputs and a fixed seed from the API response.
+        M_CB & M_WP & M_UA --> M_GF --> M_NF
+    end
 
-- **P10:** Lower-bound simulated outcome; only 10% of outcomes are lower.
-- **P50:** Median simulated outcome.
-- **P90:** Upper-bound simulated outcome; only 10% of outcomes are higher.
-- **Probability above budget:** Share of simulations at or above budget.
-- **Probability below budget:** Share of simulations below budget.
-- **Range P10-P90:** Width of the central forecast outcome range.
+    subgraph RiskPillar["3. COVERAGE & CONCENTRATION RATIOS"]
+        M_FWD["<b>Forward Revenue ($R_{\text{fwd}}$)</b><br/>$B_{\text{comm}} + P_{\text{wt}}$"]
+        M_FCov["<b>Forward Coverage</b><br/>$(R_{\text{fwd}} / R_{\text{bdg}}) \times 100$"]
+        M_CCov["<b>Committed Coverage</b><br/>$(B_{\text{comm}} / R_{\text{net}}) \times 100$"]
+        M_PDep["<b>Pipeline Dependency</b><br/>$(P_{\text{wt}} / R_{\text{fwd}}) \times 100$"]
 
-A high probability of exceeding budget does not eliminate execution risk when the forecast depends heavily on uncommitted pipeline.
+        M_CB & M_WP --> M_FWD --> M_FCov & M_PDep
+        M_CB & M_NF --> M_CCov
+    end
 
-## Staffing and Capacity
+    RevenuePillar --> RiskPillar
+    ForecastPillar --> RiskPillar
 
-| Metric | Definition | Limitation |
-|---|---|---|
-| Actual Hours | Delivery hours recorded in actuals. | Reflects recorded work, not available capacity. |
-| Hours Budget | Planned delivery hours. | A planning baseline, not a capacity denominator. |
-| Hours vs Budget | Actual hours relative to hours budget. | Must not be described as utilization without capacity hours. |
-| Blended Cost / Hour | Actual cost divided by actual hours. | Sensitive to labor mix and data completeness. |
-| Capacity Status | Rule-based status from staffing hours and data-quality checks. | Requires review when the capacity denominator is absent. |
+    style RevenuePillar fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
+    style ForecastPillar fill:#FAF5FF,stroke:#9333EA,stroke-width:2px,color:#6B21A8
+    style RiskPillar fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
+```
 
-## Business Unit Views
+---
 
-Business-unit charts use the fields available from the analytics endpoint:
+## Master Metric Glossary & Formulas
 
-- Actual revenue
-- Budget revenue
-- Variance
-- Variance percentage
-- Gross margin percentage
+### 1. Revenue Performance & Engagement Economics
 
-The heatmap is a comparison view, not a new calculation layer. It helps identify concentration, margin differences, and outlier performance quickly.
+| Metric Name | Mathematical Formula | Units | Healthy Benchmark | Diagnostic Use Case |
+|:------------|:---------------------|:-----:|:-----------------:|:--------------------|
+| **Actual Revenue** | $\sum \text{actual\_revenue}$ | INR | $\ge \text{Budget}$ | Total recognized fee revenue delivered to date |
+| **Budget Target** | $\sum \text{revenue\_budget}$ | INR | Baseline | Operating plan revenue target approved by leadership |
+| **Budget Gap** | $\text{Actual} - \text{Budget}$ | INR | $\ge 0.0$ | Dollar surplus (positive) or deficit (negative) vs plan |
+| **Budget Gap %** | $(\text{Budget Gap} / \text{Budget}) \times 100$ | $\%$ | $\ge 0.0\%$ | Normalized performance percentage against plan |
+| **Direct Consulting Cost** | $\sum \text{actual\_cost}$ | INR | $\le 0.60 \times \text{Rev}$ | Total direct labor and contractor costs |
+| **Gross Margin (INR)** | $\text{Actual Revenue} - \text{Direct Cost}$ | INR | $\ge 0.40 \times \text{Rev}$ | Total practice contribution profit |
+| **Gross Margin %** | $(\text{Gross Margin} / \text{Actual Revenue}) \times 100$ | $\%$ | $\ge 40.0\%$ | Practice profitability efficiency |
 
-## Decision Snapshot Logic
+### 2. Forward Book, Coverage & Quality Ratios
 
-The dashboard's decision snapshot is presentation logic built from existing API values:
+| Metric Name | Mathematical Formula | Units | Healthy Benchmark | Diagnostic Use Case |
+|:------------|:---------------------|:-----:|:-----------------:|:--------------------|
+| **Committed Backlog** | $\sum \text{pipeline\_value} \text{ [In Delivery, Closed Won]}$ | INR | Maximum | Contractually locked engagement revenue |
+| **Weighted Pipeline** | $\sum (\text{pipeline\_value} \times \text{win\_probability})$ | INR | Secondary | Expected probability value of open proposals |
+| **Forward Revenue** | $\text{Committed Backlog} + \text{Weighted Pipeline}$ | INR | $\ge \text{Budget}$ | Total available forward book of business |
+| **Forward Coverage**| $(\text{Forward Revenue} / \text{Budget}) \times 100$ | $\%$ | $\ge 120.0\%$ | Forward capacity relative to target budget |
+| **Committed Forecast Coverage** | $(\text{Committed Backlog} / \text{Net Forecast}) \times 100$ | $\%$ | $\ge 70.0\%$ | Share of period forecast secured by signed SOWs |
+| **Committed Revenue Mix** | $(\text{Committed Backlog} / \text{Forward Revenue}) \times 100$ | $\%$ | $\ge 60.0\%$ | Contract certainty ratio across entire forward book |
+| **Pipeline Dependency** | $(\text{Weighted Pipeline} / \text{Forward Revenue}) \times 100$ | $\%$ | $\le 40.0\%$ | Conversion vulnerability of forward book |
+| **Forecast Headroom**| $\text{Net Forecast} - \text{Budget Target}$ | INR | $> 0.0$ | Expected dollar cushion above plan |
+| **Forecast Headroom %** | $(\text{Forecast Headroom} / \text{Budget Target}) \times 100$ | $\%$ | $\ge 10.0\%$ | Percentage safety buffer above operating budget |
 
-- **Forecast Confidence** uses Monte Carlo probability above budget.
-- **Revenue at Risk** surfaces weighted pipeline because it depends on conversion.
-- **Delivery Signal** surfaces the staffing capacity status and its data-quality note.
+### 3. Stochastic Monte Carlo Metrics
 
-The snapshot is intentionally not a new backend forecast. It is a concise interpretation of the existing canonical payload.
+| Metric Name | Mathematical Definition | Units | Interpretation & Action |
+|:------------|:------------------------|:-----:|:------------------------|
+| **P10 Downside** | 10th percentile outcome of 5,000 runs | INR | 90% confidence floor revenue under negative conversion shocks |
+| **P50 Median** | 50th percentile outcome of 5,000 runs | INR | Probabilistic median expectation under simulated volatility |
+| **P90 Upside** | 90th percentile outcome of 5,000 runs | INR | Optimistic upside if high-stage proposals close early |
+| **Value-at-Risk (VaR)** | $\text{Deterministic Net Forecast} - \text{P10 Outcome}$ | INR | Total quantified revenue exposed to market downside |
+| **Probability > Budget** | $(\text{Count}(\text{Sim} \ge \text{Budget}) / 5000) \times 100$ | $\%$ | Empirical probability of meeting or beating operating budget |
 
-## Data Quality Rules
+---
 
-- Missing numeric values display as zero or an unavailable state according to the existing formatter.
-- Missing arrays produce an informational empty state.
-- Staffing utilization, bench, and capacity economics are not treated as authoritative when the capacity-hours denominator is missing.
-- The dashboard does not recompute the canonical forecast from raw analytics endpoints.
-- Financial values are displayed in Indian rupee notation using K, M, or B abbreviations where appropriate.
+## Practice Health Threshold Classification Matrix
+
+| Health Indicator | Green (Healthy) | Amber (Watch) | Red (Critical Action) |
+|:-----------------|:----------------|:--------------|:----------------------|
+| **Forecast Risk** | $\text{Committed Coverage} \ge 70\%$ | $50\% \le \text{Coverage} < 70\%$ | $\text{Coverage} < 50\%$ |
+| **Pipeline Risk** | $\text{Pipeline Dependency} \le 30\%$ | $30\% < \text{Dependency} \le 50\%$ | $\text{Dependency} > 50\%$ |
+| **Forward Position**| $\text{Forward Coverage} \ge 120\%$ | $100\% \le \text{Coverage} < 120\%$ | $\text{Coverage} < 100\%$ |
+| **Headroom Status** | $\text{Headroom \%} \ge 10.0\%$ | $0.0\% \le \text{Headroom \%} < 10.0\%$ | $\text{Headroom \%} < 0.0\%$ |
+| **Performance Stance** | $\text{Budget Gap} > 0.0$ | $\text{Budget Gap} = 0.0$ | $\text{Budget Gap} < 0.0$ |
+
+---
+
+## Data Quality & Schema Boundaries
+
+> [!WARNING]
+> **Staffing Capacity Denominator Caveat:**
+> In the current database schema, `budgets.hours_budget` represents planned billable demand rather than total consultant head-count capacity hours. Therefore, hours attainment ($\text{actual\_hours} / \text{hours\_budget}$) is displayed as **Hours vs. Budget Attainment** rather than true utilization. The system sets `data_quality.status = 'review_required'` to maintain leadership transparency.

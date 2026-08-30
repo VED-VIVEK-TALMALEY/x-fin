@@ -1,6 +1,6 @@
 # X-Fin Developer & Operations Manual
 
-> **Technology Stack:** Python 3.10+ · FastAPI · PostgreSQL 14+ · Streamlit · SQLAlchemy · Plotly
+> **Technology Stack:** Python 3.10+ · FastAPI · PostgreSQL 14+ / SQLite Fallback · Streamlit · SQLAlchemy · Plotly · Pytest
 
 ---
 
@@ -8,14 +8,14 @@
 
 ```mermaid
 flowchart LR
-    subgraph S1["1. ENVIRONMENT"]
+    subgraph S1["1. ENVIRONMENT INITIALIZATION"]
         V["Create Virtualenv<br/><code>python -m venv .venv</code>"]
         I["Install Dependencies<br/><code>pip install -r requirements.txt</code>"]
         V --> I
     end
 
-    subgraph S2["2. DATABASE SETUP"]
-        D["Execute Schema DDL<br/><code>psql -f app/db/schema.sql</code>"]
+    subgraph S2["2. DATA FOUNDATION"]
+        D["Apply PostgreSQL DDL (Optional)<br/><code>psql -f app/db/schema.sql</code>"]
         G["Generate Synthetic Data<br/><code>python scripts/generate_synthetic_data.py</code>"]
         L["Load Database Tables<br/><code>python scripts/load_data.py</code>"]
         D --> G --> L
@@ -23,7 +23,7 @@ flowchart LR
 
     subgraph S3["3. APPLICATION RUNTIME"]
         API["Launch FastAPI Server<br/><code>uvicorn app.main:app --port 8000</code>"]
-        UI["Launch Streamlit UI<br/><code>streamlit run dashboard/app.py</code>"]
+        UI["Launch Streamlit Decision UI<br/><code>streamlit run dashboard/app.py</code>"]
     end
 
     subgraph S4["4. AUTOMATED VERIFICATION"]
@@ -36,23 +36,11 @@ flowchart LR
     style S2 fill:#FDF4FF,stroke:#C026D3,stroke-width:2px,color:#86198F
     style S3 fill:#F0FDF4,stroke:#16A34A,stroke-width:2px,color:#15803D
     style S4 fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
-
-    style V fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-    style I fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-
-    style D fill:#F5D0FE,stroke:#A21CAF,stroke-width:1px,color:#701A75
-    style G fill:#F5D0FE,stroke:#A21CAF,stroke-width:1px,color:#701A75
-    style L fill:#F5D0FE,stroke:#A21CAF,stroke-width:1px,color:#701A75
-
-    style API fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
-    style UI fill:#DCFCE7,stroke:#15803D,stroke-width:1px,color:#166534
-
-    style T fill:#A7F3D0,stroke:#047857,stroke-width:2px,color:#064E3B
 ```
 
 ---
 
-## Automated Verification Suite
+## Automated Pytest Suite Specification
 
 ```mermaid
 graph TD
@@ -61,9 +49,9 @@ graph TD
         T2["tests/test_variance.py"]
     end
 
-    subgraph Trace["Test Verification Logic"]
-        C1["<b>test_forecast:</b><br/>• Committed Backlog = INR 100,000.00<br/>• Weighted Pipeline = INR 50,000.00<br/>• Actual Util = 0.75, Target Util = 0.75<br/>• Risk Haircut = 5% (0.05)<br/>Result: Asserts forecast_revenue == INR 142,500.00"]
-        C2["<b>test_variance:</b><br/>• Actual = 90.00, Budget = 100.00, Forecast = 95.00<br/>Result: Asserts Actual Variance == -10.00 (-10.00%)<br/>Result: Asserts Forecast Variance == -5.00 (-5.00%)"]
+    subgraph Trace["Test Verification Assertions"]
+        C1["<b>test_forecast:</b><br/>• Committed Backlog = INR 100,000.00<br/>• Weighted Pipeline = INR 50,000.00<br/>• Actual Util = 0.75, Target Util = 0.75<br/>• Risk Haircut = 5% (0.05)<br/>Asserts: forecast_revenue == INR 142,500.00"]
+        C2["<b>test_variance:</b><br/>• Actual = 90.00, Budget = 100.00, Forecast = 95.00<br/>Asserts: Actual Variance == -10.00 (-10.00%)<br/>Asserts: Forecast Variance == -5.00 (-5.00%)"]
     end
 
     T1 --> C1
@@ -71,65 +59,36 @@ graph TD
 
     style Suite fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E40AF
     style Trace fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#065F46
-
-    style T1 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-    style T2 fill:#DBEAFE,stroke:#1D4ED8,stroke-width:1px,color:#1E3A8A
-
-    style C1 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
-    style C2 fill:#D1FAE5,stroke:#047857,stroke-width:1px,color:#064E3B
 ```
 
-Run test suite:
+### Run Test Suite
+
 ```bash
+# Run all unit and integration tests with verbose output
 python -m pytest tests/ -v
 ```
 
 ---
 
-## Dependency Matrix
-
-```mermaid
-pie title Dependencies by Architecture Layer
-    "API & Web Framework (FastAPI, Uvicorn, Pydantic, Requests)" : 30
-    "Database & ORM (SQLAlchemy, psycopg2-binary)" : 20
-    "Data & Numerical Ops (Pandas, Numpy)" : 20
-    "Visualization & UI (Streamlit, Plotly)" : 20
-    "Testing & Quality (Pytest, HTTPX, Black, Flake8)" : 10
-```
+## Dependency Specification Matrix
 
 | Package Name | Minimum Version | Architectural Role | Layer Categorization |
 |:-------------|:---------------:|:-------------------|:---------------------|
-| `fastapi` | `0.115.0+` | Asynchronous REST API framework | API Gateway |
-| `uvicorn` | `0.30.0+` | Production ASGI web server | API Gateway |
-| `sqlalchemy` | `2.0.0+` | Database abstraction and raw SQL engine | Persistence |
-| `psycopg2-binary` | `2.9.9+` | PostgreSQL database driver adapter | Persistence |
-| `pydantic` | `2.8.0+` | Data schema validation and serialisation | API Gateway |
-| `pandas` | `2.2.0+` | Tabular data transformations | Analytics & Logic |
-| `numpy` | `1.26.0+` | Mathematical operations & distributions | Analytics & Logic |
-| `plotly` | `5.22.0+` | Interactive visual charting engine | Presentation |
-| `streamlit` | `1.36.0+` | Reactive executive dashboard frontend | Presentation |
-| `pytest` | `8.2.0+` | Test execution runner | Quality & Testing |
-| `httpx` | `0.27.0+` | Asynchronous test HTTP client | Quality & Testing |
-| `requests` | `2.32.0+` | HTTP client for Streamlit UI connector | Presentation |
+| `fastapi` | `0.115.0+` | ASGI Web Framework & Routing | API Gateway |
+| `uvicorn` | `0.30.0+` | High-performance ASGI Web Server | Infrastructure |
+| `pydantic` | `2.8.0+` | Request / Response Schema Validation | Core Type Safety |
+| `sqlalchemy` | `2.0.0+` | Database Connection Pooling & Queries | Data Persistence |
+| `psycopg2-binary` | `2.9.9+` | PostgreSQL Database Adapter | Data Persistence |
+| `streamlit` | `1.40.0+` | Executive Decision Surface & UI | Presentation |
+| `plotly` | `5.24.0+` | Interactive Visualizations & Charts | Presentation |
+| `pandas` | `2.2.0+` | Table & Matrix Data Manipulations | Analytics Engine |
+| `pytest` | `8.3.0+` | Automated Test Runner & Assertions | Quality Assurance |
+| `requests` | `2.32.0+` | Internal HTTP Client for Dashboard | Presentation Client |
 
 ---
 
-## New Endpoint Development Workflow
+## Code Quality & Contribution Standards
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant S as app/services/
-    participant R as app/routers/
-    participant M as app/main.py
-    participant D as dashboard/api.py
-    participant UI as dashboard/app.py
-    participant T as tests/
-
-    Note over S: 1. Write pure calculation function in services/
-    Note over R: 2. Expose endpoint in routers/ with Pydantic model
-    Note over M: 3. Register router in app/main.py
-    Note over D: 4. Add HTTP request wrapper in dashboard/api.py
-    Note over UI: 5. Build Streamlit metric cards and Plotly charts
-    Note over T: 6. Add automated regression unit test in tests/
-```
+1. **Pure Python Engines:** All calculation logic in `app/services` must remain pure Python with zero dependencies on FastAPI HTTP request contexts.
+2. **Deterministic Reproducibility:** Monte Carlo simulations and stochastic routines must use explicit random seeds (`seed=42`) for testing reproducibility.
+3. **Data Quality Awareness:** Never present proxy calculations as authoritative metrics without explicit warning flags.
