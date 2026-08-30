@@ -1,3 +1,11 @@
+"""
+X-Fin Dashboard Charts
+"""
+
+from __future__ import annotations
+
+from typing import Any, Dict
+
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -7,37 +15,69 @@ CHART_PAPER = "rgba(0, 0, 0, 0)"
 CHART_GRID = "rgba(148, 163, 184, 0.16)"
 
 
-def _style_chart(fig, height=400):
+def _style_chart(
+    fig: go.Figure,
+    height: int = 400,
+) -> go.Figure:
     fig.update_layout(
         template=CHART_TEMPLATE,
         paper_bgcolor=CHART_PAPER,
         plot_bgcolor=CHART_PAPER,
         height=height,
-        margin=dict(l=24, r=24, t=48, b=28),
-        font=dict(color="#e5e7eb"),
-        hoverlabel=dict(bgcolor="#1f2937", font_color="#f8fafc"),
+        margin=dict(
+            l=24,
+            r=24,
+            t=48,
+            b=28,
+        ),
+        hovermode="closest",
     )
-    fig.update_xaxes(gridcolor=CHART_GRID, zerolinecolor=CHART_GRID)
-    fig.update_yaxes(gridcolor=CHART_GRID, zerolinecolor=CHART_GRID)
+
+    fig.update_xaxes(
+        gridcolor=CHART_GRID,
+        zerolinecolor=CHART_GRID,
+    )
+
+    fig.update_yaxes(
+        gridcolor=CHART_GRID,
+        zerolinecolor=CHART_GRID,
+    )
+
     return fig
 
 
-def revenue_chart(data):
+def _empty(height: int = 400) -> go.Figure:
+    return _style_chart(
+        go.Figure(),
+        height=height,
+    )
 
+
+def revenue_chart(data):
     if not data:
-        return go.Figure()
+        return _empty()
 
     df = pd.DataFrame(data)
 
-    if "month" not in df.columns:
-        return go.Figure()
-
-    if "revenue" not in df.columns:
-        return go.Figure()
+    if not {"month", "revenue"}.issubset(df.columns):
+        return _empty()
 
     df["month"] = pd.to_datetime(
-        df["month"]
+        df["month"],
+        errors="coerce",
     )
+
+    df["revenue"] = pd.to_numeric(
+        df["revenue"],
+        errors="coerce",
+    )
+
+    df = df.dropna(
+        subset=["month", "revenue"]
+    )
+
+    if df.empty:
+        return _empty()
 
     fig = go.Figure()
 
@@ -64,7 +104,6 @@ def revenue_vs_budget_chart(
     actual_data,
     budget_data,
 ):
-
     actual = pd.DataFrame(
         actual_data or []
     )
@@ -74,21 +113,27 @@ def revenue_vs_budget_chart(
     )
 
     if actual.empty:
-        return go.Figure()
+        return _empty()
 
-    if "month" not in actual.columns:
-        return go.Figure()
-
-    if "revenue" not in actual.columns:
-        return go.Figure()
+    if not {"month", "revenue"}.issubset(
+        actual.columns
+    ):
+        return _empty()
 
     actual["month"] = pd.to_datetime(
-        actual["month"]
+        actual["month"],
+        errors="coerce",
     )
 
-    if not budget.empty and "month" in budget.columns:
+    actual["revenue"] = pd.to_numeric(
+        actual["revenue"],
+        errors="coerce",
+    )
+
+    if not budget.empty and "month" in budget:
         budget["month"] = pd.to_datetime(
-            budget["month"]
+            budget["month"],
+            errors="coerce",
         )
 
     merged = actual.merge(
@@ -108,7 +153,6 @@ def revenue_vs_budget_chart(
     )
 
     if "budget_revenue" in merged.columns:
-
         fig.add_trace(
             go.Bar(
                 x=merged["month"],
@@ -125,15 +169,12 @@ def revenue_vs_budget_chart(
     return _style_chart(fig)
 
 
-def backlog_chart(
-    backlog,
-):
-
+def backlog_chart(backlog):
     backlog = backlog or {}
 
     waterfall = backlog.get(
         "waterfall",
-        {},
+        backlog,
     )
 
     labels = [
@@ -143,17 +184,26 @@ def backlog_chart(
     ]
 
     values = [
-        waterfall.get(
-            "opening_backlog",
-            0,
+        float(
+            waterfall.get(
+                "opening_backlog",
+                0,
+            )
+            or 0
         ),
-        waterfall.get(
-            "new_wins",
-            0,
+        float(
+            waterfall.get(
+                "new_wins",
+                0,
+            )
+            or 0
         ),
-        waterfall.get(
-            "closing_backlog",
-            0,
+        float(
+            waterfall.get(
+                "closing_backlog",
+                0,
+            )
+            or 0
         ),
     ]
 
@@ -166,18 +216,15 @@ def backlog_chart(
     )
 
     fig.update_layout(
-        title="Backlog Position",
+        title="Backlog Position"
     )
 
     return _style_chart(fig)
 
 
-def business_unit_chart(
-    data,
-):
-
+def business_unit_chart(data):
     if not data:
-        return go.Figure()
+        return _empty(450)
 
     df = pd.DataFrame(data)
 
@@ -186,10 +233,13 @@ def business_unit_chart(
         "business_unit",
     }
 
-    if not required.issubset(
-        df.columns
-    ):
-        return go.Figure()
+    if not required.issubset(df.columns):
+        return _empty(450)
+
+    df["actual_revenue"] = pd.to_numeric(
+        df["actual_revenue"],
+        errors="coerce",
+    ).fillna(0)
 
     df = df.sort_values(
         "actual_revenue",
@@ -213,13 +263,13 @@ def business_unit_chart(
         yaxis_title="Business Unit",
     )
 
-    return _style_chart(fig, height=450)
+    return _style_chart(
+        fig,
+        height=450,
+    )
 
 
-def variance_chart(
-    data,
-):
-
+def variance_chart(data):
     data = data or {}
 
     labels = [
@@ -228,13 +278,19 @@ def variance_chart(
     ]
 
     values = [
-        data.get(
-            "actual_vs_budget",
-            0,
+        float(
+            data.get(
+                "actual_vs_budget",
+                0,
+            )
+            or 0
         ),
-        data.get(
-            "forecast_vs_budget",
-            0,
+        float(
+            data.get(
+                "forecast_vs_budget",
+                0,
+            )
+            or 0
         ),
     ]
 
@@ -247,52 +303,37 @@ def variance_chart(
     )
 
     fig.update_layout(
-        title="Revenue Variance",
+        title="Revenue Variance"
     )
 
-    return _style_chart(fig, height=350)
+    return _style_chart(
+        fig,
+        height=350,
+    )
 
 
 def forecast_decomposition_chart(
     decomposition,
 ):
+    decomposition = decomposition or {}
 
-    decomposition = (
-        decomposition or {}
-    )
+    components = [
+        "committed_backlog",
+        "weighted_pipeline",
+        "utilization_adjustment",
+        "risk_adjustment",
+    ]
 
-    committed_backlog = float(
-        decomposition.get(
-            "committed_backlog",
-            0,
+    values = [
+        float(
+            decomposition.get(
+                key,
+                0,
+            )
+            or 0
         )
-        or 0
-    )
-
-    weighted_pipeline = float(
-        decomposition.get(
-            "weighted_pipeline",
-            0,
-        )
-        or 0
-    )
-
-    utilization_adjustment = float(
-        decomposition.get(
-            "utilization_adjustment",
-            0,
-        )
-        or 0
-    )
-
-    # API stores execution-risk contribution as a negative amount.
-    risk_adjustment = float(
-        decomposition.get(
-            "risk_adjustment",
-            0,
-        )
-        or 0
-    )
+        for key in components
+    ]
 
     forecast_revenue = float(
         decomposition.get(
@@ -321,10 +362,7 @@ def forecast_decomposition_chart(
                 "Forecast Revenue",
             ],
             y=[
-                committed_backlog,
-                weighted_pipeline,
-                utilization_adjustment,
-                risk_adjustment,
+                *values,
                 forecast_revenue,
             ],
             connector={
@@ -341,137 +379,341 @@ def forecast_decomposition_chart(
         showlegend=False,
     )
 
-    return _style_chart(fig, height=450)
+    return _style_chart(
+        fig,
+        height=450,
+    )
 
 
 def business_unit_heatmap(data):
     if not data:
-        return go.Figure()
+        return _empty(300)
 
     df = pd.DataFrame(data)
+
     required = {
         "business_unit",
         "actual_revenue",
         "variance_pct",
         "gross_margin_pct",
     }
+
     if not required.issubset(df.columns):
-        return go.Figure()
+        return _empty(300)
 
     metrics = [
         "actual_revenue",
         "variance_pct",
         "gross_margin_pct",
     ]
-    labels = ["Revenue", "Variance %", "Gross Margin %"]
+
+    labels = [
+        "Revenue",
+        "Variance %",
+        "Gross Margin %",
+    ]
+
     values = []
+
     for metric in metrics:
-        values.append(pd.to_numeric(df[metric], errors="coerce").fillna(0))
+        values.append(
+            pd.to_numeric(
+                df[metric],
+                errors="coerce",
+            ).fillna(0).tolist()
+        )
 
     fig = go.Figure(
         go.Heatmap(
             z=values,
             x=df["business_unit"].tolist(),
             y=labels,
-            colorscale="Tealgrn",
-            hovertemplate="%{y}<br>%{x}: %{z:.1f}<extra></extra>",
+            hovertemplate=(
+                "%{y}<br>"
+                "%{x}: %{z:.1f}"
+                "<extra></extra>"
+            ),
         )
     )
-    fig.update_layout(title="Business Unit Performance Map")
-    return _style_chart(fig, height=300)
+
+    fig.update_layout(
+        title="Business Unit Performance Map"
+    )
+
+    return _style_chart(
+        fig,
+        height=300,
+    )
 
 
 def capacity_chart(staffing):
     staffing = staffing or {}
-    labels = ["Actual Hours", "Hours Budget"]
-    values = [
-        float(staffing.get("actual_hours", 0) or 0),
-        float(staffing.get("budget_hours", 0) or 0),
+
+    labels = [
+        "Actual Hours",
+        "Hours Budget",
     ]
+
+    values = [
+        float(
+            staffing.get(
+                "actual_hours",
+                0,
+            )
+            or 0
+        ),
+        float(
+            staffing.get(
+                "budget_hours",
+                0,
+            )
+            or 0
+        ),
+    ]
+
     fig = go.Figure(
         go.Bar(
             x=labels,
             y=values,
-            marker_color=["#38bdf8", "#64748b"] ,
-            text=[f"{value:,.0f}" for value in values],
+            text=[
+                f"{value:,.0f}"
+                for value in values
+            ],
             textposition="auto",
-            hovertemplate="%{x}: %{y:,.0f} hours<extra></extra>",
+            hovertemplate=(
+                "%{x}: %{y:,.0f} hours"
+                "<extra></extra>"
+            ),
         )
     )
-    fig.update_layout(title="Staffing Hours: Actual vs Budget", showlegend=False)
-    return _style_chart(fig, height=340)
+
+    fig.update_layout(
+        title="Staffing Hours: Actual vs Budget",
+        showlegend=False,
+    )
+
+    return _style_chart(
+        fig,
+        height=340,
+    )
 
 
 def risk_driver_chart(risk):
     risk = risk or {}
-    labels = ["Committed Coverage", "Pipeline Dependency", "Headroom"]
-    values = [
-        float(risk.get("committed_forecast_coverage", 0) or 0),
-        float(risk.get("pipeline_dependency", 0) or 0),
-        float(risk.get("forecast_headroom_pct", 0) or 0),
+
+    labels = [
+        "Committed Coverage",
+        "Pipeline Dependency",
+        "Headroom",
     ]
+
+    values = [
+        float(
+            risk.get(
+                "committed_forecast_coverage",
+                0,
+            )
+            or 0
+        ),
+        float(
+            risk.get(
+                "pipeline_dependency",
+                0,
+            )
+            or 0
+        ),
+        float(
+            risk.get(
+                "forecast_headroom_pct",
+                0,
+            )
+            or 0
+        ),
+    ]
+
     fig = go.Figure(
         go.Bar(
             x=values,
             y=labels,
             orientation="h",
-            marker_color=["#34d399", "#f59e0b", "#60a5fa"],
-            text=[f"{value:.1f}%" for value in values],
+            text=[
+                f"{value:.1f}%"
+                for value in values
+            ],
             textposition="auto",
-            hovertemplate="%{y}: %{x:.1f}%<extra></extra>",
+            hovertemplate=(
+                "%{y}: %{x:.1f}%"
+                "<extra></extra>"
+            ),
         )
     )
-    fig.update_layout(title="Forecast Risk Drivers", xaxis_title="Percent")
-    return _style_chart(fig, height=340)
+
+    fig.update_layout(
+        title="Forecast Risk Drivers",
+        xaxis_title="Percent",
+    )
+
+    return _style_chart(
+        fig,
+        height=340,
+    )
 
 
-def forecast_confidence_chart(monte_carlo, budget):
+def forecast_confidence_chart(
+    monte_carlo,
+    budget,
+):
     monte_carlo = monte_carlo or {}
-    distribution = monte_carlo.get("distribution", {})
-    labels = ["P10", "P25", "P50", "P75", "P90"]
-    values = [float(distribution.get(label.lower(), 0) or 0) for label in labels]
+
+    distribution = monte_carlo.get(
+        "distribution",
+        {},
+    )
+
+    labels = [
+        "P10",
+        "P25",
+        "P50",
+        "P75",
+        "P90",
+    ]
+
+    values = [
+        float(
+            distribution.get(
+                label.lower(),
+                0,
+            )
+            or 0
+        )
+        for label in labels
+    ]
 
     fig = go.Figure()
+
     fig.add_trace(
         go.Scatter(
             x=labels,
             y=values,
             mode="lines+markers",
             name="Simulated Revenue",
-            line=dict(color="#22d3ee", width=3),
             fill="tozeroy",
-            fillcolor="rgba(34, 211, 238, 0.12)",
-            hovertemplate="%{x}: ₹%{y:,.0f}<extra></extra>",
+            hovertemplate=(
+                "%{x}: %{y:,.0f}"
+                "<extra></extra>"
+            ),
         )
     )
-    fig.add_hline(
-        y=float(budget or 0),
-        line_dash="dot",
-        line_color="#f59e0b",
-        annotation_text="Budget",
+
+    if budget:
+        fig.add_hline(
+            y=float(budget),
+            line_dash="dot",
+            annotation_text="Budget",
+        )
+
+    fig.update_layout(
+        title="Forecast Confidence Distribution",
+        yaxis_title="Revenue",
     )
-    fig.update_layout(title="Forecast Confidence Distribution", yaxis_title="Revenue")
-    return _style_chart(fig, height=340)
+
+    return _style_chart(
+        fig,
+        height=340,
+    )
 
 
 def accuracy_chart(data):
     if not data:
-        return go.Figure()
+        return _empty(360)
+
     df = pd.DataFrame(data)
-    date_column = next((column for column in ["month", "period", "date"] if column in df), None)
-    value_columns = [column for column in ["actual_revenue", "forecast_revenue", "budget_revenue"] if column in df]
+
+    date_column = next(
+        (
+            column
+            for column in (
+                "month",
+                "period",
+                "date",
+            )
+            if column in df.columns
+        ),
+        None,
+    )
+
+    value_columns = [
+        column
+        for column in (
+            "actual_revenue",
+            "forecast_revenue",
+            "budget_revenue",
+        )
+        if column in df.columns
+    ]
+
     if not date_column or not value_columns:
-        return go.Figure()
+        return _empty(360)
 
     fig = go.Figure()
+
     for column in value_columns:
         fig.add_trace(
             go.Scatter(
                 x=df[date_column],
-                y=df[column],
+                y=pd.to_numeric(
+                    df[column],
+                    errors="coerce",
+                ),
                 mode="lines+markers",
-                name=column.replace("_", " ").title(),
+                name=column.replace(
+                    "_",
+                    " ",
+                ).title(),
             )
         )
-    fig.update_layout(title="Historical Forecast Accuracy", yaxis_title="Revenue")
-    return _style_chart(fig, height=360)
+
+    fig.update_layout(
+        title="Historical Forecast Accuracy",
+        yaxis_title="Revenue",
+    )
+
+    return _style_chart(
+        fig,
+        height=360,
+    )
+
+
+def executive_risk_chart(
+    portfolio_risk: Dict[str, Any],
+):
+    score = float(
+        portfolio_risk.get(
+            "portfolio_risk_score",
+            0,
+        )
+        or 0
+    )
+
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=score,
+            title={
+                "text": "Portfolio Risk Score"
+            },
+            gauge={
+                "axis": {
+                    "range": [
+                        0,
+                        100,
+                    ]
+                },
+            },
+        )
+    )
+
+    return _style_chart(
+        fig,
+        height=300,
+    )

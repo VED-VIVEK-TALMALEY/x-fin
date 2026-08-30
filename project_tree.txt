@@ -65,12 +65,18 @@
 │   ├── FORECAST_ENGINE.md
 │   ├── INTELLIGENCE.md
 │   ├── METRICS.md
+│   ├── PRODUCTION.md
 ├── scripts/
 │   ├── bootstrap_db.py
 │   ├── generate_synthetic_data.py
 │   ├── load_data.py
 │   ├── __init__.py
 ├── tests/
+│   ├── test_api.py
 │   ├── test_forecast.py
+│   ├── test_monte_carlo.py
+│   ├── test_risk.py
+│   ├── test_scenario.py
+│   ├── test_staffing.py
 │   ├── test_variance.py
 │   ├── __init__.py
