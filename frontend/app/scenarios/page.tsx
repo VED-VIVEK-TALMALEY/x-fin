@@ -1,8 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import Sidebar from "@/components/Sidebar";
-import { runScenario } from "@/lib/api";
+
+import {
+  getForecast,
+  getVariance,
+  runScenario,
+} from "@/lib/api";
 
 /* ============================================================
    FORMATTERS
@@ -30,20 +36,12 @@ function formatCr(value: number) {
 ============================================================ */
 
 interface ScenarioResult {
-  forecast_revenue?: number;
-  forecast?: number;
-
-  budget_revenue?: number;
-  variance_vs_budget?: number;
-  variance_vs_budget_pct?: number;
-
-  committed_backlog?: number;
-  weighted_pipeline?: number;
-
-  utilization_adjustment?: number;
-  risk_adjustment?: number;
-
-  [key: string]: unknown;
+  base_revenue: number;
+  adjusted_pipeline: number;
+  adjusted_utilization: number;
+  scenario_revenue: number;
+  revenue_change: number;
+  revenue_change_pct: number;
 }
 
 /* ============================================================
@@ -66,8 +64,20 @@ export default function ScenariosPage() {
   const [result, setResult] =
     useState<ScenarioResult | null>(null);
 
+  const [baseRevenue, setBaseRevenue] =
+    useState<number | null>(null);
+
+  const [pipelineRevenue, setPipelineRevenue] =
+    useState<number | null>(null);
+
+  const [budgetRevenue, setBudgetRevenue] =
+    useState<number | null>(null);
+
   const [loading, setLoading] =
     useState(false);
+
+  const [loadingInputs, setLoadingInputs] =
+    useState(true);
 
   const [error, setError] =
     useState<string | null>(null);
@@ -76,27 +86,126 @@ export default function ScenariosPage() {
     useState(false);
 
   /* ==========================================================
+     LOAD CANONICAL FORECAST INPUTS
+  ========================================================== */
+
+  useEffect(() => {
+    async function loadInputs() {
+      try {
+        setLoadingInputs(true);
+        setError(null);
+
+        const [forecastResponse, varianceResponse] =
+          await Promise.all([
+            getForecast(),
+            getVariance(),
+          ]);
+
+        /*
+         * Scenario engine uses:
+         *
+         * base_revenue     = committed backlog
+         * pipeline_revenue = weighted pipeline
+         *
+         * These come from the canonical /forecast/current
+         * endpoint rather than being hard-coded.
+         */
+        setBaseRevenue(
+          forecastResponse.backlog.committed_backlog
+        );
+
+        setPipelineRevenue(
+          forecastResponse.pipeline.weighted_pipeline
+        );
+
+        /*
+         * Budget is supplied by the variance endpoint.
+         */
+        setBudgetRevenue(
+          varianceResponse.budget
+        );
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Unable to load scenario inputs."
+        );
+      } finally {
+        setLoadingInputs(false);
+      }
+    }
+
+    loadInputs();
+  }, []);
+
+  /* ==========================================================
      RUN SCENARIO
   ========================================================== */
 
   async function handleRunScenario() {
+    if (
+      baseRevenue === null ||
+      pipelineRevenue === null
+    ) {
+      setError(
+        "Scenario inputs are not available yet."
+      );
+
+      return;
+    }
+const currentUtilizationRate =
+  Number(utilization) / 100;
+
+const targetUtilizationRate =
+  Number(targetUtilization) / 100;
+
+const executionRiskRate =
+  Number(executionRisk) / 100;
+
+const pipelineConversionRate =
+  Number(pipelineConversion) / 100;
+
+    /*
+     * Backend ScenarioRequest:
+     *
+     * base_revenue
+     * pipeline_revenue
+     * utilization
+     * pipeline_conversion_change
+     * utilization_change
+     * billing_rate_change
+     * slippage_rate
+     *
+     * The UI expresses pipeline conversion as a
+     * percentage level, while the backend expects
+     * the change from the 100% baseline.
+     */
+   const payload = {
+  base_revenue: baseRevenue,
+
+  pipeline_revenue: pipelineRevenue,
+
+  utilization: currentUtilizationRate,
+
+  pipeline_conversion_change:
+    pipelineConversionRate - 1,
+
+  utilization_change:
+    targetUtilizationRate -
+    currentUtilizationRate,
+
+  billing_rate_change: 0,
+
+  slippage_rate:
+    executionRiskRate,
+};
+
     setLoading(true);
     setError(null);
 
     try {
-      const response = await runScenario({
-        current_utilization:
-          Number(utilization) / 100,
-
-        target_utilization:
-          Number(targetUtilization) / 100,
-
-        execution_risk_rate:
-          Number(executionRisk) / 100,
-
-        pipeline_conversion_rate:
-          Number(pipelineConversion) / 100,
-      });
+      const response =
+        await runScenario(payload);
 
       setResult(
         response as ScenarioResult
@@ -109,6 +218,8 @@ export default function ScenariosPage() {
           ? err.message
           : "Unable to run scenario."
       );
+
+      setHasRun(false);
     } finally {
       setLoading(false);
     }
@@ -130,31 +241,42 @@ export default function ScenariosPage() {
   }
 
   /* ==========================================================
-     RESULT HELPERS
+     RESULT VALUES
   ========================================================== */
 
-  const forecast =
-    result?.forecast_revenue ??
-    result?.forecast ??
-    null;
+  const scenarioForecast =
+    result?.scenario_revenue ?? null;
 
-  const budget =
-    result?.budget_revenue ??
-    null;
+  const scenarioVariance =
+    result?.revenue_change ?? null;
 
-  const variance =
-    result?.variance_vs_budget ??
-    (forecast !== null && budget !== null
-      ? forecast - budget
-      : null);
+  const scenarioVariancePct =
+    result?.revenue_change_pct ?? null;
 
-  const variancePct =
-    result?.variance_vs_budget_pct ??
-    (variance !== null &&
-    budget !== null &&
-    budget !== 0
-      ? (variance / budget) * 100
-      : null);
+  /*
+   * The scenario API does not return a separate
+   * risk_adjustment field.
+   *
+   * We therefore do NOT pretend that one exists.
+   *
+   * The bridge shows the actual backend-returned
+   * adjusted pipeline and utilization values.
+   *
+   * The residual is the amount required to reconcile
+   * the returned scenario revenue:
+   *
+   * scenario revenue
+   * - base revenue
+   * - adjusted pipeline
+   * - adjusted utilization
+   */
+  const impliedSlippageAdjustment =
+    result !== null
+      ? result.scenario_revenue -
+        result.base_revenue -
+        result.adjusted_pipeline -
+        result.adjusted_utilization
+      : null;
 
   /* ==========================================================
      RENDER
@@ -175,9 +297,7 @@ export default function ScenariosPage() {
               DELIVERY FINANCE
             </div>
 
-            <h1>
-              Scenarios
-            </h1>
+            <h1>Scenarios</h1>
           </div>
 
           <div className="topbar-right">
@@ -202,9 +322,7 @@ export default function ScenariosPage() {
                 MANAGEMENT ANALYSIS
               </div>
 
-              <h2>
-                Scenario analysis
-              </h2>
+              <h2>Scenario analysis</h2>
 
               <p>
                 Adjust operating assumptions to
@@ -225,9 +343,7 @@ export default function ScenariosPage() {
                   ASSUMPTIONS
                 </div>
 
-                <h2>
-                  Scenario inputs
-                </h2>
+                <h2>Scenario inputs</h2>
               </div>
 
               <div className="section-meta">
@@ -236,6 +352,10 @@ export default function ScenariosPage() {
             </div>
 
             <div className="scenario-layout">
+              {/* ==================================================
+                  INPUT PANEL
+              ================================================== */}
+
               <div className="panel scenario-input-panel">
                 <div className="scenario-field">
                   <label htmlFor="utilization">
@@ -293,7 +413,7 @@ export default function ScenariosPage() {
 
                   <p>
                     Target delivery utilization
-                    used by the forecast.
+                    used by the scenario engine.
                   </p>
                 </div>
 
@@ -321,8 +441,8 @@ export default function ScenariosPage() {
                   </div>
 
                   <p>
-                    Revenue haircut applied for
-                    execution risk.
+                    Slippage rate applied to the
+                    scenario.
                   </p>
                 </div>
 
@@ -352,8 +472,8 @@ export default function ScenariosPage() {
                   </div>
 
                   <p>
-                    Scenario adjustment applied to
-                    weighted pipeline.
+                    Conversion level applied to the
+                    weighted pipeline baseline.
                   </p>
                 </div>
 
@@ -363,11 +483,18 @@ export default function ScenariosPage() {
                     onClick={
                       handleRunScenario
                     }
-                    disabled={loading}
+                    disabled={
+                      loading ||
+                      loadingInputs ||
+                      baseRevenue === null ||
+                      pipelineRevenue === null
+                    }
                   >
                     {loading
                       ? "Running..."
-                      : "Run scenario"}
+                      : loadingInputs
+                        ? "Loading inputs..."
+                        : "Run scenario"}
                   </button>
 
                   <button
@@ -453,15 +580,63 @@ export default function ScenariosPage() {
 
                 <div className="scenario-methodology">
                   <div className="panel-label">
+                    BASE POSITION
+                  </div>
+
+                  <div className="scenario-summary-list">
+                    <div className="scenario-summary-item">
+                      <span>
+                        Committed backlog
+                      </span>
+
+                      <strong>
+                        {baseRevenue !== null
+                          ? formatCr(baseRevenue)
+                          : "—"}
+                      </strong>
+                    </div>
+
+                    <div className="scenario-summary-item">
+                      <span>
+                        Weighted pipeline
+                      </span>
+
+                      <strong>
+                        {pipelineRevenue !==
+                        null
+                          ? formatCr(
+                              pipelineRevenue
+                            )
+                          : "—"}
+                      </strong>
+                    </div>
+
+                    <div className="scenario-summary-item">
+                      <span>
+                        Budget
+                      </span>
+
+                      <strong>
+                        {budgetRevenue !== null
+                          ? formatCr(
+                              budgetRevenue
+                            )
+                          : "—"}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="panel-label">
                     METHOD
                   </div>
 
                   <p>
                     The scenario modifies the
-                    operating assumptions supplied to
-                    the forecast engine. The resulting
-                    revenue position is returned by the
-                    X-Fin API.
+                    operating assumptions supplied
+                    to the scenario engine. Base
+                    revenue and weighted pipeline are
+                    taken from the current X-Fin
+                    forecast position.
                   </p>
                 </div>
               </div>
@@ -479,9 +654,7 @@ export default function ScenariosPage() {
                   Scenario could not be completed
                 </div>
 
-                <p>
-                  {error}
-                </p>
+                <p>{error}</p>
               </div>
             </section>
           )}
@@ -492,6 +665,10 @@ export default function ScenariosPage() {
 
           {hasRun && result && (
             <>
+              {/* ==================================================
+                  RESULT SUMMARY
+              ================================================== */}
+
               <section className="section">
                 <div className="section-header">
                   <div>
@@ -499,9 +676,7 @@ export default function ScenariosPage() {
                       RESULT
                     </div>
 
-                    <h2>
-                      Scenario outcome
-                    </h2>
+                    <h2>Scenario outcome</h2>
                   </div>
 
                   <div className="section-meta">
@@ -516,8 +691,10 @@ export default function ScenariosPage() {
                     </div>
 
                     <div className="metric-value">
-                      {forecast !== null
-                        ? formatCr(forecast)
+                      {scenarioForecast !== null
+                        ? formatCr(
+                            scenarioForecast
+                          )
                         : "—"}
                     </div>
 
@@ -532,8 +709,10 @@ export default function ScenariosPage() {
                     </div>
 
                     <div className="metric-value">
-                      {budget !== null
-                        ? formatCr(budget)
+                      {budgetRevenue !== null
+                        ? formatCr(
+                            budgetRevenue
+                          )
                         : "—"}
                     </div>
 
@@ -544,85 +723,84 @@ export default function ScenariosPage() {
 
                   <div className="metric-block">
                     <div className="metric-label">
-                      Variance
+                      Revenue change
                     </div>
 
                     <div className="metric-value">
-                      {variance !== null
-                        ? formatCr(variance)
-                        : "—"}
-                    </div>
-
-                    <div className="metric-secondary">
-                      Scenario forecast vs budget
-                    </div>
-                  </div>
-
-                  <div className="metric-block">
-                    <div className="metric-label">
-                      Variance %
-                    </div>
-
-                    <div className="metric-value">
-                      {variancePct !== null
-                        ? formatPercent(
-                            variancePct
+                      {scenarioVariance !== null
+                        ? formatCr(
+                            scenarioVariance
                           )
                         : "—"}
                     </div>
 
                     <div className="metric-secondary">
-                      Relative to budget
+                      Change from base scenario
+                    </div>
+                  </div>
+
+                  <div className="metric-block">
+                    <div className="metric-label">
+                      Revenue change %
+                    </div>
+
+                    <div className="metric-value">
+                      {scenarioVariancePct !==
+                      null
+                        ? formatPercent(
+                            scenarioVariancePct
+                          )
+                        : "—"}
+                    </div>
+
+                    <div className="metric-secondary">
+                      Relative revenue change
                     </div>
                   </div>
                 </div>
               </section>
 
               {/* ==================================================
-                  FORECAST BRIDGE
+                  SCENARIO BRIDGE
               ================================================== */}
 
               <section className="section">
                 <div className="section-header">
                   <div>
                     <div className="section-kicker">
-                      FORECAST BRIDGE
+                      SCENARIO BRIDGE
                     </div>
 
-                    <h2>
-                      Scenario construction
-                    </h2>
+                    <h2>Scenario construction</h2>
+                  </div>
+
+                  <div className="section-meta">
+                    Backend-calculated adjustments
                   </div>
                 </div>
 
                 <div className="panel scenario-result-panel">
                   <div className="scenario-result-row">
                     <span>
-                      Committed backlog
+                      Base revenue
                     </span>
 
                     <strong>
-                      {result.committed_backlog !==
-                      undefined
-                        ? formatCurrency(
-                            result.committed_backlog
-                          )
-                        : "—"}
+                      {formatCurrency(
+                        result.base_revenue
+                      )}
                     </strong>
                   </div>
 
                   <div className="scenario-result-row">
                     <span>
-                      Weighted pipeline
+                      Adjusted pipeline
                     </span>
 
                     <strong>
-                      {result.weighted_pipeline !==
-                      undefined
-                        ? formatCurrency(
-                            result.weighted_pipeline
-                          )
-                        : "—"}
+                      {formatCurrency(
+                        result.adjusted_pipeline
+                      )}
                     </strong>
                   </div>
 
@@ -632,25 +810,22 @@ export default function ScenariosPage() {
                     </span>
 
                     <strong>
-                      {result.utilization_adjustment !==
-                      undefined
-                        ? formatCurrency(
-                            result.utilization_adjustment
-                          )
-                        : "—"}
+                      {formatCurrency(
+                        result.adjusted_utilization
+                      )}
                     </strong>
                   </div>
 
                   <div className="scenario-result-row">
                     <span>
-                      Execution adjustment
+                      Implied slippage adjustment
                     </span>
 
                     <strong>
-                      {result.risk_adjustment !==
-                      undefined
+                      {impliedSlippageAdjustment !==
+                      null
                         ? formatCurrency(
-                            result.risk_adjustment
+                            impliedSlippageAdjustment
                           )
                         : "—"}
                     </strong>
@@ -662,9 +837,9 @@ export default function ScenariosPage() {
                     </span>
 
                     <strong>
-                      {forecast !== null
-                        ? formatCurrency(forecast)
-                        : "—"}
+                      {formatCurrency(
+                        result.scenario_revenue
+                      )}
                     </strong>
                   </div>
                 </div>
@@ -748,11 +923,35 @@ export default function ScenariosPage() {
                     </p>
                   </div>
 
-                  {forecast !== null &&
-                    budget !== null && (
+                  <div className="observation">
+                    <span className="observation-index">
+                      04
+                    </span>
+
+                    <p>
+                      The scenario changes forward
+                      revenue by{" "}
+                      <strong>
+                        {formatCr(
+                          result.revenue_change
+                        )}
+                      </strong>{" "}
+                      (
+                      <strong>
+                        {formatPercent(
+                          result.revenue_change_pct
+                        )}
+                      </strong>
+                      ) relative to the scenario
+                      engine's base position.
+                    </p>
+                  </div>
+
+                  {budgetRevenue !== null &&
+                    scenarioForecast !== null && (
                       <div className="observation">
                         <span className="observation-index">
-                          04
+                          05
                         </span>
 
                         <p>
@@ -760,14 +959,13 @@ export default function ScenariosPage() {
                           forecast is{" "}
                           <strong>
                             {formatCr(
-                              forecast
+                              scenarioForecast
                             )}
                           </strong>
-                          , compared with a budget
-                          of{" "}
+                          , compared with a budget of{" "}
                           <strong>
                             {formatCr(
-                              budget
+                              budgetRevenue
                             )}
                           </strong>
                           .

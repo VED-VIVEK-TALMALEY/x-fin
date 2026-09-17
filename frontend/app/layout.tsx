@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "X-Fin | Delivery Finance",
-  description: "Intelligent Delivery Finance Operating System",
+ description:
+  "Delivery finance analytics, forecasting and scenario analysis",
 };
 
 export default function RootLayout({
