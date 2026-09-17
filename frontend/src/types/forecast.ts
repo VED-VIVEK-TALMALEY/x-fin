@@ -18,8 +18,15 @@ export interface ForecastBacklog {
   total_coverage: number;
 }
 
+export interface ForecastAssumptions {
+  current_utilization: number;
+  target_utilization: number;
+  execution_risk_rate: number;
+}
+
 export interface ForecastCurrentResponse {
   forecast: ForecastMetrics;
   pipeline: ForecastPipeline;
   backlog: ForecastBacklog;
+  assumptions: ForecastAssumptions;
 }
