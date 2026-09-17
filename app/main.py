@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse
-
+from fastapi.middleware.cors import CORSMiddleware
 from app.config import APP_NAME, APP_VERSION
 from app.routers import (
     analytics,
@@ -21,7 +21,22 @@ app = FastAPI(
     version=APP_VERSION,
     description="Intelligent Delivery Finance Operating System",
 )
+app = FastAPI(
+    title=APP_NAME,
+    version=APP_VERSION,
+    description="Intelligent Delivery Finance Operating System",
+)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ============================================================
 # GLOBAL EXCEPTION HANDLER

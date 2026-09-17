@@ -29,15 +29,33 @@ def build_forecast(
         + Utilization Adjustment
         - Execution Risk Adjustment
 
-    All monetary values are expected to be in the same currency
-    and units as the source financial data.
+    Risk adjustment is represented as a POSITIVE
+    monetary haircut and is subtracted from the
+    forward revenue base.
+
+    All monetary values are expected to be in the
+    same currency and units as the source financial data.
     """
 
-    committed_backlog = float(committed_backlog or 0.0)
-    weighted_pipeline = float(weighted_pipeline or 0.0)
-    utilization = float(utilization or 0.0)
-    target_utilization = float(target_utilization or 0.0)
-    risk_rate = float(risk_rate or 0.0)
+    committed_backlog = float(
+        committed_backlog or 0.0
+    )
+
+    weighted_pipeline = float(
+        weighted_pipeline or 0.0
+    )
+
+    utilization = float(
+        utilization or 0.0
+    )
+
+    target_utilization = float(
+        target_utilization or 0.0
+    )
+
+    risk_rate = float(
+        risk_rate or 0.0
+    )
 
     # --------------------------------------------------
     # UTILIZATION ADJUSTMENT
@@ -46,21 +64,25 @@ def build_forecast(
     # Positive utilization variance produces upside.
     # Negative utilization variance produces downside.
     #
-    # We apply the utilization delta to the weighted
-    # pipeline because pipeline realization is the
-    # component most exposed to delivery capacity.
+    # The adjustment is applied to weighted pipeline
+    # because pipeline realization is most exposed to
+    # delivery capacity.
     #
-    utilization_delta = utilization - target_utilization
+    utilization_delta = (
+        utilization - target_utilization
+    )
 
     utilization_adjustment = (
-        weighted_pipeline * utilization_delta
+        weighted_pipeline
+        * utilization_delta
     )
 
     # --------------------------------------------------
     # EXECUTION RISK
     # --------------------------------------------------
     #
-    # Risk is applied to the forward revenue base.
+    # Risk is calculated as a positive haircut.
+    # It is subtracted from forward revenue below.
     #
     forward_revenue = (
         committed_backlog
@@ -68,7 +90,8 @@ def build_forecast(
     )
 
     risk_adjustment = (
-        forward_revenue * risk_rate
+        forward_revenue
+        * risk_rate
     )
 
     # --------------------------------------------------
