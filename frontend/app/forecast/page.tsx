@@ -10,9 +10,7 @@ import {
 
 import type { ForecastCurrentResponse } from "@/types/forecast";
 import type { VarianceResponse } from "@/types/analytics";
-import type {
-  IntelligenceOverview,
-} from "@/types/intelligence";
+import type { IntelligenceOverview } from "@/types/intelligence";
 
 /* ============================================================
    FORMATTERS
@@ -48,31 +46,39 @@ function ForecastBridge({
     {
       label: "Committed backlog",
       value: forecast.forecast.committed_backlog,
+      operator: "",
       type: "positive",
     },
     {
       label: "Weighted pipeline",
       value: forecast.forecast.weighted_pipeline,
+      operator: "+",
       type: "positive",
     },
     {
       label: "Utilization adjustment",
       value: forecast.forecast.utilization_adjustment,
-      type: "negative",
+      operator:
+        forecast.forecast.utilization_adjustment >= 0
+          ? "+"
+          : "−",
+      type:
+        forecast.forecast.utilization_adjustment >= 0
+          ? "positive"
+          : "negative",
     },
     {
       label: "Execution risk",
       value: -Math.abs(
         forecast.forecast.risk_adjustment
       ),
+      operator: "−",
       type: "negative",
     },
   ];
 
   const maxValue = Math.max(
-    ...items.map((item) =>
-      Math.abs(item.value)
-    )
+    ...items.map((item) => Math.abs(item.value))
   );
 
   return (
@@ -81,9 +87,7 @@ function ForecastBridge({
         const width =
           maxValue > 0
             ? Math.max(
-                (Math.abs(item.value) /
-                  maxValue) *
-                  100,
+                (Math.abs(item.value) / maxValue) * 100,
                 5
               )
             : 5;
@@ -119,12 +123,9 @@ function ForecastBridge({
               />
             </div>
 
-            {index <
-              items.length - 1 && (
+            {index < items.length - 1 && (
               <div className="bridge-operator">
-                {item.type === "negative"
-                  ? "−"
-                  : "+"}
+                {items[index + 1].operator}
               </div>
             )}
           </div>
@@ -183,18 +184,14 @@ function ForecastDistribution({
 
   const min = distribution.p10;
   const max = distribution.p90;
-
-  const range =
-    max - min || 1;
+  const range = max - min || 1;
 
   return (
     <div className="distribution">
       <div className="distribution-scale">
         {values.map((item) => {
           const position =
-            ((item.value - min) /
-              range) *
-            100;
+            ((item.value - min) / range) * 100;
 
           return (
             <div
@@ -205,9 +202,7 @@ function ForecastDistribution({
               }}
             >
               <div className="distribution-value">
-                {formatCurrency(
-                  item.value
-                )}
+                {formatCurrency(item.value)}
               </div>
 
               <div className="distribution-marker" />
@@ -225,13 +220,8 @@ function ForecastDistribution({
       </div>
 
       <div className="distribution-caption">
-        <span>
-          Lower outcome
-        </span>
-
-        <span>
-          Higher outcome
-        </span>
+        <span>Lower outcome</span>
+        <span>Higher outcome</span>
       </div>
     </div>
   );
@@ -243,19 +233,13 @@ function ForecastDistribution({
 
 export default function ForecastPage() {
   const [forecast, setForecast] =
-    useState<ForecastCurrentResponse | null>(
-      null
-    );
+    useState<ForecastCurrentResponse | null>(null);
 
   const [variance, setVariance] =
-    useState<VarianceResponse | null>(
-      null
-    );
+    useState<VarianceResponse | null>(null);
 
   const [intelligence, setIntelligence] =
-    useState<IntelligenceOverview | null>(
-      null
-    );
+    useState<IntelligenceOverview | null>(null);
 
   const [loading, setLoading] =
     useState(true);
@@ -285,9 +269,7 @@ export default function ForecastPage() {
 
         setForecast(forecastData);
         setVariance(varianceData);
-        setIntelligence(
-          intelligenceData
-        );
+        setIntelligence(intelligenceData);
       } catch (err) {
         setError(
           err instanceof Error
@@ -307,42 +289,33 @@ export default function ForecastPage() {
   ---------------------------------------------------------- */
 
   const metrics = useMemo(() => {
-    if (
-      !forecast ||
-      !variance
-    ) {
+    if (!forecast || !variance) {
       return null;
     }
 
     const forecastValue =
-      forecast.forecast
-        .forecast_revenue;
+      forecast.forecast.forecast_revenue;
 
-    const budget =
-      variance.budget;
+    const budget = variance.budget;
 
     const varianceValue =
       forecastValue - budget;
 
     const variancePct =
       budget !== 0
-        ? (varianceValue /
-            budget) *
-          100
+        ? (varianceValue / budget) * 100
         : 0;
 
     const pipelineDependency =
       forecastValue !== 0
-        ? (forecast.forecast
-            .weighted_pipeline /
+        ? (forecast.forecast.weighted_pipeline /
             forecastValue) *
           100
         : 0;
 
     const committedCoverage =
       forecastValue !== 0
-        ? (forecast.forecast
-            .committed_backlog /
+        ? (forecast.forecast.committed_backlog /
             forecastValue) *
           100
         : 0;
@@ -571,8 +544,7 @@ export default function ForecastPage() {
 
               <div
                 className={`metric-change ${
-                  metrics.variancePct >=
-                  0
+                  metrics.variancePct >= 0
                     ? "positive"
                     : "negative"
                 }`}
@@ -610,14 +582,12 @@ export default function ForecastPage() {
 
               <div
                 className={`metric-value ${
-                  metrics.varianceValue >=
-                  0
+                  metrics.varianceValue >= 0
                     ? "value-positive"
                     : "value-negative"
                 }`}
               >
-                {metrics.varianceValue >=
-                0
+                {metrics.varianceValue >= 0
                   ? "+"
                   : "−"}
 
@@ -696,8 +666,6 @@ export default function ForecastPage() {
             </div>
 
             <div className="assumptions-grid">
-              {/* CURRENT UTILIZATION */}
-
               <div className="panel assumption-panel">
                 <div className="panel-label">
                   Current utilization
@@ -705,7 +673,8 @@ export default function ForecastPage() {
 
                 <div className="panel-value">
                   {forecast.assumptions
-                    ?.current_utilization != null
+                    ?.current_utilization !=
+                  null
                     ? formatPlainPercent(
                         forecast.assumptions
                           .current_utilization *
@@ -719,8 +688,6 @@ export default function ForecastPage() {
                 </div>
               </div>
 
-              {/* TARGET UTILIZATION */}
-
               <div className="panel assumption-panel">
                 <div className="panel-label">
                   Target utilization
@@ -728,7 +695,8 @@ export default function ForecastPage() {
 
                 <div className="panel-value">
                   {forecast.assumptions
-                    ?.target_utilization != null
+                    ?.target_utilization !=
+                  null
                     ? formatPlainPercent(
                         forecast.assumptions
                           .target_utilization *
@@ -742,8 +710,6 @@ export default function ForecastPage() {
                 </div>
               </div>
 
-              {/* EXECUTION RISK */}
-
               <div className="panel assumption-panel">
                 <div className="panel-label">
                   Execution risk
@@ -751,7 +717,8 @@ export default function ForecastPage() {
 
                 <div className="panel-value">
                   {forecast.assumptions
-                    ?.execution_risk_rate != null
+                    ?.execution_risk_rate !=
+                  null
                     ? formatPlainPercent(
                         forecast.assumptions
                           .execution_risk_rate *
@@ -764,8 +731,6 @@ export default function ForecastPage() {
                   Applied to forward revenue
                 </div>
               </div>
-
-              {/* COMMITTED COVERAGE */}
 
               <div className="panel assumption-panel">
                 <div className="panel-label">
@@ -786,7 +751,7 @@ export default function ForecastPage() {
           </section>
 
           {/* ==================================================
-              SUPPORTING POSITION
+              FORWARD POSITION
           ================================================== */}
 
           <section className="section">
@@ -862,10 +827,9 @@ export default function ForecastPage() {
                 </div>
 
                 <div className="panel-value">
-                  {forecast.pipeline
-                    .opportunities.toLocaleString(
-                      "en-IN"
-                    )}
+                  {forecast.pipeline.opportunities.toLocaleString(
+                    "en-IN"
+                  )}
                 </div>
 
                 <div className="panel-note">
@@ -876,7 +840,7 @@ export default function ForecastPage() {
           </section>
 
           {/* ==================================================
-              MONTE CARLO
+              MONTE CARLO DISTRIBUTION
           ================================================== */}
 
           <section className="section">
@@ -892,19 +856,16 @@ export default function ForecastPage() {
               </div>
 
               <div className="section-meta">
-                {intelligence.monte_carlo
-                  .iterations.toLocaleString(
-                    "en-IN"
-                  )}{" "}
+                {intelligence.monte_carlo.iterations.toLocaleString(
+                  "en-IN"
+                )}{" "}
                 iterations
               </div>
             </div>
 
             <div className="panel distribution-panel">
               <ForecastDistribution
-                intelligence={
-                  intelligence
-                }
+                intelligence={intelligence}
               />
 
               <div className="distribution-summary">
@@ -952,6 +913,12 @@ export default function ForecastPage() {
                     )}
                   </strong>
                 </div>
+              </div>
+
+              <div className="assumption-note">
+                Probabilistic distribution is shown
+                separately from the deterministic
+                operating forecast above.
               </div>
             </div>
           </section>
@@ -1086,19 +1053,18 @@ export default function ForecastPage() {
 
               <div className="context-row">
                 <span>
-                  Forecast headroom
+                  Forecast variance
                 </span>
 
                 <strong>
                   {formatCurrency(
-                    intelligence.risk
-                      .forecast_headroom
+                    metrics.varianceValue
                   )}
                 </strong>
 
                 <span>
-                  Remaining position against
-                  budget
+                  Deterministic forecast
+                  relative to budget
                 </span>
               </div>
 
@@ -1109,40 +1075,39 @@ export default function ForecastPage() {
 
                 <strong>
                   {formatPlainPercent(
-                    intelligence.risk
-                      .pipeline_dependency
+                    metrics.pipelineDependency
                   )}
                 </strong>
 
                 <span>
-                  Share of forecast dependent
-                  on weighted pipeline
+                  Share of forecast represented
+                  by weighted pipeline
                 </span>
               </div>
 
               <div className="context-row">
                 <span>
-                  Risk adjustment
+                  Execution risk adjustment
                 </span>
 
                 <strong>
                   {formatCurrency(
                     Math.abs(
-                      intelligence.risk
+                      forecast.forecast
                         .risk_adjustment
                     )
                   )}
                 </strong>
 
                 <span>
-                  Forecast reduction for
-                  execution risk
+                  Reduction applied in the
+                  operating forecast
                 </span>
               </div>
 
               <div className="context-row">
                 <span>
-                  Forecast confidence
+                  Model confidence indicator
                 </span>
 
                 <strong>
@@ -1153,7 +1118,8 @@ export default function ForecastPage() {
                 </strong>
 
                 <span>
-                  Base confidence measure
+                  Base model indicator; not a
+                  statistical confidence interval
                 </span>
               </div>
             </div>

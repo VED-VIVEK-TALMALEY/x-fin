@@ -4,8 +4,9 @@ from sqlalchemy import text
 def business_unit_performance(db):
 
     query = text("""
+    WITH actuals AS (
         SELECT
-            bu.name AS business_unit,
+            p.business_unit_id,
 
             COALESCE(
                 SUM(a.actual_revenue),
@@ -18,40 +19,77 @@ def business_unit_performance(db):
             ) AS actual_cost,
 
             COALESCE(
-                SUM(b.revenue_budget),
+                SUM(a.actual_hours),
+                0
+            ) AS actual_hours
+
+        FROM projects p
+
+        LEFT JOIN project_actuals a
+            ON a.project_id = p.project_id
+
+        GROUP BY p.business_unit_id
+    ),
+
+    budgets AS (
+        SELECT
+            business_unit_id,
+
+            COALESCE(
+                SUM(revenue_budget),
                 0
             ) AS budget_revenue,
 
             COALESCE(
-                SUM(a.actual_hours),
-                0
-            ) AS actual_hours,
-
-            COALESCE(
-                SUM(b.hours_budget),
+                SUM(hours_budget),
                 0
             ) AS budget_hours
 
-        FROM business_units bu
+        FROM budgets
 
-        LEFT JOIN projects p
-            ON p.business_unit_id =
-               bu.business_unit_id
+        GROUP BY business_unit_id
+    )
 
-        LEFT JOIN project_actuals a
-            ON a.project_id =
-               p.project_id
+    SELECT
+        bu.name AS business_unit,
 
-        LEFT JOIN budgets b
-            ON b.business_unit_id =
-               bu.business_unit_id
-           AND DATE_TRUNC('month', a.month)
-               = DATE_TRUNC('month', b.month)
+        COALESCE(
+            actuals.actual_revenue,
+            0
+        ) AS actual_revenue,
 
-        GROUP BY bu.name
-        ORDER BY actual_revenue DESC
-    """)
+        COALESCE(
+            budgets.budget_revenue,
+            0
+        ) AS budget_revenue,
 
+        COALESCE(
+            actuals.actual_cost,
+            0
+        ) AS actual_cost,
+
+        COALESCE(
+            actuals.actual_hours,
+            0
+        ) AS actual_hours,
+
+        COALESCE(
+            budgets.budget_hours,
+            0
+        ) AS budget_hours
+
+    FROM business_units bu
+
+    LEFT JOIN actuals
+        ON actuals.business_unit_id =
+           bu.business_unit_id
+
+    LEFT JOIN budgets
+        ON budgets.business_unit_id =
+           bu.business_unit_id
+
+    ORDER BY actual_revenue DESC
+""")
     rows = db.execute(query).mappings().all()
 
     results = []

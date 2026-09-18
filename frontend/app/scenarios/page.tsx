@@ -3,16 +3,20 @@
 import { useEffect, useState } from "react";
 
 import Sidebar from "@/components/Sidebar";
-
 import {
   getForecast,
   getVariance,
   runScenario,
 } from "@/lib/api";
 
-/* ============================================================
-   FORMATTERS
-============================================================ */
+interface ScenarioResult {
+  base_revenue: number;
+  adjusted_pipeline: number;
+  adjusted_utilization: number;
+  scenario_revenue: number;
+  revenue_change: number;
+  revenue_change_pct: number;
+}
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-IN", {
@@ -31,33 +35,22 @@ function formatCr(value: number) {
   return `₹${(value / 10000000).toFixed(1)} Cr`;
 }
 
-/* ============================================================
-   TYPES
-============================================================ */
+function parseInput(value: string): number | null {
+  if (value.trim() === "") {
+    return null;
+  }
 
-interface ScenarioResult {
-  base_revenue: number;
-  adjusted_pipeline: number;
-  adjusted_utilization: number;
-  scenario_revenue: number;
-  revenue_change: number;
-  revenue_change_pct: number;
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
-/* ============================================================
-   PAGE
-============================================================ */
-
 export default function ScenariosPage() {
-  const [utilization, setUtilization] =
-    useState("74");
-
+  const [utilization, setUtilization] = useState("74");
   const [targetUtilization, setTargetUtilization] =
     useState("75");
-
   const [executionRisk, setExecutionRisk] =
     useState("5");
-
   const [pipelineConversion, setPipelineConversion] =
     useState("100");
 
@@ -73,43 +66,37 @@ export default function ScenariosPage() {
   const [budgetRevenue, setBudgetRevenue] =
     useState<number | null>(null);
 
-  const [loading, setLoading] =
-    useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [loadingInputs, setLoadingInputs] =
     useState(true);
 
   const [error, setError] =
     useState<string | null>(null);
 
-  const [hasRun, setHasRun] =
-    useState(false);
-
-  /* ==========================================================
-     LOAD CANONICAL FORECAST INPUTS
-  ========================================================== */
-
+  /*
+   * Load the canonical operating forecast and budget.
+   *
+   * Scenario engine inputs:
+   * base_revenue     = committed backlog
+   * pipeline_revenue = weighted pipeline
+   *
+   * Both come from /forecast/current.
+   * Budget comes from /analytics/variance.
+   */
   useEffect(() => {
     async function loadInputs() {
       try {
         setLoadingInputs(true);
         setError(null);
 
-        const [forecastResponse, varianceResponse] =
-          await Promise.all([
-            getForecast(),
-            getVariance(),
-          ]);
+        const [
+          forecastResponse,
+          varianceResponse,
+        ] = await Promise.all([
+          getForecast(),
+          getVariance(),
+        ]);
 
-        /*
-         * Scenario engine uses:
-         *
-         * base_revenue     = committed backlog
-         * pipeline_revenue = weighted pipeline
-         *
-         * These come from the canonical /forecast/current
-         * endpoint rather than being hard-coded.
-         */
         setBaseRevenue(
           forecastResponse.backlog.committed_backlog
         );
@@ -118,9 +105,6 @@ export default function ScenariosPage() {
           forecastResponse.pipeline.weighted_pipeline
         );
 
-        /*
-         * Budget is supplied by the variance endpoint.
-         */
         setBudgetRevenue(
           varianceResponse.budget
         );
@@ -138,10 +122,6 @@ export default function ScenariosPage() {
     loadInputs();
   }, []);
 
-  /* ==========================================================
-     RUN SCENARIO
-  ========================================================== */
-
   async function handleRunScenario() {
     if (
       baseRevenue === null ||
@@ -150,55 +130,78 @@ export default function ScenariosPage() {
       setError(
         "Scenario inputs are not available yet."
       );
-
       return;
     }
-const currentUtilizationRate =
-  Number(utilization) / 100;
 
-const targetUtilizationRate =
-  Number(targetUtilization) / 100;
+    const currentUtilizationValue =
+      parseInput(utilization);
 
-const executionRiskRate =
-  Number(executionRisk) / 100;
+    const targetUtilizationValue =
+      parseInput(targetUtilization);
 
-const pipelineConversionRate =
-  Number(pipelineConversion) / 100;
+    const executionRiskValue =
+      parseInput(executionRisk);
+
+    const pipelineConversionValue =
+      parseInput(pipelineConversion);
+
+    if (
+      currentUtilizationValue === null ||
+      targetUtilizationValue === null ||
+      executionRiskValue === null ||
+      pipelineConversionValue === null
+    ) {
+      setError(
+        "All scenario inputs must contain valid numeric values."
+      );
+      return;
+    }
+
+    if (
+      currentUtilizationValue < 0 ||
+      currentUtilizationValue > 100 ||
+      targetUtilizationValue < 0 ||
+      targetUtilizationValue > 100 ||
+      executionRiskValue < 0 ||
+      executionRiskValue > 100 ||
+      pipelineConversionValue < 0 ||
+      pipelineConversionValue > 200
+    ) {
+      setError(
+        "Scenario inputs are outside their permitted ranges."
+      );
+      return;
+    }
+
+    const currentUtilizationRate =
+      currentUtilizationValue / 100;
+
+    const targetUtilizationRate =
+      targetUtilizationValue / 100;
+
+    const executionRiskRate =
+      executionRiskValue / 100;
+
+    const pipelineConversionRate =
+      pipelineConversionValue / 100;
 
     /*
-     * Backend ScenarioRequest:
-     *
-     * base_revenue
-     * pipeline_revenue
-     * utilization
-     * pipeline_conversion_change
-     * utilization_change
-     * billing_rate_change
-     * slippage_rate
-     *
-     * The UI expresses pipeline conversion as a
-     * percentage level, while the backend expects
-     * the change from the 100% baseline.
+     * The backend expects changes relative to the
+     * 100% pipeline-conversion baseline and the
+     * current utilization assumption.
      */
-   const payload = {
-  base_revenue: baseRevenue,
-
-  pipeline_revenue: pipelineRevenue,
-
-  utilization: currentUtilizationRate,
-
-  pipeline_conversion_change:
-    pipelineConversionRate - 1,
-
-  utilization_change:
-    targetUtilizationRate -
-    currentUtilizationRate,
-
-  billing_rate_change: 0,
-
-  slippage_rate:
-    executionRiskRate,
-};
+    const payload = {
+      base_revenue: baseRevenue,
+      pipeline_revenue: pipelineRevenue,
+      utilization: currentUtilizationRate,
+      pipeline_conversion_change:
+        pipelineConversionRate - 1,
+      utilization_change:
+        targetUtilizationRate -
+        currentUtilizationRate,
+      billing_rate_change: 0,
+      slippage_rate: executionRiskRate,
+    };
 
     setLoading(true);
     setError(null);
@@ -207,11 +210,7 @@ const pipelineConversionRate =
       const response =
         await runScenario(payload);
 
-      setResult(
-        response as ScenarioResult
-      );
-
-      setHasRun(true);
+      setResult(response as ScenarioResult);
     } catch (err) {
       setError(
         err instanceof Error
@@ -219,30 +218,20 @@ const pipelineConversionRate =
           : "Unable to run scenario."
       );
 
-      setHasRun(false);
+      setResult(null);
     } finally {
       setLoading(false);
     }
   }
-
-  /* ==========================================================
-     RESET
-  ========================================================== */
 
   function resetScenario() {
     setUtilization("74");
     setTargetUtilization("75");
     setExecutionRisk("5");
     setPipelineConversion("100");
-
     setResult(null);
     setError(null);
-    setHasRun(false);
   }
-
-  /* ==========================================================
-     RESULT VALUES
-  ========================================================== */
 
   const scenarioForecast =
     result?.scenario_revenue ?? null;
@@ -254,23 +243,37 @@ const pipelineConversionRate =
     result?.revenue_change_pct ?? null;
 
   /*
-   * The scenario API does not return a separate
-   * risk_adjustment field.
+   * Separate from the scenario engine's
+   * "revenue change" metric, which is measured
+   * against the engine's base position.
+   */
+  const scenarioVsBudget =
+    result !== null && budgetRevenue !== null
+      ? result.scenario_revenue - budgetRevenue
+      : null;
+
+  const scenarioVsBudgetPct =
+    result !== null &&
+    budgetRevenue !== null &&
+    budgetRevenue !== 0
+      ? ((result.scenario_revenue -
+          budgetRevenue) /
+          budgetRevenue) *
+        100
+      : null;
+
+  /*
+   * The Scenario API does not expose a separate
+   * execution/slippage adjustment.
    *
-   * We therefore do NOT pretend that one exists.
-   *
-   * The bridge shows the actual backend-returned
-   * adjusted pipeline and utilization values.
-   *
-   * The residual is the amount required to reconcile
-   * the returned scenario revenue:
+   * This residual reconciles the returned result:
    *
    * scenario revenue
    * - base revenue
    * - adjusted pipeline
    * - adjusted utilization
    */
-  const impliedSlippageAdjustment =
+  const impliedExecutionAdjustment =
     result !== null
       ? result.scenario_revenue -
         result.base_revenue -
@@ -278,19 +281,11 @@ const pipelineConversionRate =
         result.adjusted_utilization
       : null;
 
-  /* ==========================================================
-     RENDER
-  ========================================================== */
-
   return (
     <main className="app-shell">
       <Sidebar />
 
       <section className="main-content">
-        {/* ==================================================
-            HEADER
-        ================================================== */}
-
         <header className="topbar">
           <div>
             <div className="eyebrow">
@@ -312,10 +307,6 @@ const pipelineConversionRate =
         </header>
 
         <div className="content">
-          {/* ==================================================
-              INTRO
-          ================================================== */}
-
           <section className="scenario-intro">
             <div>
               <div className="section-kicker">
@@ -331,10 +322,6 @@ const pipelineConversionRate =
               </p>
             </div>
           </section>
-
-          {/* ==================================================
-              SCENARIO INPUTS
-          ================================================== */}
 
           <section className="section">
             <div className="section-header">
@@ -352,10 +339,6 @@ const pipelineConversionRate =
             </div>
 
             <div className="scenario-layout">
-              {/* ==================================================
-                  INPUT PANEL
-              ================================================== */}
-
               <div className="panel scenario-input-panel">
                 <div className="scenario-field">
                   <label htmlFor="utilization">
@@ -398,9 +381,7 @@ const pipelineConversionRate =
                       min="0"
                       max="100"
                       step="0.5"
-                      value={
-                        targetUtilization
-                      }
+                      value={targetUtilization}
                       onChange={(event) =>
                         setTargetUtilization(
                           event.target.value
@@ -458,9 +439,7 @@ const pipelineConversionRate =
                       min="0"
                       max="200"
                       step="1"
-                      value={
-                        pipelineConversion
-                      }
+                      value={pipelineConversion}
                       onChange={(event) =>
                         setPipelineConversion(
                           event.target.value
@@ -480,9 +459,7 @@ const pipelineConversionRate =
                 <div className="scenario-actions">
                   <button
                     className="primary-button"
-                    onClick={
-                      handleRunScenario
-                    }
+                    onClick={handleRunScenario}
                     disabled={
                       loading ||
                       loadingInputs ||
@@ -506,10 +483,6 @@ const pipelineConversionRate =
                   </button>
                 </div>
               </div>
-
-              {/* ==================================================
-                  ASSUMPTION SUMMARY
-              ================================================== */}
 
               <div className="panel scenario-summary-panel">
                 <div className="panel-heading">
@@ -602,8 +575,7 @@ const pipelineConversionRate =
                       </span>
 
                       <strong>
-                        {pipelineRevenue !==
-                        null
+                        {pipelineRevenue !== null
                           ? formatCr(
                               pipelineRevenue
                             )
@@ -643,10 +615,6 @@ const pipelineConversionRate =
             </div>
           </section>
 
-          {/* ==================================================
-              ERROR
-          ================================================== */}
-
           {error && (
             <section className="section">
               <div className="scenario-error">
@@ -659,16 +627,8 @@ const pipelineConversionRate =
             </section>
           )}
 
-          {/* ==================================================
-              RESULTS
-          ================================================== */}
-
-          {hasRun && result && (
+          {result && (
             <>
-              {/* ==================================================
-                  RESULT SUMMARY
-              ================================================== */}
-
               <section className="section">
                 <div className="section-header">
                   <div>
@@ -723,7 +683,29 @@ const pipelineConversionRate =
 
                   <div className="metric-block">
                     <div className="metric-label">
-                      Revenue change
+                      Variance vs budget
+                    </div>
+
+                    <div className="metric-value">
+                      {scenarioVsBudget !== null
+                        ? formatCr(
+                            scenarioVsBudget
+                          )
+                        : "—"}
+                    </div>
+
+                    <div className="metric-secondary">
+                      {scenarioVsBudgetPct !== null
+                        ? `${formatPercent(
+                            scenarioVsBudgetPct
+                          )} vs budget`
+                        : "Budget comparison unavailable"}
+                    </div>
+                  </div>
+
+                  <div className="metric-block">
+                    <div className="metric-label">
+                      Change from base
                     </div>
 
                     <div className="metric-value">
@@ -735,34 +717,15 @@ const pipelineConversionRate =
                     </div>
 
                     <div className="metric-secondary">
-                      Change from base scenario
-                    </div>
-                  </div>
-
-                  <div className="metric-block">
-                    <div className="metric-label">
-                      Revenue change %
-                    </div>
-
-                    <div className="metric-value">
-                      {scenarioVariancePct !==
-                      null
-                        ? formatPercent(
+                      {scenarioVariancePct !== null
+                        ? `${formatPercent(
                             scenarioVariancePct
-                          )
-                        : "—"}
-                    </div>
-
-                    <div className="metric-secondary">
-                      Relative revenue change
+                          )} relative change`
+                        : "Relative change unavailable"}
                     </div>
                   </div>
                 </div>
               </section>
-
-              {/* ==================================================
-                  SCENARIO BRIDGE
-              ================================================== */}
 
               <section className="section">
                 <div className="section-header">
@@ -818,14 +781,14 @@ const pipelineConversionRate =
 
                   <div className="scenario-result-row">
                     <span>
-                      Implied slippage adjustment
+                      Implied execution adjustment
                     </span>
 
                     <strong>
-                      {impliedSlippageAdjustment !==
+                      {impliedExecutionAdjustment !==
                       null
                         ? formatCurrency(
-                            impliedSlippageAdjustment
+                            impliedExecutionAdjustment
                           )
                         : "—"}
                     </strong>
@@ -844,10 +807,6 @@ const pipelineConversionRate =
                   </div>
                 </div>
               </section>
-
-              {/* ==================================================
-                  INTERPRETATION
-              ================================================== */}
 
               <section className="section last-section">
                 <div className="section-header">
@@ -948,7 +907,9 @@ const pipelineConversionRate =
                   </div>
 
                   {budgetRevenue !== null &&
-                    scenarioForecast !== null && (
+                    scenarioForecast !== null &&
+                    scenarioVsBudget !== null &&
+                    scenarioVsBudgetPct !== null && (
                       <div className="observation">
                         <span className="observation-index">
                           05
@@ -962,13 +923,25 @@ const pipelineConversionRate =
                               scenarioForecast
                             )}
                           </strong>
-                          , compared with a budget of{" "}
+                          , representing a{" "}
+                          <strong>
+                            {formatCr(
+                              scenarioVsBudget
+                            )}
+                          </strong>{" "}
+                          variance versus the{" "}
                           <strong>
                             {formatCr(
                               budgetRevenue
                             )}
+                          </strong>{" "}
+                          budget (
+                          <strong>
+                            {formatPercent(
+                              scenarioVsBudgetPct
+                            )}
                           </strong>
-                          .
+                          ).
                         </p>
                       </div>
                     )}

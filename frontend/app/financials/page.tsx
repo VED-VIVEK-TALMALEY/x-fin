@@ -101,22 +101,27 @@ function RevenueComparison({
       </div>
 
       <div className="comparison-footer">
-        <span>
-          Actual vs budget
-        </span>
+  <span>
+    Actual vs budget
+  </span>
 
-        <strong
-          className={
-            actual >= budget
-              ? "value-positive"
-              : "value-negative"
-          }
-        >
-          {formatCurrency(
-            actual - budget
-          )}
-        </strong>
-      </div>
+  <strong
+    className={
+      actual >= budget
+        ? "value-positive"
+        : "value-negative"
+    }
+  >
+    {formatCurrency(actual - budget)}
+    <span className="comparison-percent">
+      {formatPercent(
+        budget !== 0
+          ? ((actual - budget) / budget) * 100
+          : 0
+      )}
+    </span>
+  </strong>
+</div>
     </div>
   );
 }
@@ -272,41 +277,31 @@ export default function FinancialsPage() {
   ---------------------------------------------------------- */
 
   const metrics = useMemo(() => {
-    if (!summary || !variance) {
-      return null;
-    }
+  if (!summary) {
+    return null;
+  }
 
-    const revenue =
-      summary.finance.actual_revenue;
+  const revenue = summary.finance.actual_revenue;
+  const budget = summary.budget.budget_revenue;
+  const cost = summary.finance.actual_cost;
+  const contractValue = summary.finance.contract_value;
 
-    const budget =
-      summary.budget.budget_revenue;
+  const revenueVariance = revenue - budget;
 
-    const cost =
-      summary.finance.actual_cost;
+  const margin =
+    revenue !== 0
+      ? ((revenue - cost) / revenue) * 100
+      : 0;
 
-    const contractValue =
-      summary.finance.contract_value;
-
-    const revenueVariance =
-      revenue - budget;
-
-    const margin =
-      revenue !== 0
-        ? ((revenue - cost) /
-            revenue) *
-          100
-        : 0;
-
-    return {
-      revenue,
-      budget,
-      cost,
-      contractValue,
-      revenueVariance,
-      margin,
-    };
-  }, [summary, variance]);
+  return {
+    revenue,
+    budget,
+    cost,
+    contractValue,
+    revenueVariance,
+    margin,
+  };
+}, [summary]);
 
   /* ----------------------------------------------------------
      LOADING

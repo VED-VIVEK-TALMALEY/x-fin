@@ -1,5 +1,6 @@
 ./
 ├── gen_tree.py
+├── openapi.json
 ├── README.md
 ├── render.yaml
 ├── requirements.txt
@@ -17,6 +18,8 @@
 │   │   ├── __init__.py
 │   ├── routers/
 │   │   ├── analytics.py
+│   │   ├── decisions.py
+│   │   ├── executive.py
 │   │   ├── forecast.py
 │   │   ├── intelligence.py
 │   │   ├── projects.py
@@ -25,17 +28,25 @@
 │   ├── services/
 │   │   ├── backlog_engine.py
 │   │   ├── business_unit_engine.py
+│   │   ├── decision_engine.py
+│   │   ├── executive_briefing_engine.py
 │   │   ├── finance_engine.py
 │   │   ├── finance_queries.py
 │   │   ├── finance_reasoning.py
 │   │   ├── forecast_accuracy.py
+│   │   ├── forecast_confidence_engine.py
 │   │   ├── forecast_decomposition.py
 │   │   ├── forecast_engine.py
 │   │   ├── insight_engine.py
 │   │   ├── intelligence_engine.py
+│   │   ├── margin_risk_engine.py
 │   │   ├── monte_carlo_engine.py
+│   │   ├── pipeline_intelligence_engine.py
+│   │   ├── portfolio_risk_engine.py
 │   │   ├── recommendation_engine.py
 │   │   ├── revenue_calc.py
+│   │   ├── revenue_leakage_engine.py
+│   │   ├── revenue_waterfall_engine.py
 │   │   ├── risk_engine.py
 │   │   ├── scenario_engine.py
 │   │   ├── staffing_engine.py
@@ -66,6 +77,50 @@
 │   ├── INTELLIGENCE.md
 │   ├── METRICS.md
 │   ├── PRODUCTION.md
+├── frontend/
+│   ├── AGENTS.md
+│   ├── CLAUDE.md
+│   ├── eslint.config.mjs
+│   ├── next-env.d.ts
+│   ├── next.config.ts
+│   ├── package.json
+│   ├── postcss.config.mjs
+│   ├── README.md
+│   ├── tsconfig.json
+│   ├── app/
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── financials/
+│   │   │   ├── page.tsx
+│   │   ├── forecast/
+│   │   │   ├── page.tsx
+│   │   ├── operations/
+│   │   │   ├── page.tsx
+│   │   ├── pipeline/
+│   │   │   ├── page.tsx
+│   │   ├── scenarios/
+│   │   │   ├── page.tsx
+│   ├── public/
+│   │   ├── file.svg
+│   │   ├── globe.svg
+│   │   ├── next.svg
+│   │   ├── vercel.svg
+│   │   ├── window.svg
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Sidebar.tsx
+│   │   ├── lib/
+│   │   │   ├── api.ts
+│   │   ├── types/
+│   │   │   ├── accuracy.ts
+│   │   │   ├── analytics.ts
+│   │   │   ├── business-units.ts
+│   │   │   ├── executive.ts
+│   │   │   ├── forecast.ts
+│   │   │   ├── intelligence.ts
+│   │   │   ├── scenario.ts
 ├── scripts/
 │   ├── bootstrap_db.py
 │   ├── generate_synthetic_data.py
@@ -73,6 +128,8 @@
 │   ├── __init__.py
 ├── tests/
 │   ├── test_api.py
+│   ├── test_confidence.py
+│   ├── test_decisions.py
 │   ├── test_forecast.py
 │   ├── test_monte_carlo.py
 │   ├── test_risk.py

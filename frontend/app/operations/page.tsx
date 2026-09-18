@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+
 import Sidebar from "@/components/Sidebar";
+
 import { getIntelligence } from "@/lib/api";
 
-import type {
-  IntelligenceOverview,
-} from "@/types/intelligence";
+import type { IntelligenceOverview } from "@/types/intelligence";
 
 /* ============================================================
    FORMATTERS
@@ -22,9 +22,7 @@ function formatCurrency(value: number) {
 }
 
 function formatNumber(value: number) {
-  return new Intl.NumberFormat("en-IN").format(
-    value
-  );
+  return new Intl.NumberFormat("en-IN").format(value);
 }
 
 function formatPercent(value: number) {
@@ -44,7 +42,10 @@ function formatRate(value: number) {
 function nullablePercent(
   value: number | null
 ) {
-  if (value === null || !Number.isFinite(value)) {
+  if (
+    value === null ||
+    !Number.isFinite(value)
+  ) {
     return "Not measured";
   }
 
@@ -62,7 +63,11 @@ function HoursComparison({
   actual: number;
   budget: number;
 }) {
-  const maximum = Math.max(actual, budget, 1);
+  const maximum = Math.max(
+    actual,
+    budget,
+    1
+  );
 
   const actualWidth =
     (actual / maximum) * 100;
@@ -179,14 +184,9 @@ export default function OperationsPage() {
           100
         : 0;
 
-    const costVariance =
-      staffing.actual_cost -
-      data.source_metrics.actual_cost;
-
     return {
       hoursVariance,
       hoursVariancePct,
-      costVariance,
     };
   }, [data]);
 
@@ -396,7 +396,8 @@ export default function OperationsPage() {
                   </div>
 
                   <div className="operations-primary-value">
-                    {metrics.hoursVariance >= 0
+                    {metrics.hoursVariance >=
+                    0
                       ? "+"
                       : "−"}
 
@@ -457,7 +458,7 @@ export default function OperationsPage() {
               </div>
 
               <div className="section-meta">
-                Current delivery period
+                Current operating period
               </div>
             </div>
 
@@ -610,7 +611,9 @@ export default function OperationsPage() {
                 </div>
 
                 <p>
-                  {staffing.capacity_measurement_note}
+                  {
+                    staffing.capacity_measurement_note
+                  }
                 </p>
               </div>
             </div>
@@ -730,12 +733,16 @@ export default function OperationsPage() {
                 </span>
 
                 <strong>
-                  {staffing.utilization_data_quality}
+                  {
+                    staffing.utilization_data_quality
+                  }
                 </strong>
               </div>
 
               <p>
-                {staffing.capacity_measurement_note}
+                {
+                  staffing.capacity_measurement_note
+                }
               </p>
             </div>
           </section>

@@ -21,11 +21,6 @@ app = FastAPI(
     version=APP_VERSION,
     description="Intelligent Delivery Finance Operating System",
 )
-app = FastAPI(
-    title=APP_NAME,
-    version=APP_VERSION,
-    description="Intelligent Delivery Finance Operating System",
-)
 
 app.add_middleware(
     CORSMiddleware,

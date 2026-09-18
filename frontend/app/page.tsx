@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+
 import Sidebar from "@/components/Sidebar";
+
 import {
   getSummary,
   getForecast,
@@ -10,15 +12,9 @@ import {
   getBusinessUnits,
 } from "@/lib/api";
 
-import type {
-  AnalyticsSummary,
-  MonthlyRevenueResponse,
-} from "@/types/analytics";
-
+import type { AnalyticsSummary } from "@/types/analytics";
 import type { ForecastCurrentResponse } from "@/types/forecast";
-
 import type { IntelligenceOverview } from "@/types/intelligence";
-
 import type { BusinessUnitsResponse } from "@/types/business-units";
 
 /* ============================================================
@@ -45,9 +41,8 @@ function formatHours(value: number) {
 }
 
 function monthLabel(month: string) {
-  const normalized = month.length === 7
-    ? `${month}-01`
-    : month;
+  const normalized =
+    month.length === 7 ? `${month}-01` : month;
 
   const date = new Date(normalized);
 
@@ -78,22 +73,6 @@ function normalizeMonthlyRevenue(
     return [];
   }
 
-  /*
-   Expected backend shape:
-
-   {
-     value: [
-       {
-         month: "...",
-         revenue: 123,
-         hours: 123,
-         cost: 123
-       }
-     ],
-     Count: 12
-   }
-  */
-
   if (
     typeof data === "object" &&
     data !== null &&
@@ -117,14 +96,6 @@ function normalizeMonthlyRevenue(
     }
   }
 
-  /*
-   Some FastAPI implementations may return:
-
-   {
-     data: [...]
-   }
-  */
-
   if (
     typeof data === "object" &&
     data !== null &&
@@ -147,12 +118,6 @@ function normalizeMonthlyRevenue(
         );
     }
   }
-
-  /*
-   Or simply:
-
-   [...]
-  */
 
   if (Array.isArray(data)) {
     return data
@@ -178,8 +143,7 @@ function normalizeRevenuePoint(
     return null;
   }
 
-  const row =
-    item as Record<string, unknown>;
+  const row = item as Record<string, unknown>;
 
   const month =
     typeof row.month === "string"
@@ -225,12 +189,8 @@ function normalizeRevenuePoint(
   return {
     month,
     revenue,
-    hours: Number.isFinite(hours)
-      ? hours
-      : 0,
-    cost: Number.isFinite(cost)
-      ? cost
-      : 0,
+    hours: Number.isFinite(hours) ? hours : 0,
+    cost: Number.isFinite(cost) ? cost : 0,
   };
 }
 
@@ -243,8 +203,7 @@ function RevenueChart({
 }: {
   data: unknown;
 }) {
-  const points =
-    normalizeMonthlyRevenue(data);
+  const points = normalizeMonthlyRevenue(data);
 
   if (!points.length) {
     return (
@@ -259,33 +218,23 @@ function RevenueChart({
   );
 
   const safeMax =
-    maxRevenue > 0
-      ? maxRevenue
-      : 1;
+    maxRevenue > 0 ? maxRevenue : 1;
 
   return (
     <div className="revenue-chart">
       <div className="chart-y-axis">
+        <span>{formatCurrency(safeMax)}</span>
+
         <span>
-          {formatCurrency(safeMax)}
+          {formatCurrency(safeMax * 0.75)}
         </span>
 
         <span>
-          {formatCurrency(
-            safeMax * 0.75
-          )}
+          {formatCurrency(safeMax * 0.5)}
         </span>
 
         <span>
-          {formatCurrency(
-            safeMax * 0.5
-          )}
-        </span>
-
-        <span>
-          {formatCurrency(
-            safeMax * 0.25
-          )}
+          {formatCurrency(safeMax * 0.25)}
         </span>
 
         <span>₹0</span>
@@ -303,8 +252,7 @@ function RevenueChart({
         <div className="chart-bars">
           {points.map((item) => {
             const height =
-              (item.revenue / safeMax) *
-              100;
+              (item.revenue / safeMax) * 100;
 
             return (
               <div
@@ -312,9 +260,7 @@ function RevenueChart({
                 key={`${item.month}-${item.revenue}`}
               >
                 <div className="chart-value">
-                  {formatCurrency(
-                    item.revenue
-                  )}
+                  {formatCurrency(item.revenue)}
                 </div>
 
                 <div
@@ -331,9 +277,7 @@ function RevenueChart({
                 />
 
                 <div className="chart-label">
-                  {monthLabel(
-                    item.month
-                  )}
+                  {monthLabel(item.month)}
                 </div>
               </div>
             );
@@ -350,27 +294,19 @@ function RevenueChart({
 
 export default function Home() {
   const [summary, setSummary] =
-    useState<AnalyticsSummary | null>(
-      null
-    );
+    useState<AnalyticsSummary | null>(null);
 
   const [forecast, setForecast] =
-    useState<ForecastCurrentResponse | null>(
-      null
-    );
+    useState<ForecastCurrentResponse | null>(null);
 
   const [intelligence, setIntelligence] =
-    useState<IntelligenceOverview | null>(
-      null
-    );
+    useState<IntelligenceOverview | null>(null);
 
   const [monthlyRevenue, setMonthlyRevenue] =
     useState<unknown>(null);
 
   const [businessUnits, setBusinessUnits] =
-    useState<BusinessUnitsResponse | null>(
-      null
-    );
+    useState<BusinessUnitsResponse | null>(null);
 
   const [error, setError] =
     useState<string | null>(null);
@@ -403,20 +339,10 @@ export default function Home() {
         ]);
 
         setSummary(summaryData);
-
         setForecast(forecastData);
-
-        setIntelligence(
-          intelligenceData
-        );
-
-        setMonthlyRevenue(
-          revenueData
-        );
-
-        setBusinessUnits(
-          businessUnitData
-        );
+        setIntelligence(intelligenceData);
+        setMonthlyRevenue(revenueData);
+        setBusinessUnits(businessUnitData);
       } catch (err) {
         setError(
           err instanceof Error
@@ -436,10 +362,7 @@ export default function Home() {
   ---------------------------------------------------------- */
 
   const observations = useMemo(() => {
-    if (
-      !summary ||
-      !forecast
-    ) {
+    if (!summary || !forecast) {
       return [];
     }
 
@@ -451,11 +374,16 @@ export default function Home() {
       forecast.forecast.forecast_revenue -
       summary.budget.budget_revenue;
 
+    const forecastRevenue =
+      forecast.forecast.forecast_revenue;
+
+    const weightedPipeline =
+      forecast.forecast.weighted_pipeline;
+
     const pipelineDependency =
-      forecast.forecast
-        .weighted_pipeline /
-      forecast.forecast
-        .forecast_revenue;
+      forecastRevenue !== 0
+        ? weightedPipeline / forecastRevenue
+        : 0;
 
     const items = [
       `Revenue is ${formatCurrency(
@@ -474,23 +402,20 @@ export default function Home() {
           : "below"
       } budget.`,
 
-      `${(
-        pipelineDependency * 100
-      ).toFixed(
+      `${(pipelineDependency * 100).toFixed(
         1
-      )}% of forecast revenue is supported by weighted pipeline.`,
+      )}% of the current forecast is represented by weighted pipeline.`,
     ];
 
     if (intelligence?.staffing) {
+      const hoursVariancePct =
+        intelligence.staffing.hours_variance_pct;
+
       items.push(
         `Delivery hours are ${Math.abs(
-          intelligence.staffing
-            .hours_variance_pct
-        ).toFixed(
-          1
-        )}% ${
-          intelligence.staffing
-            .hours_variance_pct >= 0
+          hoursVariancePct
+        ).toFixed(1)}% ${
+          hoursVariancePct >= 0
             ? "above"
             : "below"
         } budget.`
@@ -561,10 +486,7 @@ export default function Home() {
     );
   }
 
-  if (
-    !summary ||
-    !forecast
-  ) {
+  if (!summary || !forecast) {
     return null;
   }
 
@@ -579,20 +501,21 @@ export default function Home() {
     summary.budget.budget_revenue;
 
   const forecastRevenue =
-    forecast.forecast
-      .forecast_revenue;
+    forecast.forecast.forecast_revenue;
 
   const actualVariancePct =
-    ((actualRevenue -
-      budgetRevenue) /
-      budgetRevenue) *
-    100;
+    budgetRevenue !== 0
+      ? ((actualRevenue - budgetRevenue) /
+          budgetRevenue) *
+        100
+      : 0;
 
   const forecastVariancePct =
-    ((forecastRevenue -
-      budgetRevenue) /
-      budgetRevenue) *
-    100;
+    budgetRevenue !== 0
+      ? ((forecastRevenue - budgetRevenue) /
+          budgetRevenue) *
+        100
+      : 0;
 
   /* ----------------------------------------------------------
      RENDER
@@ -604,7 +527,8 @@ export default function Home() {
           SIDEBAR
       ====================================================== */}
 
-     <Sidebar />
+      <Sidebar />
+
       {/* ======================================================
           MAIN CONTENT
       ====================================================== */}
@@ -616,9 +540,7 @@ export default function Home() {
               DELIVERY FINANCE
             </div>
 
-            <h1>
-              Overview
-            </h1>
+            <h1>Overview</h1>
           </div>
 
           <div className="topbar-right">
@@ -644,9 +566,7 @@ export default function Home() {
               </div>
 
               <div className="metric-value">
-                {formatCurrency(
-                  actualRevenue
-                )}
+                {formatCurrency(actualRevenue)}
               </div>
 
               <div className="metric-change positive">
@@ -654,9 +574,7 @@ export default function Home() {
                   actualVariancePct
                 )}
 
-                <span>
-                  vs budget
-                </span>
+                <span>vs budget</span>
               </div>
             </div>
 
@@ -666,9 +584,7 @@ export default function Home() {
               </div>
 
               <div className="metric-value">
-                {formatCurrency(
-                  budgetRevenue
-                )}
+                {formatCurrency(budgetRevenue)}
               </div>
 
               <div className="metric-secondary">
@@ -682,15 +598,12 @@ export default function Home() {
               </div>
 
               <div className="metric-value">
-                {formatCurrency(
-                  forecastRevenue
-                )}
+                {formatCurrency(forecastRevenue)}
               </div>
 
               <div
                 className={`metric-change ${
-                  forecastVariancePct >=
-                  0
+                  forecastVariancePct >= 0
                     ? "positive"
                     : "negative"
                 }`}
@@ -699,26 +612,23 @@ export default function Home() {
                   forecastVariancePct
                 )}
 
-                <span>
-                  vs budget
-                </span>
+                <span>vs budget</span>
               </div>
             </div>
 
             <div className="metric-block">
               <div className="metric-label">
-                Forward coverage
+                Forward revenue coverage
               </div>
 
               <div className="metric-value">
                 {formatCurrency(
-                  forecast.backlog
-                    .total_coverage
+                  forecast.backlog.total_coverage
                 )}
               </div>
 
               <div className="metric-secondary">
-                Backlog + pipeline
+                Committed backlog + uncommitted pipeline
               </div>
             </div>
           </section>
@@ -858,25 +768,11 @@ export default function Home() {
               <table>
                 <thead>
                   <tr>
-                    <th>
-                      Business unit
-                    </th>
-
-                    <th>
-                      Revenue
-                    </th>
-
-                    <th>
-                      Budget variance
-                    </th>
-
-                    <th>
-                      Gross margin
-                    </th>
-
-                    <th>
-                      Hours
-                    </th>
+                    <th>Business unit</th>
+                    <th>Revenue</th>
+                    <th>Budget variance</th>
+                    <th>Gross margin</th>
+                    <th>Hours</th>
                   </tr>
                 </thead>
 
@@ -889,9 +785,7 @@ export default function Home() {
                         }
                       >
                         <td className="table-primary">
-                          {
-                            unit.business_unit
-                          }
+                          {unit.business_unit}
                         </td>
 
                         <td>
@@ -902,8 +796,7 @@ export default function Home() {
 
                         <td
                           className={
-                            unit.variance_pct >=
-                            0
+                            unit.variance_pct >= 0
                               ? "table-positive"
                               : "table-negative"
                           }
@@ -963,10 +856,7 @@ export default function Home() {
                     <span className="observation-index">
                       {String(
                         index + 1
-                      ).padStart(
-                        2,
-                        "0"
-                      )}
+                      ).padStart(2, "0")}
                     </span>
 
                     <span>

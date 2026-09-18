@@ -4,20 +4,46 @@ from sqlalchemy import text
 def get_finance_summary(db):
 
     query = text("""
+        WITH project_financials AS (
+            SELECT
+                COALESCE(
+                    SUM(contract_value),
+                    0
+                ) AS contract_value,
+
+                COALESCE(
+                    SUM(planned_hours),
+                    0
+                ) AS planned_hours
+            FROM projects
+        ),
+
+        actual_financials AS (
+            SELECT
+                COALESCE(
+                    SUM(actual_revenue),
+                    0
+                ) AS actual_revenue,
+
+                COALESCE(
+                    SUM(actual_cost),
+                    0
+                ) AS actual_cost
+            FROM project_actuals
+        )
+
         SELECT
-            COALESCE(SUM(a.actual_revenue), 0) AS actual_revenue,
-            COALESCE(SUM(a.actual_cost), 0) AS actual_cost,
-            COALESCE(SUM(p.contract_value), 0) AS contract_value,
-            COALESCE(SUM(p.planned_hours), 0) AS planned_hours
-        FROM projects p
-        LEFT JOIN project_actuals a
-            ON p.project_id = a.project_id
+            actual_financials.actual_revenue,
+            actual_financials.actual_cost,
+            project_financials.contract_value,
+            project_financials.planned_hours
+        FROM project_financials
+        CROSS JOIN actual_financials
     """)
 
-    row = db.execute(query).mappings().first()
+    row = db.execute(query).mappings().one()
 
     return dict(row)
-
 
 def get_pipeline_summary(db):
 

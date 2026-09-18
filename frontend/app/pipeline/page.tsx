@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+
 import Sidebar from "@/components/Sidebar";
+
 import { getForecast } from "@/lib/api";
 
-import type {
-  ForecastCurrentResponse,
-} from "@/types/forecast";
+import type { ForecastCurrentResponse } from "@/types/forecast";
 
 /* ============================================================
    FORMATTERS
@@ -22,9 +22,7 @@ function formatCurrency(value: number) {
 }
 
 function formatNumber(value: number) {
-  return new Intl.NumberFormat("en-IN").format(
-    value
-  );
+  return new Intl.NumberFormat("en-IN").format(value);
 }
 
 function formatPercent(value: number) {
@@ -165,9 +163,7 @@ function PipelineComposition({
           </span>
 
           <strong>
-            {formatCurrency(
-              committed
-            )}
+            {formatCurrency(committed)}
           </strong>
         </div>
 
@@ -177,9 +173,7 @@ function PipelineComposition({
           </span>
 
           <strong>
-            {formatCurrency(
-              uncommitted
-            )}
+            {formatCurrency(uncommitted)}
           </strong>
         </div>
       </div>
@@ -267,10 +261,26 @@ export default function PipelinePage() {
           100
         : 0;
 
+    const coverageToForecast =
+      forecast.forecast_revenue > 0
+        ? (backlog.total_coverage /
+            forecast.forecast_revenue) *
+          100
+        : 0;
+
+    const grossPipelineToForecast =
+      forecast.forecast_revenue > 0
+        ? (pipeline.pipeline_value /
+            forecast.forecast_revenue) *
+          100
+        : 0;
+
     return {
       weightedPipelineShare,
       committedShare,
       uncommittedShare,
+      coverageToForecast,
+      grossPipelineToForecast,
     };
   }, [data]);
 
@@ -453,7 +463,7 @@ export default function PipelinePage() {
               </div>
 
               <div className="metric-secondary">
-                Backlog + pipeline
+                Committed backlog + uncommitted pipeline
               </div>
             </div>
           </section>
@@ -517,6 +527,18 @@ export default function PipelinePage() {
                   forecast.forecast_revenue
                 }
               />
+
+              <div className="coverage-detail">
+                <span>
+                  Coverage / forecast
+                </span>
+
+                <strong>
+                  {formatPercent(
+                    metrics.coverageToForecast
+                  )}
+                </strong>
+              </div>
             </div>
           </section>
 
@@ -690,6 +712,10 @@ export default function PipelinePage() {
                   Forward revenue construction
                 </h2>
               </div>
+
+              <div className="section-meta">
+                Deterministic operating forecast
+              </div>
             </div>
 
             <div className="panel bridge-panel">
@@ -738,15 +764,11 @@ export default function PipelinePage() {
 
               <div className="bridge-row adjustment">
                 <span>
-                  Execution adjustment
+                  Execution risk
                 </span>
 
                 <strong>
-                  {forecast.risk_adjustment >=
-                  0
-                    ? "−"
-                    : "+"}
-
+                  −
                   {formatCurrency(
                     Math.abs(
                       forecast.risk_adjustment
@@ -806,7 +828,8 @@ export default function PipelinePage() {
                       pipeline.weighted_pipeline
                     )}
                   </strong>{" "}
-                  of probability-weighted pipeline.
+                  of probability-weighted
+                  pipeline.
                 </p>
               </div>
 
@@ -828,7 +851,15 @@ export default function PipelinePage() {
                       pipeline.opportunities
                     )}
                   </strong>{" "}
-                  opportunities.
+                  opportunities, with weighted
+                  pipeline representing{" "}
+                  <strong>
+                    {formatPercent(
+                      metrics.grossPipelineToForecast
+                    )}
+                  </strong>{" "}
+                  of the current forecast on a
+                  gross-value basis.
                 </p>
               </div>
 
@@ -845,7 +876,7 @@ export default function PipelinePage() {
                     )}
                   </strong>
                   , compared with a current
-                  forecast of{" "}
+                  operating forecast of{" "}
                   <strong>
                     {formatCurrency(
                       forecast.forecast_revenue
