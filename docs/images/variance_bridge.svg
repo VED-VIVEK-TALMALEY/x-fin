@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 240" width="100%" height="100%" style="background:#0F172A; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; border-radius:12px; border:1px solid #334155; box-shadow:0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+  <defs>
+    <linearGradient id="grad-v1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#2563EB" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="grad-v2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#059669" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="br-shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <marker id="arrow-br" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#38BDF8" />
+    </marker>
+  </defs>
+
+  <!-- Title Header -->
+  <rect x="25" y="15" width="1050" height="38" rx="6" fill="#1E293B" stroke="#334155" stroke-width="1.2" />
+  <text x="45" y="40" fill="#F8FAFC" font-size="16" font-weight="700">Financial Variance Bridge Architecture</text>
+  <text x="400" y="40" fill="#94A3B8" font-size="12">Decomposition of Delivered Revenue vs Operating Budgets &amp; Forecast Headroom</text>
+
+  <!-- BRIDGE 1: ACTUAL VS BUDGET -->
+  <g transform="translate(25, 68)">
+    <rect x="0" y="0" width="510" height="150" rx="8" fill="#1E293B" stroke="#2563EB" stroke-width="1.8" filter="url(#br-shadow)"/>
+    <rect x="0" y="0" width="510" height="28" rx="8" fill="url(#grad-v1)"/>
+    <text x="16" y="19" fill="#FFFFFF" font-size="12" font-weight="700">ACTUAL REVENUE VS. BUDGET VARIANCE BRIDGE</text>
+
+    <!-- Source Box -->
+    <rect x="15" y="42" width="180" height="92" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <text x="25" y="64" fill="#60A5FA" font-size="11" font-weight="700">Inputs</text>
+    <text x="25" y="84" fill="#CBD5E1" font-size="11">* Recognized Actuals</text>
+    <text x="25" y="104" fill="#CBD5E1" font-size="11">* Operating Budget</text>
+    <text x="25" y="122" fill="#94A3B8" font-size="10">Source: project_actuals</text>
+
+    <!-- Arrow -->
+    <line x1="205" y1="88" x2="235" y2="88" stroke="#38BDF8" stroke-width="2.5" marker-end="url(#arrow-br)"/>
+
+    <!-- Result Box -->
+    <rect x="245" y="42" width="250" height="92" rx="6" fill="#0F172A" stroke="#2563EB" stroke-width="1"/>
+    <text x="258" y="64" fill="#60A5FA" font-size="12" font-weight="700">Budget Gap &amp; Delta Ratio</text>
+    <text x="258" y="84" fill="#E2E8F0" font-size="11">budget_gap = Actual - Budget</text>
+    <text x="258" y="104" fill="#E2E8F0" font-size="11">budget_gap_pct = (Gap / Budget) * 100</text>
+    <text x="258" y="122" fill="#93C5FD" font-size="10">Classified: Ahead (&gt;0), Watch (-10% to 0), Deficit (&lt;-10%)</text>
+  </g>
+
+  <!-- BRIDGE 2: FORECAST VS BUDGET -->
+  <g transform="translate(565, 68)">
+    <rect x="0" y="0" width="510" height="150" rx="8" fill="#1E293B" stroke="#059669" stroke-width="1.8" filter="url(#br-shadow)"/>
+    <rect x="0" y="0" width="510" height="28" rx="8" fill="url(#grad-v2)"/>
+    <text x="16" y="19" fill="#FFFFFF" font-size="12" font-weight="700">FORECAST VS. BUDGET VARIANCE BRIDGE</text>
+
+    <!-- Source Box -->
+    <rect x="15" y="42" width="180" height="92" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <text x="25" y="64" fill="#34D399" font-size="11" font-weight="700">Inputs</text>
+    <text x="25" y="84" fill="#CBD5E1" font-size="11">* Net Deliverable Forecast</text>
+    <text x="25" y="104" fill="#CBD5E1" font-size="11">* Operating Budget</text>
+    <text x="25" y="122" fill="#94A3B8" font-size="10">Source: forecast_engine.py</text>
+
+    <!-- Arrow -->
+    <line x1="205" y1="88" x2="235" y2="88" stroke="#34D399" stroke-width="2.5" marker-end="url(#arrow-br)"/>
+
+    <!-- Result Box -->
+    <rect x="245" y="42" width="250" height="92" rx="6" fill="#0F172A" stroke="#059669" stroke-width="1"/>
+    <text x="258" y="64" fill="#34D399" font-size="12" font-weight="700">Forecast Headroom &amp; Buffer</text>
+    <text x="258" y="84" fill="#E2E8F0" font-size="11">forecast_headroom = Net - Budget</text>
+    <text x="258" y="104" fill="#E2E8F0" font-size="11">headroom_pct = (Headroom / Budget) * 100</text>
+    <text x="258" y="122" fill="#6EE7B7" font-size="10">Classified: Strong (&gt;10%), Moderate (0-10%), Deficit (&lt;0)</text>
+  </g>
+</svg>

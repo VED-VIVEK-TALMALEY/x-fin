@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 240" width="100%" height="100%" style="background:#0F172A; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; border-radius:12px; border:1px solid #334155; box-shadow:0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+  <defs>
+    <linearGradient id="grad-sc-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#2563EB" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="grad-sc-2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#581C87" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#7E22CE" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="grad-sc-3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#047857" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="sc-shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <marker id="arrow-sc" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#38BDF8" />
+    </marker>
+  </defs>
+
+  <!-- Title Header -->
+  <rect x="25" y="15" width="1050" height="38" rx="6" fill="#1E293B" stroke="#334155" stroke-width="1.2" />
+  <text x="45" y="40" fill="#F8FAFC" font-size="16" font-weight="700">Interactive Scenario Simulator &amp; Sensitivity Controls</text>
+  <text x="500" y="40" fill="#94A3B8" font-size="12">Parametric Levers, FastAPI Engine, and Dynamic Financial Impact Output</text>
+
+  <!-- COLUMN 1: CONTROLS -->
+  <g transform="translate(25, 68)">
+    <rect x="0" y="0" width="320" height="150" rx="8" fill="#1E293B" stroke="#2563EB" stroke-width="1.8" filter="url(#sc-shadow)"/>
+    <rect x="0" y="0" width="320" height="28" rx="8" fill="url(#grad-sc-1)"/>
+    <text x="16" y="19" fill="#FFFFFF" font-size="12" font-weight="700">1. INPUT CONTROLS (STREAMLIT SLIDERS)</text>
+
+    <rect x="12" y="38" width="296" height="102" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <text x="24" y="58" fill="#60A5FA" font-size="11" font-weight="700">* Conversion Change : -50.0% to +50.0%</text>
+    <text x="24" y="78" fill="#60A5FA" font-size="11" font-weight="700">* Utilization Shift : -15.0% to +15.0%</text>
+    <text x="24" y="98" fill="#60A5FA" font-size="11" font-weight="700">* Billing Rate Shift : -20.0% to +20.0%</text>
+    <text x="24" y="118" fill="#60A5FA" font-size="11" font-weight="700">* Delivery Slippage  :  0.0% to 30.0%</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="345" y1="143" x2="380" y2="143" stroke="#38BDF8" stroke-width="2.5" marker-end="url(#arrow-sc)"/>
+
+  <!-- COLUMN 2: SIMULATION BACKEND -->
+  <g transform="translate(385, 68)">
+    <rect x="0" y="0" width="320" height="150" rx="8" fill="#1E293B" stroke="#9333EA" stroke-width="1.8" filter="url(#sc-shadow)"/>
+    <rect x="0" y="0" width="320" height="28" rx="8" fill="url(#grad-sc-2)"/>
+    <text x="16" y="19" fill="#FFFFFF" font-size="12" font-weight="700">2. SIMULATION ENGINE (FASTAPI :8000)</text>
+
+    <rect x="12" y="38" width="296" height="102" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <text x="24" y="60" fill="#C084FC" font-size="12" font-weight="700">POST /scenarios/run</text>
+    <text x="24" y="80" fill="#CBD5E1" font-size="11">* Re-weights pipeline conversion</text>
+    <text x="24" y="98" fill="#CBD5E1" font-size="11">* Adjusts consultant labor margins</text>
+    <text x="24" y="118" fill="#CBD5E1" font-size="11">* Applies delivery slippage haircut</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="705" y1="143" x2="740" y2="143" stroke="#34D399" stroke-width="2.5" marker-end="url(#arrow-sc)"/>
+
+  <!-- COLUMN 3: DASHBOARD OUTPUT -->
+  <g transform="translate(745, 68)">
+    <rect x="0" y="0" width="330" height="150" rx="8" fill="#1E293B" stroke="#059669" stroke-width="1.8" filter="url(#sc-shadow)"/>
+    <rect x="0" y="0" width="330" height="28" rx="8" fill="url(#grad-sc-3)"/>
+    <text x="16" y="19" fill="#FFFFFF" font-size="12" font-weight="700">3. DASHBOARD IMPACT RENDER</text>
+
+    <rect x="12" y="38" width="306" height="102" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <text x="24" y="62" fill="#34D399" font-size="12" font-weight="700">Simulated Revenue (INR)</text>
+    <text x="24" y="82" fill="#CBD5E1" font-size="11">* Absolute Revenue Delta (INR)</text>
+    <text x="24" y="102" fill="#CBD5E1" font-size="11">* Percentage Revenue Delta (%)</text>
+    <text x="24" y="122" fill="#6EE7B7" font-size="11">* Real-time visual comparison card</text>
+  </g>
+</svg>

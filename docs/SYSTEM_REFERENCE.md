@@ -8,225 +8,41 @@ This document provides a consolidated technical and operational reference for th
 
 ## 1. End-to-End System Architecture
 
-```
-+-----------------------------------------------------------------------------------------------------------------------------------------+
-|                                                      1. PRESENTATION TIER (STREAMLIT :8501)                                              |
-|                                                                                                                                         |
-|  +-------------------------------------+  +-------------------------------------+  +-------------------------------------------------+  |
-|  |       app.py (Executive View)       |  |     intelligence.py (Action Hub)    |  |               charts.py & components.py         |  |
-|  |  * Metric Summary KPI Banners       |  |  * 9 Rule-Based Diagnostic Cards    |  |  * Waterfall Forecast Visualizer                |  |
-|  |  * Revenue & Margin Realization     |  |  * 10 Prioritized Action Cards      |  |  * Monte Carlo Distribution Density Plots       |  |
-|  |  * Business Unit Performance Matrix |  |  * Headroom & VaR Impact Metrics    |  |  * Scenario Sensitivity Sliders                 |  |
-|  +-------------------------------------+  +-------------------------------------+  +-------------------------------------------------+  |
-|                                                     |                                                                                   |
-|                                                     v (Internal Python Requests Client)                                                 |
-|                                     +---------------------------------------------------+                                               |
-|                                     |    api.py (Resilient REST Connector with Timeout) |                                               |
-|                                     +---------------------------------------------------+                                               |
-+-----------------------------------------------------------------|-----------------------------------------------------------------------+
-                                                                  | HTTP REST (JSON / Port 8000)
-                                                                  v
-+-----------------------------------------------------------------------------------------------------------------------------------------+
-|                                                       2. API GATEWAY TIER (FASTAPI :8000)                                               |
-|                                                                                                                                         |
-|  +------------------------------------+  +-------------------------------------+  +--------------------------------------------------+  |
-|  |        /forecast/current           |  |          /analytics/*               |  |           /intelligence/* & /executive/*         |  |
-|  |  * 5-Step Net Deliverable Baseline  |  |  * /summary, /monthly-revenue       |  |  * /overview (Unified Diagnostic Bundle)         |  |
-|  |  * Backlog vs Pipeline Allocation  |  |  * /backlog (Stage Breakdown)       |  |  * /briefing (Strategic Status & Health)         |  |
-|  |  * Haircut & Utilization Adjust    |  |  * /variance (Budget vs Actual)     |  |  * /decisions/overview & /scenarios/run          |  |
-|  +------------------------------------+  +-------------------------------------+  +--------------------------------------------------+  |
-+-----------------------------------------------------------------|-----------------------------------------------------------------------+
-                                                                  |
-                                                                  v
-+-----------------------------------------------------------------------------------------------------------------------------------------+
-|                                                   3. COMPUTATION & REASONING ENGINES                                                    |
-|                                                                                                                                         |
-|  +----------------------------------------------------+   +--------------------------------------------------------------------------+  |
-|  |               Deterministic Engines                |   |                       Stochastic & Variance Engines                      |  |
-|  |  * forecast_engine.py (5-Step Deterministic Model) |   |  * monte_carlo_engine.py (5,000 Stochastic Iterations: P10, P50, P90)    |  |
-|  |  * backlog_engine.py (Contract Realization)        |   |  * variance_engine.py (Revenue & Margin Bridges vs Operating Budget)     |  |
-|  |  * forecast_decomposition.py (Additive Waterfall)  |   |  * scenario_engine.py (Multi-Parameter Parametric Sensitivity Model)     |  |
-|  +----------------------------------------------------+   +--------------------------------------------------------------------------+  |
-|                                                                                                                                         |
-|  +-----------------------------------------------------------------------------------------------------------------------------------+  |
-|  |                                                 Diagnostic & Decision Engines                                                     |  |
-|  |  * finance_reasoning.py (Calculates 20+ Financial Ratios, Forward Coverage, Pipeline Risk, and Operational Health)               |  |
-|  |  * insight_engine.py (Evaluates 9 Diagnostic Rules, Classifying Severity into High, Medium, and Low Alert Badges)                 |  |
-|  |  * recommendation_engine.py (Evaluates 10 Prescriptive Action Playbooks and Computes Quantified Financial Impact)                 |  |
-|  |  * staffing_engine.py & staffing_insight_engine.py (Analyzes Delivery Hours vs Budgeted Demand and Flags Data Review State)       |  |
-|  +-----------------------------------------------------------------------------------------------------------------------------------+  |
-+-----------------------------------------------------------------|-----------------------------------------------------------------------+
-                                                                  | SQLAlchemy Core / Raw SQL Queries
-                                                                  v
-+-----------------------------------------------------------------------------------------------------------------------------------------+
-|                                                  4. PERSISTENCE LAYER (POSTGRESQL / SQLITE)                                             |
-|                                                                                                                                         |
-|  +-------------------------+  +-------------------------+  +--------------------------+  +---------------------------------------+  |
-|  |     business_units      |  |        projects         |  |     project_pipeline     |  |            project_actuals            |  |
-|  |  * business_unit_id(PK) |  |  * project_id (PK)      |  |  * pipeline_id (PK)      |  |  * actual_id (PK)                     |  |
-|  |  * name                 |  |  * business_unit_id(FK) |  |  * project_id (FK)       |  |  * project_id (FK)                    |  |
-|  |                         |  |  * stage, contract_val  |  |  * probability, stage    |  |  * actual_revenue, actual_cost, hours |  |
-|  +-------------------------+  +-------------------------+  +--------------------------+  +---------------------------------------+  |
-|                                                                                                                                         |
-|  +------------------------------------------------------+  +-------------------------------------------------------------------------+  |
-|  |                        budgets                       |  |                   forecast_versions & forecast_values                   |  |
-|  |  * budget_id (PK)                                    |  |  * forecast_id (PK)                                                     |  |
-|  |  * business_unit_id (FK)                             |  |  * forecast_month, forecast_method                                       |  |
-|  |  * revenue_budget, hours_budget, utilization_budget  |  |  * forecast_value_id (PK), project_id (FK), forecast_revenue             |  |
-|  +------------------------------------------------------+  +-------------------------------------------------------------------------+  |
-+-----------------------------------------------------------------------------------------------------------------------------------------+
-```
+![System Telemetry & Architecture Flow](images/telemetry_architecture.svg)
 
 ---
 
 ## 2. Telemetry Ingestion & Forecast Pipeline
 
-```
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                        STAGE 1: INPUT EXTRACTION                                                      |
-|                                                                                                                                       |
-|  [Committed Backlog Ingestion]            [Weighted Pipeline Ingestion]           [Utilization Tracking]                              |
-|  SUM(contract_value) for:                 SUM(contract_value * win_probability)   Current Practice Utilization: 74.0%                 |
-|  'In Delivery' & 'Closed Won'             for 'Prospect' & 'Qualified'            Target Benchmark Standard:    75.0%                 |
-|  Value: INR 100,000.00                    Value: INR 50,000.00                    Delta Ratio: 0.74 / 0.75 = 0.9867                   |
-+---------------------------------------------------|-----------------------------------------------------------------------------------+
-                                                    |
-                                                    v
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                    STAGE 2: UTILIZATION ADJUSTMENT                                                    |
-|                                                                                                                                       |
-|  Utilization Factor     = actual_utilization / target_utilization                                                                     |
-|  Utilization Adjustment = committed_backlog * (utilization_factor - 1.0)                                                              |
-|                                                                                                                                       |
-|  At Standard Parity (75% / 75%):                                                                                                      |
-|  Utilization Adjustment = INR 100,000.00 * (1.0 - 1.0) = INR 0.00                                                                     |
-+---------------------------------------------------|-----------------------------------------------------------------------------------+
-                                                    |
-                                                    v
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                    STAGE 3: GROSS FORECAST SYNTHESIS                                                  |
-|                                                                                                                                       |
-|  Gross Forecast Revenue = Committed Backlog + Weighted Pipeline + Utilization Adjustment                                              |
-|  Gross Forecast Revenue = INR 100,000.00 + INR 50,000.00 + INR 0.00 = INR 150,000.00                                                 |
-+---------------------------------------------------|-----------------------------------------------------------------------------------+
-                                                    |
-                                                    v
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                    STAGE 4: EXECUTION RISK HAIRCUT                                                    |
-|                                                                                                                                       |
-|  Risk Adjustment Rate = 5.0% (Execution Buffer for Project Delay & Commercial Slippage)                                               |
-|  Risk Haircut Amount  = Gross Forecast Revenue * 0.05                                                                                 |
-|  Risk Haircut Amount  = INR 150,000.00 * 0.05 = INR 7,500.00                                                                          |
-+---------------------------------------------------|-----------------------------------------------------------------------------------+
-                                                    |
-                                                    v
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                    STAGE 5: NET DELIVERABLE FORECAST                                                  |
-|                                                                                                                                       |
-|  Net Forecast Revenue = Gross Forecast Revenue - Risk Haircut Amount                                                                  |
-|  Net Forecast Revenue = INR 150,000.00 - INR 7,500.00 = INR 142,500.00                                                                |
-+---------------------------------------------------------------------------------------------------------------------------------------+
-```
+![Deterministic Forecast Pipeline](images/forecast_pipeline.svg)
 
 ---
 
 ## 3. Monte Carlo Simulation Engine
 
-```
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                     1. PARAMETRIC DISTRIBUTIONS                                                       |
-|                                                                                                                                       |
-|  +-----------------------------------+  +------------------------------------+  +--------------------------------------------------+  |
-|  |     Pipeline Win Probabilities    |  |     Staffing Utilization Rate      |  |             Delivery Project Slippage            |  |
-|  |  * Modeled via Beta Distribution  |  |  * Normal Distribution             |  |  * Log-Normal Distribution                       |  |
-|  |  * Reflects historical win rates  |  |  * Mean = 0.75, StdDev = 0.035     |  |  * Right-skewed delay factor (0% to 15%)         |  |
-|  +-----------------------------------+  +------------------------------------+  +--------------------------------------------------+  |
-+-------------------------------------------------------------------|-------------------------------------------------------------------+
-                                                                    |
-                                                                    v
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                     2. STOCHASTIC SIMULATION RUN                                                      |
-|                                                                                                                                       |
-|  Number of Iterations : 5,000 Independent Trials                                                                                      |
-|  Random Number Seed   : 42 (Guarantees Reproducibility across Test Environments)                                                      |
-|  Trial Execution Logic: Evaluates Gross Synthesis, Slippage Drag, and Risk Haircut across each trial                                  |
-+-------------------------------------------------------------------|-------------------------------------------------------------------+
-                                                                    |
-                                                                    v
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                     3. OUTPUT DISTRIBUTION & RISK METRICS                                             |
-|                                                                                                                                       |
-|  +-------------------------------+  +--------------------------------+  +--------------------------------+  +----------------------+  |
-|  |         P10 (Floor)           |  |          P50 (Median)          |  |          P90 (Upside)          |  | Value-at-Risk (VaR)  |  |
-|  |  * 10th Percentile Outcome    |  |  * 50th Percentile Outcome     |  |  * 90th Percentile Outcome     |  |  * Net Forecast - P10|  |
-|  |  * Conservative 90% floor     |  |  * Probabilistic central value |  |  * Optimistic target capture   |  |  * Downside risk amt |  |
-|  |  * Capital protection anchor  |  |  * Benchmarked against Net     |  |  * Resource surge indicator    |  |  * Risk exposure     |  |
-|  +-------------------------------+  +--------------------------------+  +--------------------------------+  +----------------------+  |
-+---------------------------------------------------------------------------------------------------------------------------------------+
-```
+![Monte Carlo Simulation Engine](images/monte_carlo_engine.svg)
 
 ---
 
-## 4. Diagnostic & Recommendation Playbook Pipeline
+## 4. Financial Variance Bridge Architecture
 
-```
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                       STEP 1: TELEMETRY EXTRACTION                                                    |
-|                                                                                                                                       |
-|  Actual Revenue       : Recognized delivery fees from project_actuals                                                                 |
-|  Operating Budget     : Revenue and hours targets from budgets                                                                        |
-|  Committed Backlog    : Contract value for 'In Delivery' and 'Closed Won' engagements                                                 |
-|  Weighted Pipeline    : Probability-discounted commercial pipeline value                                                              |
-|  Net Forecast Revenue : 5-step risk-adjusted deliverable projection                                                                   |
-+---------------------------------------------------|-----------------------------------------------------------------------------------+
-                                                    |
-                                                    v
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                   STEP 2: FINANCIAL REASONING ENGINE                                                  |
-|                                                                                                                                       |
-|  Variance Ratios     : budget_gap, budget_gap_pct, forecast_gap, forecast_gap_pct, forecast_headroom                                  |
-|  Coverage Ratios     : forward_revenue, forward_coverage, committed_forecast_coverage                                                 |
-|  Composition Ratios  : pipeline_dependency, committed_revenue_mix                                                                     |
-|  Health Indicators   : forecast_risk, pipeline_risk, forward_position, headroom_status                                                |
-+---------------------------------------------------|-----------------------------------------------------------------------------------+
-                                                    |
-                                                    v
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                   STEP 3: DIAGNOSTIC INSIGHT ENGINE                                                   |
-|                                                                                                                                       |
-|  Evaluates 9 Heuristic Severity Rules:                                                                                                |
-|  * Rule 1: Revenue Realization Gap vs Operating Budget                                                                                |
-|  * Rule 2: Net Forecast Headroom Gap vs Operating Budget                                                                              |
-|  * Rule 3: Forward Coverage Depth vs Target Baseline                                                                                  |
-|  * Rule 4: Committed Backlog Coverage of Net Forecast                                                                                 |
-|  * Rule 5: Commercial Pipeline Dependency Ratio                                                                                       |
-|  * Rule 6: Committed Revenue Mix across Forward Book                                                                                  |
-|  * Rule 7: Aggregate Delivery Forecast Risk Rating                                                                                    |
-|  * Rule 8: Comprehensive Practice Forward Market Stance                                                                               |
-|  * Rule 9: Absolute Forecast Headroom Buffer Status                                                                                   |
-+---------------------------------------------------|-----------------------------------------------------------------------------------+
-                                                    |
-                                                    v
-+---------------------------------------------------------------------------------------------------------------------------------------+
-|                                                 STEP 4: ACTION RECOMMENDATION ENGINE                                                  |
-|                                                                                                                                       |
-|  Maps Operational Shortfalls to 10 Prioritized Action Items with Quantified Financial Impact (INR):                                  |
-|  * Priority 1 [HIGH]   : Partner Revenue Recovery Mobilization     (Impact: abs(budget_gap))                                          |
-|  * Priority 2 [HIGH]   : Forecast Protection & SOW Lock-in         (Impact: abs(forecast_gap))                                        |
-|  * Priority 3 [HIGH]   : Pipeline Origination Surge                (Impact: budget - forward_revenue)                                 |
-|  * Priority 4 [MEDIUM] : Forward Coverage Buffer Preservation      (Impact: forward_revenue - budget)                                 |
-|  * Priority 5 [HIGH]   : Executive Closing Surge on Qualified Deals(Impact: weighted_pipeline)                                        |
-|  * Priority 6 [MEDIUM] : Stage-Gate Proposal Velocity Acceleration (Impact: weighted_pipeline)                                        |
-|  * Priority 7 [HIGH]   : Fast-Track MSA/SOW Legal Review           (Impact: forecast - backlog)                                       |
-|  * Priority 8 [MEDIUM] : Backlog Hardening via Milestone Sign-off  (Impact: forecast - backlog)                                       |
-|  * Priority 9 [HIGH]   : Portfolio Deliverable Slippage Audit      (Impact: forecast_revenue)                                         |
-|  * Priority 10 [LOW]   : Premium-Rate Margin Optimization          (Impact: forecast_gap)                                             |
-+---------------------------------------------------------------------------------------------------------------------------------------+
-```
+![Financial Variance Bridge](images/variance_bridge.svg)
 
 ---
 
-## 5. Summary Reference Tables
+## 5. Interactive Scenario Simulator Controls
+
+![Scenario Simulator Controls](images/scenario_simulator.svg)
+
+---
+
+## 6. Commercial Pipeline Progression
+
+![Commercial Pipeline Stage Progression](images/pipeline_stages.svg)
+
+---
+
+## 7. Summary Reference Tables
 
 ### Core Financial Telemetry Formulas
 
@@ -253,3 +69,35 @@ This document provides a consolidated technical and operational reference for th
 | **Headroom Buffer** | Headroom `% >= 10.0%` | `0.0% <= Headroom % < 10.0%` | Headroom `% < 0.0%` |
 | **Revenue Realization**| Budget Gap `>= 0.0` | `-10.0% <= Budget Gap % < 0.0%`| Budget Gap `% < -10.0%` |
 
+---
+
+## 8. Diagnostic & Recommendation Playbook Pipeline
+
+### Diagnostic Insights Matrix (9 Rules)
+
+| # | Diagnostic Dimension | Telemetry Metric Evaluated | High Severity Alert | Medium Severity Alert | Low Severity Alert | Prescribed Diagnostic Action |
+|:--:|:---------------------|:--------------------------|:--------------------|:----------------------|:-------------------|:-----------------------------|
+| **1** | Revenue Performance | `budget_gap_pct` | `<= -10.0%` | `-10.0% < gap < 0.0%` | `>= 0.0%` | Review delivered billing realization vs plan |
+| **2** | Forecast Trajectory | `forecast_gap_pct` | `<= -10.0%` | `-10.0% < gap < 0.0%` | `>= 0.0%` | Assess closing velocity of near-term pipeline |
+| **3** | Forward Coverage | `forward_coverage` | `< 100.0%` | `100.0% <= cov < 120.0%` | `>= 120.0%` | Accelerate proposal origination in key accounts |
+| **4** | Forecast Quality | `committed_forecast_coverage` | `< 50.0%` | `50.0% <= cov < 70.0%` | `>= 70.0%` | Convert verbal client approvals into executed SOWs |
+| **5** | Pipeline Dependency | `pipeline_dependency` | `>= 60.0%` | `40.0% <= dep < 60.0%` | `< 40.0%` | Mitigate risk by securing firm commitments on top 3 deals |
+| **6** | Committed Revenue Mix| `committed_revenue_mix` | `< 40.0%` | `40.0% <= mix < 60.0%` | `>= 60.0%` | Harden backlog to protect delivery team staffing |
+| **7** | Forecast Risk Profile| `forecast_risk` | `== "high"` | `== "moderate"` | `== "low"` | Implement weekly project milestone health checks |
+| **8** | Market Stance | `forward_position` | `in ("watch", "weak")` | `== "adequate"` | `== "strong"` | Align practice staffing models to market demand |
+| **9** | Headroom Buffer | `forecast_headroom` | `< 0.0` | N/A | `> 0.0` | Allocate additional commercial capacity to bridge gap |
+
+### Prioritized Action Triggers (10 Remediations with Quantified Financial Impact)
+
+| Priority | Strategy Category | Activation Condition | Prescriptive Operational Intervention | Quantified Impact (INR) |
+|:---------|:------------------|:---------------------|:--------------------------------------|:------------------------|
+| **[HIGH]** | Revenue Recovery | `budget_gap < 0` | Mobilize partner-led revenue recovery plan on lagging accounts | `abs(budget_gap)` |
+| **[HIGH]** | Forecast Protection | `forecast_gap < 0` | Lock in pending contract extensions and prevent scope reduction | `abs(forecast_gap)` |
+| **[HIGH]** | Pipeline Coverage | `forward_coverage < 100%` | Fast-track high-probability proposals to achieve baseline budget | `budget - forward_revenue` |
+| **[MEDIUM]** | Coverage Buffer | `100% <= forward_coverage < 120%` | Maintain business development momentum to preserve safety buffer | `forward_revenue - budget` |
+| **[HIGH]** | Deal Closure Surge | `pipeline_dependency >= 60%` | Conduct executive closing sessions on all deals in Qualified stage | `weighted_pipeline` |
+| **[MEDIUM]** | Velocity Management| `40% <= pipeline_dependency < 60%` | Review stage-gate progression weekly with client teams | `weighted_pipeline` |
+| **[HIGH]** | Backlog Fortification| `committed_forecast_coverage < 50%` | Prioritize execution of MSAs and SOWs currently under legal review | `forecast - backlog` |
+| **[MEDIUM]** | Backlog Hardening | `50% <= committed_forecast_coverage < 70%` | Expedite client sign-offs on milestone deliverables | `forecast - backlog` |
+| **[HIGH]** | Delivery Audit | `forecast_risk == "high"` | Conduct portfolio-wide review to prevent deliverable slippage | `forecast_revenue` |
+| **[LOW]** | Margin Optimization| `forward_coverage >= 120%` & `pipeline < 60%` | Prioritize higher-margin, premium-rate engagements | `forecast_gap` |

@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 480" width="100%" height="100%" style="background:#0F172A; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; border-radius:12px; border:1px solid #334155; box-shadow:0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+  <defs>
+    <linearGradient id="grad-blue-hdr" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#2563EB" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="grad-emerald-hdr" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#059669" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="card-shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <marker id="arrow-down" viewBox="0 0 10 10" refX="5" refY="6" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 1 0 L 5 8 L 9 0 z" fill="#38BDF8" />
+    </marker>
+  </defs>
+
+  <!-- Title Header -->
+  <rect x="25" y="20" width="1050" height="46" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+  <text x="45" y="49" fill="#F8FAFC" font-size="18" font-weight="700">Executive Decision Framework</text>
+  <text x="360" y="49" fill="#94A3B8" font-size="13">Strategic Governance &amp; Operational Remediation Alignment</text>
+
+  <!-- TIER 1: STRATEGIC OVERSIGHT -->
+  <g transform="translate(25, 80)">
+    <rect x="0" y="0" width="1050" height="150" rx="10" fill="#1E293B" fill-opacity="0.7" stroke="#2563EB" stroke-width="2" filter="url(#card-shadow)"/>
+    <rect x="0" y="0" width="1050" height="34" rx="10" fill="url(#grad-blue-hdr)"/>
+    <text x="20" y="23" fill="#FFFFFF" font-size="14" font-weight="700">STRATEGIC OVERSIGHT (Partners &amp; Practice Leaders)</text>
+
+    <!-- Pillar 1.1 -->
+    <rect x="15" y="46" width="325" height="90" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="15" y="46" width="4" height="90" rx="2" fill="#3B82F6"/>
+    <text x="28" y="68" fill="#60A5FA" font-size="13" font-weight="700">Revenue Trajectory</text>
+    <text x="28" y="88" fill="#CBD5E1" font-size="12">Is the net deliverable forecast on track</text>
+    <text x="28" y="106" fill="#CBD5E1" font-size="12">to beat approved annual budget targets?</text>
+    <text x="28" y="124" fill="#94A3B8" font-size="11">Metric: forecast_gap &gt;= 0.0</text>
+
+    <!-- Pillar 1.2 -->
+    <rect x="362" y="46" width="325" height="90" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="362" y="46" width="4" height="90" rx="2" fill="#60A5FA"/>
+    <text x="375" y="68" fill="#60A5FA" font-size="13" font-weight="700">Coverage Depth</text>
+    <text x="375" y="88" fill="#CBD5E1" font-size="12">Does committed backlog + weighted pipe</text>
+    <text x="375" y="106" fill="#CBD5E1" font-size="12">cover &gt;= 120% of operating plan?</text>
+    <text x="375" y="124" fill="#94A3B8" font-size="11">Metric: forward_coverage &gt;= 120.0%</text>
+
+    <!-- Pillar 1.3 -->
+    <rect x="710" y="46" width="325" height="90" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="710" y="46" width="4" height="90" rx="2" fill="#93C5FD"/>
+    <text x="723" y="68" fill="#60A5FA" font-size="13" font-weight="700">Revenue Quality Mix</text>
+    <text x="723" y="88" fill="#CBD5E1" font-size="12">What proportion of forward plan is locked</text>
+    <text x="723" y="106" fill="#CBD5E1" font-size="12">by contracts vs pipeline contingent?</text>
+    <text x="723" y="124" fill="#94A3B8" font-size="11">Metric: committed_revenue_mix &gt;= 60.0%</text>
+  </g>
+
+  <!-- Downward Connecting Flow -->
+  <line x1="550" y1="230" x2="550" y2="265" stroke="#38BDF8" stroke-width="3" marker-end="url(#arrow-down)"/>
+
+  <!-- TIER 2: OPERATIONAL REMEDIATION -->
+  <g transform="translate(25, 275)">
+    <rect x="0" y="0" width="1050" height="175" rx="10" fill="#1E293B" fill-opacity="0.7" stroke="#059669" stroke-width="2" filter="url(#card-shadow)"/>
+    <rect x="0" y="0" width="1050" height="34" rx="10" fill="url(#grad-emerald-hdr)"/>
+    <text x="20" y="23" fill="#FFFFFF" font-size="14" font-weight="700">OPERATIONAL REMEDIATION (Delivery Directors &amp; Project Leads)</text>
+
+    <!-- Lever 2.1 -->
+    <rect x="15" y="46" width="325" height="115" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="15" y="46" width="4" height="115" rx="2" fill="#10B981"/>
+    <text x="28" y="68" fill="#34D399" font-size="13" font-weight="700">Staffing &amp; Utilization Lever</text>
+    <text x="28" y="88" fill="#CBD5E1" font-size="12">* Benchmark: 75.0% billable target</text>
+    <text x="28" y="106" fill="#CBD5E1" font-size="12">* Monitor consultant bench rollover</text>
+    <text x="28" y="124" fill="#CBD5E1" font-size="12">* Reallocate unassigned staff to backlog</text>
+    <text x="28" y="142" fill="#94A3B8" font-size="11">Action: Staffing Capacity Optimization</text>
+
+    <!-- Lever 2.2 -->
+    <rect x="362" y="46" width="325" height="115" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="362" y="46" width="4" height="115" rx="2" fill="#F59E0B"/>
+    <text x="375" y="68" fill="#FBBF24" font-size="13" font-weight="700">Pipeline Velocity Lever</text>
+    <text x="375" y="88" fill="#CBD5E1" font-size="12">* Fast-track late-stage Qualified proposals</text>
+    <text x="375" y="106" fill="#CBD5E1" font-size="12">* Conduct executive closing surges</text>
+    <text x="375" y="124" fill="#CBD5E1" font-size="12">* Mitigate pipeline dependency drag</text>
+    <text x="375" y="142" fill="#94A3B8" font-size="11">Action: Executive Deal Surges (Qualified)</text>
+
+    <!-- Lever 2.3 -->
+    <rect x="710" y="46" width="325" height="115" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="710" y="46" width="4" height="115" rx="2" fill="#EF4444"/>
+    <text x="723" y="68" fill="#F87171" font-size="13" font-weight="700">Delivery Slippage Lever</text>
+    <text x="723" y="88" fill="#CBD5E1" font-size="12">* Audit deliverable milestone dates</text>
+    <text x="723" y="106" fill="#CBD5E1" font-size="12">* Eliminate unbilled scope creep</text>
+    <text x="723" y="124" fill="#CBD5E1" font-size="12">* Accelerate client sign-offs on SOWs</text>
+    <text x="723" y="142" fill="#94A3B8" font-size="11">Action: Portfolio Delivery Audit</text>
+  </g>
+</svg>

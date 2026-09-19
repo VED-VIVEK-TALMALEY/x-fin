@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 460" width="100%" height="100%" style="background:#0F172A; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; border-radius:12px; border:1px solid #334155; box-shadow:0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+  <defs>
+    <linearGradient id="grad-mc-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#2563EB" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="grad-mc-2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#581C87" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#7E22CE" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="grad-mc-3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#047857" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="mc-shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <marker id="arrow-mc" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#38BDF8" />
+    </marker>
+  </defs>
+
+  <!-- Title Header -->
+  <rect x="25" y="18" width="1050" height="46" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+  <text x="45" y="47" fill="#F8FAFC" font-size="18" font-weight="700">Stochastic Monte Carlo Simulation Engine</text>
+  <text x="470" y="47" fill="#94A3B8" font-size="13">5,000 Stochastic Iterations · Empirical Quantiles &amp; Value-at-Risk</text>
+
+  <!-- COLUMN 1: PARAMETRIC DISTRIBUTIONS -->
+  <g transform="translate(25, 80)">
+    <rect x="0" y="0" width="310" height="350" rx="10" fill="#1E293B" fill-opacity="0.7" stroke="#2563EB" stroke-width="2" filter="url(#mc-shadow)"/>
+    <rect x="0" y="0" width="310" height="36" rx="10" fill="url(#grad-mc-1)"/>
+    <text x="18" y="24" fill="#FFFFFF" font-size="13" font-weight="700">1. PARAMETRIC DISTRIBUTIONS</text>
+
+    <!-- Sub 1 -->
+    <rect x="15" y="52" width="280" height="84" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="15" y="52" width="4" height="84" rx="2" fill="#3B82F6"/>
+    <text x="28" y="74" fill="#60A5FA" font-size="12" font-weight="700">Pipeline Win Probability</text>
+    <text x="28" y="94" fill="#CBD5E1" font-size="11">* Modeled via Beta Distribution</text>
+    <text x="28" y="112" fill="#94A3B8" font-size="11">* Calibrated by proposal stage</text>
+
+    <!-- Sub 2 -->
+    <rect x="15" y="148" width="280" height="84" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="15" y="148" width="4" height="84" rx="2" fill="#60A5FA"/>
+    <text x="28" y="170" fill="#60A5FA" font-size="12" font-weight="700">Staffing Utilization</text>
+    <text x="28" y="190" fill="#CBD5E1" font-size="11">* Normal (Mean=0.75, Std=0.035)</text>
+    <text x="28" y="208" fill="#94A3B8" font-size="11">* Simulates consultant bench risk</text>
+
+    <!-- Sub 3 -->
+    <rect x="15" y="244" width="280" height="92" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="15" y="244" width="4" height="92" rx="2" fill="#93C5FD"/>
+    <text x="28" y="266" fill="#60A5FA" font-size="12" font-weight="700">Delivery Project Slippage</text>
+    <text x="28" y="286" fill="#CBD5E1" font-size="11">* Log-Normal Distribution</text>
+    <text x="28" y="304" fill="#CBD5E1" font-size="11">* Right-skewed delay drag (0% - 15%)</text>
+    <text x="28" y="322" fill="#94A3B8" font-size="10">* Milestone rollover exposure</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="335" y1="255" x2="368" y2="255" stroke="#38BDF8" stroke-width="3" marker-end="url(#arrow-mc)"/>
+
+  <!-- COLUMN 2: SIMULATION EXECUTION -->
+  <g transform="translate(370, 80)">
+    <rect x="0" y="0" width="310" height="350" rx="10" fill="#1E293B" fill-opacity="0.7" stroke="#9333EA" stroke-width="2" filter="url(#mc-shadow)"/>
+    <rect x="0" y="0" width="310" height="36" rx="10" fill="url(#grad-mc-2)"/>
+    <text x="18" y="24" fill="#FFFFFF" font-size="13" font-weight="700">2. SIMULATION ENGINE</text>
+
+    <!-- Box 1 -->
+    <rect x="15" y="52" width="280" height="130" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="15" y="52" width="4" height="130" rx="2" fill="#A855F7"/>
+    <text x="28" y="76" fill="#C084FC" font-size="13" font-weight="700">5,000 Stochastic Trials</text>
+    <text x="28" y="100" fill="#CBD5E1" font-size="12">* Seed = 42 (Reproducible)</text>
+    <text x="28" y="122" fill="#CBD5E1" font-size="12">* Fast NumPy array operations</text>
+    <text x="28" y="144" fill="#CBD5E1" font-size="12">* Gross synthesis per trial</text>
+    <text x="28" y="164" fill="#94A3B8" font-size="11">* Slippage &amp; haircut deduction</text>
+
+    <!-- Box 2 -->
+    <rect x="15" y="196" width="280" height="140" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="15" y="196" width="4" height="140" rx="2" fill="#C084FC"/>
+    <text x="28" y="220" fill="#C084FC" font-size="13" font-weight="700">Empirical Probability Array</text>
+    <text x="28" y="244" fill="#CBD5E1" font-size="12">* Sorts 5,000 outcomes</text>
+    <text x="28" y="266" fill="#CBD5E1" font-size="12">* Computes quantiles at 10, 50, 90</text>
+    <text x="28" y="288" fill="#CBD5E1" font-size="12">* Evaluates probability &gt; budget</text>
+    <text x="28" y="310" fill="#94A3B8" font-size="11">* Density curve distribution</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="680" y1="255" x2="713" y2="255" stroke="#34D399" stroke-width="3" marker-end="url(#arrow-mc)"/>
+
+  <!-- COLUMN 3: QUANTILES & RISK EXPOSURE -->
+  <g transform="translate(715, 80)">
+    <rect x="0" y="0" width="360" height="350" rx="10" fill="#1E293B" fill-opacity="0.7" stroke="#059669" stroke-width="2" filter="url(#mc-shadow)"/>
+    <rect x="0" y="0" width="360" height="36" rx="10" fill="url(#grad-mc-3)"/>
+    <text x="18" y="24" fill="#FFFFFF" font-size="13" font-weight="700">3. CONFIDENCE BANDS &amp; VaR</text>
+
+    <!-- Band 1: P10 -->
+    <rect x="15" y="52" width="330" height="64" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="15" y="52" width="4" height="64" rx="2" fill="#EF4444"/>
+    <text x="28" y="74" fill="#F87171" font-size="12" font-weight="700">P10 Downside Floor</text>
+    <text x="28" y="92" fill="#CBD5E1" font-size="11">90% confidence floor deliverable revenue</text>
+    <text x="28" y="106" fill="#94A3B8" font-size="10">Triggers emergency contractor freeze if &lt; Plan</text>
+
+    <!-- Band 2: P50 -->
+    <rect x="15" y="124" width="330" height="64" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="15" y="124" width="4" height="64" rx="2" fill="#3B82F6"/>
+    <text x="28" y="146" fill="#60A5FA" font-size="12" font-weight="700">P50 Probabilistic Median</text>
+    <text x="28" y="164" fill="#CBD5E1" font-size="11">Expected central outcome under simulated volatility</text>
+    <text x="28" y="178" fill="#94A3B8" font-size="10">Directly benchmarked against Net Deterministic</text>
+
+    <!-- Band 3: P90 -->
+    <rect x="15" y="196" width="330" height="64" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <rect x="15" y="196" width="4" height="64" rx="2" fill="#10B981"/>
+    <text x="28" y="218" fill="#34D399" font-size="12" font-weight="700">P90 Optimistic Upside</text>
+    <text x="28" y="236" fill="#CBD5E1" font-size="11">Top 10% exceedance target if deals close early</text>
+    <text x="28" y="250" fill="#94A3B8" font-size="10">Pre-allocates practice hiring &amp; recruiting pipeline</text>
+
+    <!-- Band 4: VaR -->
+    <rect x="15" y="268" width="330" height="68" rx="6" fill="#0F172A" stroke="#DC2626" stroke-width="1"/>
+    <rect x="15" y="268" width="4" height="68" rx="2" fill="#DC2626"/>
+    <text x="28" y="290" fill="#F87171" font-size="12" font-weight="700">Value-at-Risk: Deterministic Net - P10</text>
+    <text x="28" y="308" fill="#CBD5E1" font-size="11">Quantified capital exposure under adverse market shocks</text>
+    <text x="28" y="324" fill="#FCA5A5" font-size="10">Action: Mobilize sponsor reviews on top 3 accounts</text>
+  </g>
+</svg>

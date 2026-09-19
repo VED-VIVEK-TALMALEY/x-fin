@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 580" width="100%" height="100%" style="background:#0F172A; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; border-radius:12px; border:1px solid #334155; box-shadow:0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+  <defs>
+    <linearGradient id="grad-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#1D4ED8" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="grad-purple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#581C87" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#7E22CE" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="grad-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#047857" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="grad-amber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78350F" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#B45309" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#60A5FA" />
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#34D399" />
+    </marker>
+  </defs>
+
+  <!-- Title Header Banner -->
+  <rect x="25" y="20" width="1050" height="50" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+  <text x="45" y="52" fill="#F8FAFC" font-size="20" font-weight="700" letter-spacing="0.5">X-Fin Delivery Finance Operating System</text>
+  <text x="520" y="52" fill="#94A3B8" font-size="14" font-weight="500">End-to-End Operational Telemetry &amp; Intelligence Flow</text>
+  <rect x="940" y="32" width="115" height="26" rx="13" fill="#0EA5E9" fill-opacity="0.2" stroke="#0284C7" stroke-width="1.2"/>
+  <text x="962" y="49" fill="#38BDF8" font-size="11" font-weight="700">PORTFOLIO OS</text>
+
+  <!-- SECTION 1: PRACTICE TELEMETRY INGESTION -->
+  <g transform="translate(25, 95)">
+    <rect x="0" y="0" width="330" height="450" rx="10" fill="#1E293B" fill-opacity="0.7" stroke="#2563EB" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="330" height="42" rx="10" fill="url(#grad-blue)"/>
+    <text x="20" y="27" fill="#FFFFFF" font-size="15" font-weight="700" letter-spacing="0.5">1. PRACTICE TELEMETRY</text>
+
+    <!-- Card 1.1 -->
+    <rect x="15" y="58" width="300" height="110" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="58" width="4" height="110" rx="2" fill="#3B82F6"/>
+    <text x="30" y="82" fill="#60A5FA" font-size="13" font-weight="700">Delivered Financial Actuals</text>
+    <text x="30" y="104" fill="#CBD5E1" font-size="12">* Billable Hours Delivered</text>
+    <text x="30" y="124" fill="#CBD5E1" font-size="12">* Recognized Fee Revenue</text>
+    <text x="30" y="144" fill="#94A3B8" font-size="11">Source: project_actuals (Monthly)</text>
+
+    <!-- Card 1.2 -->
+    <rect x="15" y="183" width="300" height="110" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="183" width="4" height="110" rx="2" fill="#60A5FA"/>
+    <text x="30" y="207" fill="#60A5FA" font-size="13" font-weight="700">Commercial Pipeline</text>
+    <text x="30" y="229" fill="#CBD5E1" font-size="12">* Deal Stage &amp; Win Probability</text>
+    <text x="30" y="249" fill="#CBD5E1" font-size="12">* Contract Value &amp; Target Close</text>
+    <text x="30" y="269" fill="#94A3B8" font-size="11">Source: project_pipeline (Snapshots)</text>
+
+    <!-- Card 1.3 -->
+    <rect x="15" y="308" width="300" height="122" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="308" width="4" height="122" rx="2" fill="#93C5FD"/>
+    <text x="30" y="332" fill="#60A5FA" font-size="13" font-weight="700">Approved Operating Plan</text>
+    <text x="30" y="354" fill="#CBD5E1" font-size="12">* Practice Revenue Budgets</text>
+    <text x="30" y="374" fill="#CBD5E1" font-size="12">* Planned Hours Demand</text>
+    <text x="30" y="394" fill="#CBD5E1" font-size="12">* 75.0% Benchmark Utilization</text>
+    <text x="30" y="414" fill="#94A3B8" font-size="11">Source: budgets (Per Practice Hub)</text>
+  </g>
+
+  <!-- Connection Arrow 1 -> 2 -->
+  <line x1="355" y1="320" x2="385" y2="320" stroke="#60A5FA" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- SECTION 2: CORE COMPUTATION & ENGINES -->
+  <g transform="translate(385, 95)">
+    <rect x="0" y="0" width="330" height="450" rx="10" fill="#1E293B" fill-opacity="0.7" stroke="#9333EA" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="330" height="42" rx="10" fill="url(#grad-purple)"/>
+    <text x="20" y="27" fill="#FFFFFF" font-size="15" font-weight="700" letter-spacing="0.5">2. CALCULATION ENGINES</text>
+
+    <!-- Card 2.1 -->
+    <rect x="15" y="58" width="300" height="110" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="58" width="4" height="110" rx="2" fill="#A855F7"/>
+    <text x="30" y="82" fill="#C084FC" font-size="13" font-weight="700">Deterministic Forecast Engine</text>
+    <text x="30" y="104" fill="#CBD5E1" font-size="12">* Gross = Backlog + Pipe + Util Adj</text>
+    <text x="30" y="124" fill="#CBD5E1" font-size="12">* Net = Gross - 5% Risk Haircut</text>
+    <text x="30" y="144" fill="#94A3B8" font-size="11">Service: forecast_engine.py</text>
+
+    <!-- Card 2.2 -->
+    <rect x="15" y="183" width="300" height="110" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="183" width="4" height="110" rx="2" fill="#C084FC"/>
+    <text x="30" y="207" fill="#C084FC" font-size="13" font-weight="700">Monte Carlo Simulator</text>
+    <text x="30" y="229" fill="#CBD5E1" font-size="12">* 5,000 Stochastic Iterations</text>
+    <text x="30" y="249" fill="#CBD5E1" font-size="12">* P10 Floor, P50 Median, P90 Upside</text>
+    <text x="30" y="269" fill="#94A3B8" font-size="11">Service: monte_carlo_engine.py (Seed 42)</text>
+
+    <!-- Card 2.3 -->
+    <rect x="15" y="308" width="300" height="122" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="308" width="4" height="122" rx="2" fill="#E9D5FF"/>
+    <text x="30" y="332" fill="#C084FC" font-size="13" font-weight="700">Variance &amp; Intelligence</text>
+    <text x="30" y="354" fill="#CBD5E1" font-size="12">* 20+ Financial Ratios &amp; Gaps</text>
+    <text x="30" y="374" fill="#CBD5E1" font-size="12">* 9 Heuristic Severity Evaluators</text>
+    <text x="30" y="394" fill="#CBD5E1" font-size="12">* 10 Quantified Remediation Triggers</text>
+    <text x="30" y="414" fill="#94A3B8" font-size="11">Services: finance_reasoning.py &amp; insights</text>
+  </g>
+
+  <!-- Connection Arrow 2 -> 3 -->
+  <line x1="715" y1="320" x2="745" y2="320" stroke="#34D399" stroke-width="3" marker-end="url(#arrow-emerald)"/>
+
+  <!-- SECTION 3: DECISION SURFACES -->
+  <g transform="translate(745, 95)">
+    <rect x="0" y="0" width="330" height="450" rx="10" fill="#1E293B" fill-opacity="0.7" stroke="#059669" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="330" height="42" rx="10" fill="url(#grad-emerald)"/>
+    <text x="20" y="27" fill="#FFFFFF" font-size="15" font-weight="700" letter-spacing="0.5">3. EXECUTIVE DECISION SURFACES</text>
+
+    <!-- Card 3.1 -->
+    <rect x="15" y="58" width="300" height="110" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="58" width="4" height="110" rx="2" fill="#10B981"/>
+    <text x="30" y="82" fill="#34D399" font-size="13" font-weight="700">Executive KPI Dashboard</text>
+    <text x="30" y="104" fill="#CBD5E1" font-size="12">* Real-Time Performance Cards</text>
+    <text x="30" y="124" fill="#CBD5E1" font-size="12">* Forecast Waterfalls &amp; Densities</text>
+    <text x="30" y="144" fill="#94A3B8" font-size="11">Portal: Streamlit (:8501) app.py</text>
+
+    <!-- Card 3.2 -->
+    <rect x="15" y="183" width="300" height="110" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="183" width="4" height="110" rx="2" fill="#F59E0B"/>
+    <text x="30" y="207" fill="#FBBF24" font-size="13" font-weight="700">Diagnostic Insights Matrix</text>
+    <text x="30" y="229" fill="#CBD5E1" font-size="12">* 9 Health Dimensions Evaluated</text>
+    <text x="30" y="249" fill="#CBD5E1" font-size="12">* Scored Severity Alert Badges</text>
+    <text x="30" y="269" fill="#94A3B8" font-size="11">View: intelligence.py (Insight Badges)</text>
+
+    <!-- Card 3.3 -->
+    <rect x="15" y="308" width="300" height="122" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1.2"/>
+    <rect x="15" y="308" width="4" height="122" rx="2" fill="#34D399"/>
+    <text x="30" y="332" fill="#34D399" font-size="13" font-weight="700">Action Recommendation Playbook</text>
+    <text x="30" y="354" fill="#CBD5E1" font-size="12">* 10 Prescriptive Interventions</text>
+    <text x="30" y="374" fill="#CBD5E1" font-size="12">* Quantified Financial Impact (INR)</text>
+    <text x="30" y="394" fill="#CBD5E1" font-size="12">* Partner &amp; Lead Recovery Playbooks</text>
+    <text x="30" y="414" fill="#94A3B8" font-size="11">API: /intelligence/overview</text>
+  </g>
+</svg>

@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 240" width="100%" height="100%" style="background:#0F172A; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; border-radius:12px; border:1px solid #334155; box-shadow:0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+  <defs>
+    <filter id="step-shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <marker id="arrow-step" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#38BDF8" />
+    </marker>
+  </defs>
+
+  <!-- Title Header -->
+  <rect x="25" y="15" width="1050" height="38" rx="6" fill="#1E293B" stroke="#334155" stroke-width="1.2" />
+  <text x="45" y="40" fill="#F8FAFC" font-size="16" font-weight="700">Deterministic 5-Step Revenue Formulation Pipeline</text>
+  <text x="500" y="40" fill="#94A3B8" font-size="12">Mathematical Trace: Backlog to Net Deliverable Forecast</text>
+
+  <!-- STEP 1 -->
+  <g transform="translate(25, 68)">
+    <rect x="0" y="0" width="180" height="150" rx="8" fill="#1E293B" stroke="#2563EB" stroke-width="1.5" filter="url(#step-shadow)"/>
+    <rect x="0" y="0" width="180" height="28" rx="8" fill="#1D4ED8"/>
+    <text x="12" y="19" fill="#FFFFFF" font-size="11" font-weight="700">1. INPUT INGESTION</text>
+    <text x="12" y="48" fill="#60A5FA" font-size="11" font-weight="700">Committed Backlog</text>
+    <text x="12" y="66" fill="#CBD5E1" font-size="10">INR 100,000.00</text>
+    <text x="12" y="90" fill="#60A5FA" font-size="11" font-weight="700">Weighted Pipeline</text>
+    <text x="12" y="108" fill="#CBD5E1" font-size="10">INR 50,000.00</text>
+    <text x="12" y="132" fill="#94A3B8" font-size="10">Actual Util: 75.0%</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="205" y1="143" x2="230" y2="143" stroke="#38BDF8" stroke-width="2.5" marker-end="url(#arrow-step)"/>
+
+  <!-- STEP 2 -->
+  <g transform="translate(242, 68)">
+    <rect x="0" y="0" width="180" height="150" rx="8" fill="#1E293B" stroke="#C026D3" stroke-width="1.5" filter="url(#step-shadow)"/>
+    <rect x="0" y="0" width="180" height="28" rx="8" fill="#86198F"/>
+    <text x="12" y="19" fill="#FFFFFF" font-size="11" font-weight="700">2. UTILIZATION ADJ</text>
+    <text x="12" y="48" fill="#E879F9" font-size="11" font-weight="700">Benchmark: 75%</text>
+    <text x="12" y="66" fill="#CBD5E1" font-size="10">Factor = 0.75 / 0.75</text>
+    <text x="12" y="84" fill="#CBD5E1" font-size="10">Delta = 1.0 - 1.0</text>
+    <text x="12" y="108" fill="#E879F9" font-size="11" font-weight="700">Adjustment</text>
+    <text x="12" y="128" fill="#F0ABFC" font-size="12" font-weight="700">INR 0.00</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="422" y1="143" x2="447" y2="143" stroke="#38BDF8" stroke-width="2.5" marker-end="url(#arrow-step)"/>
+
+  <!-- STEP 3 -->
+  <g transform="translate(459, 68)">
+    <rect x="0" y="0" width="180" height="150" rx="8" fill="#1E293B" stroke="#9333EA" stroke-width="1.5" filter="url(#step-shadow)"/>
+    <rect x="0" y="0" width="180" height="28" rx="8" fill="#6B21A8"/>
+    <text x="12" y="19" fill="#FFFFFF" font-size="11" font-weight="700">3. GROSS FORECAST</text>
+    <text x="12" y="48" fill="#C084FC" font-size="11" font-weight="700">Backlog + Pipe + Util</text>
+    <text x="12" y="68" fill="#CBD5E1" font-size="10">100k + 50k + 0</text>
+    <text x="12" y="98" fill="#C084FC" font-size="11" font-weight="700">Gross Period Total</text>
+    <text x="12" y="122" fill="#E9D5FF" font-size="13" font-weight="700">INR 150,000.00</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="639" y1="143" x2="664" y2="143" stroke="#38BDF8" stroke-width="2.5" marker-end="url(#arrow-step)"/>
+
+  <!-- STEP 4 -->
+  <g transform="translate(676, 68)">
+    <rect x="0" y="0" width="180" height="150" rx="8" fill="#1E293B" stroke="#DC2626" stroke-width="1.5" filter="url(#step-shadow)"/>
+    <rect x="0" y="0" width="180" height="28" rx="8" fill="#991B1B"/>
+    <text x="12" y="19" fill="#FFFFFF" font-size="11" font-weight="700">4. RISK HAIRCUT (5%)</text>
+    <text x="12" y="48" fill="#F87171" font-size="11" font-weight="700">Execution Slippage</text>
+    <text x="12" y="68" fill="#CBD5E1" font-size="10">Rate = 5.0% (0.05)</text>
+    <text x="12" y="88" fill="#CBD5E1" font-size="10">150,000 * 0.05</text>
+    <text x="12" y="112" fill="#F87171" font-size="11" font-weight="700">Haircut Value</text>
+    <text x="12" y="132" fill="#FCA5A5" font-size="12" font-weight="700">- INR 7,500.00</text>
+  </g>
+
+  <!-- Arrow 4 -> 5 -->
+  <line x1="856" y1="143" x2="881" y2="143" stroke="#34D399" stroke-width="2.5" marker-end="url(#arrow-step)"/>
+
+  <!-- STEP 5 -->
+  <g transform="translate(893, 68)">
+    <rect x="0" y="0" width="182" height="150" rx="8" fill="#1E293B" stroke="#059669" stroke-width="2" filter="url(#step-shadow)"/>
+    <rect x="0" y="0" width="182" height="28" rx="8" fill="#047857"/>
+    <text x="12" y="19" fill="#FFFFFF" font-size="11" font-weight="700">5. NET DELIVERABLE</text>
+    <text x="12" y="48" fill="#34D399" font-size="11" font-weight="700">Risk-Adjusted Target</text>
+    <text x="12" y="68" fill="#CBD5E1" font-size="10">150,000 - 7,500</text>
+    <text x="12" y="94" fill="#34D399" font-size="11" font-weight="700">Authoritative Net</text>
+    <text x="12" y="118" fill="#6EE7B7" font-size="14" font-weight="800">INR 142,500.00</text>
+    <text x="12" y="138" fill="#A7F3D0" font-size="10">Evaluated vs Plan</text>
+  </g>
+</svg>
